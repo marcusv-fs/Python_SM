@@ -13,6 +13,7 @@ class Semaforo(Machine):
         {'trigger': 'tp_Amarelo', 'source': 'Verde', 'dest': 'Amarelo'},
         {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo'}
      ]
+    
 
     def temporizador(self, segundos):
         tempo_inicial = time.time()
