@@ -1,7 +1,7 @@
 import time
-from transitions import Machine
+from transitions.extensions import GraphMachine
 
-class Semaforo(Machine):
+class Semaforo(GraphMachine):
 
     states = ['Initial','Vermelho','Amarelo','Verde']
 
@@ -14,7 +14,6 @@ class Semaforo(Machine):
         {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo'}
      ]
     
-
     def temporizador(self, segundos):
         tempo_inicial = time.time()
         tempo_atual = tempo_inicial
@@ -39,8 +38,17 @@ class Semaforo(Machine):
         self.temporizador(1)
         self.tp_Amarelo()
 
+
 # instantiating all objects
 machine = Semaforo()
+
+# Desenho automático da máquina de estados
+from transitions.extensions import GraphMachine
+
+m = Semaforo()
+graph = GraphMachine(model=Semaforo)
+m.get_graph().draw('PytransitionsSemaphore.png', prog='dot')
+
 
 #Starting
 machine.start()
