@@ -11,7 +11,7 @@ import time
 from transitions.extensions import GraphMachine
 
 class Semaforo(GraphMachine):
-    states = ['Initial','Vermelho','Amarelo','Verde', 'Final']
+    states = ['Initial','Vermelho','Amarelo','Verde','Final']
 
     transitions = [
         {'trigger': 'start', 'source': 'Initial', 'dest': 'Vermelho'},
@@ -34,11 +34,6 @@ class Semaforo(GraphMachine):
         self.Energia = self.Energia - 10
         while tempo_atual - tempo_inicial < segundos and self.Energia > 10:
             tempo_atual = time.time()
-        if self.Energia < 10:
-            if self.state != 'Amarelo':
-                self.tp_Emergencia()
-            else:
-                self.tp_Defeito()
 
     def Aviso(self):
         print('Emergência!!! Energia Baixa. Mudando para o Amarelo')
@@ -53,8 +48,7 @@ class Semaforo(GraphMachine):
     
     def on_enter_Vermelho(self):
         print('Estou no Vermelho. Energia atual: ' + str(self.Energia))
-        self.temporizador(1)
-        self.tp_Verde()
+        self.temporizador(0.1)
 
     def on_enter_Amarelo(self): #####Falta arrumar a energia aqui do amarelo
         if(self.Energia < 10):
@@ -66,13 +60,12 @@ class Semaforo(GraphMachine):
             self.Energia = self.Energia + random.randint(0,100)
             self.tp_Defeito()        
         print('Estou no Amarelo. Energia atual: ' + str(self.Energia))
-        self.temporizador(1)
-        self.tp_Vermelho()
+        self.temporizador(0.1)
 
     def on_enter_Verde(self):
         print('Estou no Verde. Energia atual: ' + str(self.Energia))
-        self.temporizador(1)
-        self.tp_Amarelo()
+        self.temporizador(0.1)
+
 
 
 
@@ -84,8 +77,21 @@ from transitions.extensions import GraphMachine
 
 m = Semaforo()
 graph = GraphMachine(model=Semaforo)
-m.get_graph().draw('PytransitionsSemaphore.png', prog='dot')
+m.get_graph().draw('Pytransitions/Pytransitions.png', prog='dot')
 
 
 #Starting
 machine.start()
+while True:
+    if machine.Energia < 10:
+        if machine.state != 'Amarelo':
+            machine.tp_Emergencia()
+        else:
+            machine.tp_Defeito()
+    else:
+        if(machine.state == 'Vermelho'):
+            machine.tp_Verde()  
+        elif(machine.state == 'Amarelo'):
+            machine.tp_Vermelho()
+        else:
+            machine.tp_Amarelo()
