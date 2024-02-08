@@ -19,6 +19,8 @@ class TrafficLightIsolatedTransitions(StateMachine):
     end = Amarelo.to(Final)
 
     tp_Emergencia = Verde.to(Amarelo) | Vermelho.to(Amarelo)
+    tp_Normal = tp_Verde | tp_Vermelho | tp_Amarelo
+
     tp_Defeito = Amarelo.to(Amarelo)
 
     def before_tp_Emergência(self):
@@ -61,7 +63,7 @@ class TrafficLightIsolatedTransitions(StateMachine):
 
 machine = TrafficLightIsolatedTransitions()
 
-img_path = "python-statemachine/psm.png"
+img_path = "python-statemachine/psm3.png"
 machine._graph().write_png(img_path)
 
 machine.start()
@@ -73,6 +75,7 @@ while True:
         else:
             machine.tp_Defeito()
     else:
+        # machine.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
         if(machine.current_state.id == 'Vermelho'):
             machine.tp_Verde()  
         elif(machine.current_state.id == 'Amarelo'):
