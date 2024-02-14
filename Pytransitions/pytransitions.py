@@ -15,16 +15,24 @@ class Semaforo(GraphMachine):
 
     transitions = [
         {'trigger': 'start', 'source': 'Initial', 'dest': 'Vermelho'},
-        {'trigger': 'tp_Verde', 'source': 'Vermelho', 'dest': 'Verde'},
-        {'trigger': 'tp_Vermelho', 'source': 'Amarelo', 'dest': 'Vermelho'},
-        {'trigger': 'tp_Defeito', 'source': 'Amarelo', 'dest': 'Amarelo', 'before': 'Erro'},
-        {'trigger': 'tp_Amarelo', 'source': 'Verde', 'dest': 'Amarelo'},
-        {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo', 'before':'Aviso'},
-        {'trigger': 'end', 'source': 'Amarelo', 'dest': 'Final'}
+        {'trigger': 'tp_Verde', 'source': 'Vermelho', 'dest': 'Verde', 'conditions': 'c_EnergiaSuficiente'},
+        {'trigger': 'tp_Vermelho', 'source': 'Amarelo', 'dest': 'Vermelho', 'conditions': 'c_EnergiaSuficiente', 'unless': 'c_MuitosDefeitos'},
+        {'trigger': 'tp_Defeito', 'source': 'Amarelo', 'dest': 'Amarelo', 'before': 'b_Erro', 'unless': ['c_EnergiaSuficiente', 'c_MuitosDefeitos']},
+        {'trigger': 'tp_Amarelo', 'source': 'Verde', 'dest': 'Amarelo', 'conditions': 'c_EnergiaSuficiente'},
+        {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo', 'before':'b_Aviso', 'unless': 'c_EnergiaSuficiente'},
+        {'trigger': 'end', 'source': 'Amarelo', 'dest': 'Final', 'conditions': 'c_MuitosDefeitos'}
      ]
+    
+####################### Transition Conditions ####################### 
+    def c_EnergiaSuficiente(self):
+        return self.Energia >= 10
+    
+    def c_MuitosDefeitos(self):
+        return self.Defeitos >= 3
 
+####################### Init and assist functions ####################### 
     def __init__(self):
-        super().__init__(name="Semaforo", states=Semaforo.states, transitions=Semaforo.transitions, initial='Initial')
+        super().__init__(name="Semaforo", states=Semaforo.states, transitions=Semaforo.transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
         self.Energia = 100
         self.Defeitos = 0
 
@@ -35,17 +43,18 @@ class Semaforo(GraphMachine):
         while tempo_atual - tempo_inicial < segundos and self.Energia > 10:
             tempo_atual = time.time()
 
-    def Aviso(self):
+####################### Before Transitions ####################### 
+    def b_Aviso(self):
         print('Emergência!!! Energia Baixa. Mudando para o Amarelo')
     
-    def Erro(self):
+    def b_Erro(self):
         print('A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
         
-
+####################### On_enter States ####################### 
     def on_enter_Final(self):
         print("Fim de execução")
         sys.exit()
-    
+   
     def on_enter_Vermelho(self):
         print('Estou no Vermelho. Energia atual: ' + str(self.Energia))
         self.temporizador(0.1)
@@ -67,20 +76,16 @@ class Semaforo(GraphMachine):
         self.temporizador(0.1)
 
 
-
-
-# instantiating all objects
+####################### Instantiating all objects #######################  
 machine = Semaforo()
 
-# Desenho automático da máquina de estados
+####################### Draw State Machine ####################### 
 from transitions.extensions import GraphMachine
-
 m = Semaforo()
 graph = GraphMachine(model=Semaforo)
 m.get_graph().draw('Pytransitions/Pytransitions.png', prog='dot')
 
-
-#Starting
+####################### Running the State Machine ####################### 
 machine.start()
 while True:
     if machine.Energia < 10:
