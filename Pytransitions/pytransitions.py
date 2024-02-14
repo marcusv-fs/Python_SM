@@ -1,6 +1,10 @@
 import random, sys, time
 from transitions.extensions import GraphMachine
 
+####################### Parameters #######################   
+MIN_ENERGIA = 10
+MAX_DEFEITOS = 3
+
 class Semaforo(GraphMachine):
 ####################### States Declaration #######################   
     states = ['Initial','Vermelho','Amarelo','Verde','Final']
@@ -26,15 +30,15 @@ class Semaforo(GraphMachine):
         tempo_inicial = time.time()
         tempo_atual = tempo_inicial
         self.Energia = self.Energia - 10
-        while tempo_atual - tempo_inicial < segundos and self.Energia > 10:
+        while tempo_atual - tempo_inicial < segundos and self.Energia > MIN_ENERGIA:
             tempo_atual = time.time()
 
 ####################### Transition Conditions ####################### 
     def c_EnergiaSuficiente(self):
-        return self.Energia >= 10
+        return self.Energia >= MIN_ENERGIA
     
     def c_MuitosDefeitos(self):
-        return self.Defeitos > 3
+        return self.Defeitos > MAX_DEFEITOS
 
 ####################### Before Transitions ####################### 
     def b_tp_Emergencia(self):
@@ -56,11 +60,11 @@ class Semaforo(GraphMachine):
         self.temporizador(0.1)
 
     def on_enter_Amarelo(self):
-        if(self.Energia < 10):
+        if(self.Energia < MIN_ENERGIA):
             print('Energia atual: ' + str(self.Energia))
             self.Defeitos = self.Defeitos + 1
             print("Defeitos: " + str(self.Defeitos))
-            if(self.Defeitos > 3):
+            if(self.Defeitos > MAX_DEFEITOS):
                 self.end()
             self.tp_Defeito()        
         else:        
@@ -83,7 +87,7 @@ m.get_graph().draw('Pytransitions/Pytransitions.png', prog='dot')
 ####################### Running the State Machine ####################### 
 machine.start()
 while True:
-    if machine.Energia < 10:
+    if machine.Energia < MIN_ENERGIA:
         if machine.state != 'Amarelo':
             machine.tp_Emergencia()
         else:

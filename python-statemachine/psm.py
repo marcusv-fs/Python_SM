@@ -1,6 +1,10 @@
 import random, time, sys
 from statemachine import State, StateMachine
 
+####################### Parameters #######################   
+MIN_ENERGIA = 10
+MAX_DEFEITOS = 3
+
 class Python_statemachine(StateMachine):
 ####################### States Declaration #######################   
     Initial = State(initial=True)
@@ -28,15 +32,15 @@ class Python_statemachine(StateMachine):
         tempo_inicial = time.time()
         tempo_atual = tempo_inicial
         self.Energia = self.Energia - 10
-        while tempo_atual - tempo_inicial < segundos and self.Energia > 10:
+        while tempo_atual - tempo_inicial < segundos and self.Energia > MIN_ENERGIA:
             tempo_atual = time.time()
             
 ####################### Transition Conditions ####################### 
     def c_EnergiaSuficiente(self):
-        return self.Energia >= 10
+        return self.Energia >= MIN_ENERGIA
     
     def c_MuitosDefeitos(self):
-        return self.Defeitos > 3
+        return self.Defeitos > MAX_DEFEITOS
 
 ####################### Before Transitions ####################### 
     def before_tp_Emergencia(self):
@@ -59,11 +63,11 @@ class Python_statemachine(StateMachine):
         sys.exit()
 
     def on_enter_Amarelo(self): 
-        if(self.Energia < 10):
+        if(self.Energia < MIN_ENERGIA):
             print('Energia atual: ' + str(self.Energia))
             self.Defeitos = self.Defeitos + 1
             print("Defeitos: " + str(self.Defeitos))
-            if(self.Defeitos > 3):
+            if(self.Defeitos > MAX_DEFEITOS):
                 self.end()
             self.tp_Defeito()   
         else:        
@@ -84,7 +88,7 @@ machine._graph().write_png(img_path)
 ####################### Running the State Machine ####################### 
 machine.start()
 while True:
-    if machine.Energia < 10:
+    if machine.Energia < MIN_ENERGIA:
         if machine.current_state.id != 'Amarelo':
             machine.tp_Emergencia()
         else:
