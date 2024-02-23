@@ -1,6 +1,6 @@
 import random, time
 from transitions.extensions import GraphMachine
-from Semaforo import *
+from PytransSemaforo import *
 
 ####################### Parameters #######################   
 MAX_CICLOS = 3
@@ -23,7 +23,7 @@ class ManutencaoSemaforo(GraphMachine):
         self.ciclos = 0
         self.semaforoFuncional = False
         ####################### Draw State Machine ####################### 
-        self.get_graph().draw('Pytransitions/PytransCancela.png', prog='dot')
+        self.get_graph().draw('Pytransitions/PytransManutencao.png', prog='dot')
 
     def temporizador(self, segundos):
         tempo_inicial = time.time()

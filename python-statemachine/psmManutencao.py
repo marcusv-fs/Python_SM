@@ -60,6 +60,8 @@ class Python_statemachine(StateMachine):
 
     def on_enter_Final(self):
         print("Fim de execução")
+        ####################### Draw State Machine ####################### 
+        self._graph().write_png("python-statemachine/psm.png")
         sys.exit()
 
     def on_enter_Amarelo(self): 
@@ -78,30 +80,47 @@ class Python_statemachine(StateMachine):
     def on_enter_Verde(self):
         print('Estou no Verde. Energia atual: ' + str(self.Energia))
         self.temporizador(0.1)
+
+    def run(self):
+        self.start()
+        while True:
+            if(self.current_state.id == 'Final'):
+                break
+            else:
+                if self.Energia < MIN_ENERGIA:
+                    if self.current_state.id != 'Amarelo':
+                        self.tp_Emergencia()
+                    else:
+                        self.tp_Defeito()
+                else:
+                    # self.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
+                    if(self.current_state.id == 'Vermelho'):
+                        self.tp_Verde()  
+                    elif(self.current_state.id == 'Amarelo'):
+                        self.tp_Vermelho()
+                    else:
+                        self.tp_Amarelo()
+
         
 ####################### Instantiating all objects #######################  
-machine = Python_statemachine()
+# machine = Python_statemachine()
 
-####################### Draw State Machine ####################### 
-img_path = "python-statemachine/psm.png"
-machine._graph().write_png(img_path)
-
-####################### Running the State Machine ####################### 
-machine.start()
-while True:
-    if(machine.current_state.id == 'Final'):
-        break
-    else:
-        if machine.Energia < MIN_ENERGIA:
-            if machine.current_state.id != 'Amarelo':
-                machine.tp_Emergencia()
-            else:
-                machine.tp_Defeito()
-        else:
-            # machine.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
-            if(machine.current_state.id == 'Vermelho'):
-                machine.tp_Verde()  
-            elif(machine.current_state.id == 'Amarelo'):
-                machine.tp_Vermelho()
-            else:
-                machine.tp_Amarelo()
+# ####################### Running the State Machine ####################### 
+# machine.start()
+# while True:
+#     if(machine.current_state.id == 'Final'):
+#         break
+#     else:
+#         if machine.Energia < MIN_ENERGIA:
+#             if machine.current_state.id != 'Amarelo':
+#                 machine.tp_Emergencia()
+#             else:
+#                 machine.tp_Defeito()
+#         else:
+#             # machine.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
+#             if(machine.current_state.id == 'Vermelho'):
+#                 machine.tp_Verde()  
+#             elif(machine.current_state.id == 'Amarelo'):
+#                 machine.tp_Vermelho()
+#             else:
+#                 machine.tp_Amarelo()
