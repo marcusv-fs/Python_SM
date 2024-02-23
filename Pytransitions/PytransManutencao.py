@@ -61,17 +61,17 @@ class ManutencaoSemaforo(GraphMachine):
                 self.semaforoFuncional = False
 
 ####################### Instantiating the Machine #######################  
-cancelaDeTrem = ManutencaoSemaforo()
+manutencaoSemaforo = ManutencaoSemaforo()
 semaforo1 = Semaforo()
 
 ####################### Running the State Machine ####################### 
-cancelaDeTrem.Start()
-while cancelaDeTrem.state != 'Final':
-    if cancelaDeTrem.ciclos >= MAX_CICLOS:
-        cancelaDeTrem.End()
+manutencaoSemaforo.Start()
+while manutencaoSemaforo.state != 'Final':
+    if manutencaoSemaforo.ciclos >= MAX_CICLOS:
+        manutencaoSemaforo.End()
     else:
-        if(cancelaDeTrem.semaforoFuncional == False):
-            cancelaDeTrem.tp_Defeituoso()
+        if(manutencaoSemaforo.semaforoFuncional == False):
+            manutencaoSemaforo.tp_Defeituoso()
         else:
-            cancelaDeTrem.tp_Funcional()
+            manutencaoSemaforo.tp_Funcional()
             

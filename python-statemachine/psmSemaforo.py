@@ -3,9 +3,9 @@ from statemachine import State, StateMachine
 
 ####################### Parameters #######################   
 MIN_ENERGIA = 10
-MAX_DEFEITOS = 3
+MAX_DEFEITOS = 1
 
-class Python_statemachine(StateMachine):
+class Semaforo(StateMachine):
 ####################### States Declaration #######################   
     Initial = State(initial=True)
     Verde = State()
@@ -44,41 +44,41 @@ class Python_statemachine(StateMachine):
 
 ####################### Before Transitions ####################### 
     def before_tp_Emergencia(self):
-        print('Emergência!!! Energia Baixa. Mudando para o Amarelo')
+        print(' Emergência!!! Energia Baixa. Mudando para o Amarelo')
     
     def before_tp_Defeito(self):
-        print('A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
+        print(' A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
         recarga = random.randint(0,100)
         self.Energia = self.Energia + recarga
-        print("Foram recarregados " + str(recarga) + " de energia agora")
+        print(" Foram recarregados " + str(recarga) + " de energia agora")
 
 
 ####################### On_enter States ####################### 
     def on_enter_Vermelho(self):
-        print('Estou no Vermelho. Energia atual: ' + str(self.Energia))
+        print(' Estou no Vermelho. Energia atual: ' + str(self.Energia))
         self.temporizador(0.1)
 
     def on_enter_Final(self):
-        print("Fim de execução")
+        print(" Finalizando semáforo")
         ####################### Draw State Machine ####################### 
         self._graph().write_png("python-statemachine/psm.png")
-        sys.exit()
+        
 
     def on_enter_Amarelo(self): 
         if(self.Energia < MIN_ENERGIA):
-            print('Energia atual: ' + str(self.Energia))
+            print(' Energia atual: ' + str(self.Energia))
             self.Defeitos = self.Defeitos + 1
-            print("Defeitos: " + str(self.Defeitos))
+            print(" Defeitos: " + str(self.Defeitos))
             if(self.Defeitos > MAX_DEFEITOS):
                 self.end()
             else:
                 self.tp_Defeito()  
         else:        
-            print('Estou no Amarelo. Energia atual: ' + str(self.Energia))
+            print(' Estou no Amarelo. Energia atual: ' + str(self.Energia))
             self.temporizador(0.1)
  
     def on_enter_Verde(self):
-        print('Estou no Verde. Energia atual: ' + str(self.Energia))
+        print(' Estou no Verde. Energia atual: ' + str(self.Energia))
         self.temporizador(0.1)
 
     def run(self):

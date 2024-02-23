@@ -1,126 +1,73 @@
 import random, time, sys
 from statemachine import State, StateMachine
-
+from psmSemaforo import *
 ####################### Parameters #######################   
-MIN_ENERGIA = 10
-MAX_DEFEITOS = 3
+MAX_CICLOS = 300
 
-class Python_statemachine(StateMachine):
+class ManutencaoSemaforo(StateMachine):
 ####################### States Declaration #######################   
     Initial = State(initial=True)
-    Verde = State()
-    Amarelo = State()
-    Vermelho= State()
+    Defeituoso = State()
+    Funcional = State()
     Final = State()
 
 ####################### Transitions Statement  #######################  
-    tp_Amarelo = Verde.to(Amarelo, cond="c_EnergiaSuficiente")
-    tp_Vermelho = Amarelo.to(Vermelho, cond="c_EnergiaSuficiente", unless="c_MuitosDefeitos")
-    tp_Verde = Vermelho.to(Verde, cond="c_EnergiaSuficiente")
-    start = Initial.to(Vermelho)
-    end = Amarelo.to(Final, cond="c_MuitosDefeitos")
-
-    tp_Emergencia = Verde.to(Amarelo, unless="c_EnergiaSuficiente") | Vermelho.to(Amarelo, unless="c_EnergiaSuficiente")
-    # tp_Normal = tp_Verde | tp_Vermelho | tp_Amarelo # Descomente esse e a condição no while true para usar o modo alternativo
-
-    tp_Defeito = Amarelo.to(Amarelo, unless=["c_MuitosDefeitos", "c_EnergiaSuficiente"])
+    Start = Initial.to(Funcional)
+    tp_Funcional = Defeituoso.to(Funcional, cond="c_SemaforoConsertado")
+    tp_Defeituoso = Funcional.to(Defeituoso, unless="c_SemaforoConsertado")
+    End = Defeituoso.to(Final, cond="c_End")
 
 ####################### Init and util Functions ####################### 
-    Energia = 100
-    Defeitos = 0
+    ciclos = 0
+    semaforoFuncional = False
+
     def temporizador(self, segundos):
         tempo_inicial = time.time()
         tempo_atual = tempo_inicial
-        self.Energia = self.Energia - 10
-        while tempo_atual - tempo_inicial < segundos and self.Energia > MIN_ENERGIA:
+        while tempo_atual - tempo_inicial < segundos:
             tempo_atual = time.time()
             
 ####################### Transition Conditions ####################### 
-    def c_EnergiaSuficiente(self):
-        return self.Energia >= MIN_ENERGIA
+    def c_SemaforoConsertado(self):
+        return self.semaforoFuncional
     
-    def c_MuitosDefeitos(self):
-        return self.Defeitos > MAX_DEFEITOS
-
-####################### Before Transitions ####################### 
-    def before_tp_Emergencia(self):
-        print('Emergência!!! Energia Baixa. Mudando para o Amarelo')
-    
-    def before_tp_Defeito(self):
-        print('A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
-        recarga = random.randint(0,100)
-        self.Energia = self.Energia + recarga
-        print("Foram recarregados " + str(recarga) + " de energia agora")
-
+    def c_End(self):
+        return self.ciclos >= MAX_CICLOS
 
 ####################### On_enter States ####################### 
-    def on_enter_Vermelho(self):
-        print('Estou no Vermelho. Energia atual: ' + str(self.Energia))
-        self.temporizador(0.1)
-
     def on_enter_Final(self):
-        print("Fim de execução")
-        ####################### Draw State Machine ####################### 
-        self._graph().write_png("python-statemachine/psm.png")
-        sys.exit()
-
-    def on_enter_Amarelo(self): 
-        if(self.Energia < MIN_ENERGIA):
-            print('Energia atual: ' + str(self.Energia))
-            self.Defeitos = self.Defeitos + 1
-            print("Defeitos: " + str(self.Defeitos))
-            if(self.Defeitos > MAX_DEFEITOS):
-                self.end()
-            else:
-                self.tp_Defeito()  
-        else:        
-            print('Estou no Amarelo. Energia atual: ' + str(self.Energia))
-            self.temporizador(0.1)
- 
-    def on_enter_Verde(self):
-        print('Estou no Verde. Energia atual: ' + str(self.Energia))
+        print("\nEsse semáforo foi desativado devido aos muitos problemas.")
+   
+    def on_enter_Defeituoso(self):
+        print('\nO Semáforo está apresentando muitos defeitos. Uma equipe foi chamada para manutenção.')
+        self.ciclos = self.ciclos + 1
         self.temporizador(0.1)
+        self.semaforoFuncional = True
 
-    def run(self):
-        self.start()
+    def on_enter_Funcional(self):
+        print('\nO semáforo está operacional. Iniciando ciclo: ' + str(self.ciclos) + "\n")
+        semaforo1 = Semaforo()
         while True:
-            if(self.current_state.id == 'Final'):
+            if(semaforo1.current_state.id == 'Final'):
+                self.semaforoFuncional = False
+                self.temporizador(0.1)
                 break
             else:
-                if self.Energia < MIN_ENERGIA:
-                    if self.current_state.id != 'Amarelo':
-                        self.tp_Emergencia()
-                    else:
-                        self.tp_Defeito()
-                else:
-                    # self.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
-                    if(self.current_state.id == 'Vermelho'):
-                        self.tp_Verde()  
-                    elif(self.current_state.id == 'Amarelo'):
-                        self.tp_Vermelho()
-                    else:
-                        self.tp_Amarelo()
+                semaforo1.run()
+                self.semaforoFuncional = False
 
-        
-####################### Instantiating all objects #######################  
-# machine = Python_statemachine()
+####################### Instantiating the Machine #######################  
+manutencaoSemaforo = ManutencaoSemaforo()
+semaforo1 = Semaforo()
 
-# ####################### Running the State Machine ####################### 
-# machine.start()
-# while True:
-#     if(machine.current_state.id == 'Final'):
-#         break
-#     else:
-#         if machine.Energia < MIN_ENERGIA:
-#             if machine.current_state.id != 'Amarelo':
-#                 machine.tp_Emergencia()
-#             else:
-#                 machine.tp_Defeito()
-#         else:
-#             # machine.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
-#             if(machine.current_state.id == 'Vermelho'):
-#                 machine.tp_Verde()  
-#             elif(machine.current_state.id == 'Amarelo'):
-#                 machine.tp_Vermelho()
-#             else:
-#                 machine.tp_Amarelo()
+####################### Running the State Machine ####################### 
+manutencaoSemaforo.Start()
+while manutencaoSemaforo.current_state.id != 'Final':
+    if manutencaoSemaforo.ciclos >= MAX_CICLOS:
+        manutencaoSemaforo.End()
+    else:
+        if(manutencaoSemaforo.semaforoFuncional == False):
+            manutencaoSemaforo.tp_Defeituoso()
+        else:
+            manutencaoSemaforo.tp_Funcional()
+            
