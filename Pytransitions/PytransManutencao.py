@@ -12,7 +12,7 @@ class ManutencaoSemaforo(GraphMachine):
 ####################### Transitions Statement  #######################  
     transitions = [
         {'trigger': 'Start', 'source': 'Initial', 'dest': 'Funcional'},
-        {'trigger': 'tp_Funcional', 'source': 'Defeituoso', 'dest': 'Funcional', 'conditions': 'c_SemaforoConsertado'},
+        {'trigger': 'tp_Funcional', 'source': 'Defeituoso', 'dest': 'Funcional', 'conditions': 'c_SemaforoConsertado', 'unless': 'c_End'},
         {'trigger': 'tp_Defeituoso', 'source': 'Funcional', 'dest': 'Defeituoso', 'unless': 'c_SemaforoConsertado'},
         {'trigger': 'End', 'source': 'Defeituoso', 'dest': 'Final', 'conditions': 'c_End'}
     ]

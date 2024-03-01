@@ -2,7 +2,7 @@ import random, time, sys
 from statemachine import State, StateMachine
 from psmSemaforo import *
 ####################### Parameters #######################   
-MAX_CICLOS = 300
+MAX_CICLOS = 3
 
 class ManutencaoSemaforo(StateMachine):
 ####################### States Declaration #######################   
@@ -13,7 +13,7 @@ class ManutencaoSemaforo(StateMachine):
 
 ####################### Transitions Statement  #######################  
     Start = Initial.to(Funcional)
-    tp_Funcional = Defeituoso.to(Funcional, cond="c_SemaforoConsertado")
+    tp_Funcional = Defeituoso.to(Funcional, cond="c_SemaforoConsertado", unless="c_End")
     tp_Defeituoso = Funcional.to(Defeituoso, unless="c_SemaforoConsertado")
     End = Defeituoso.to(Final, cond="c_End")
 
@@ -37,6 +37,7 @@ class ManutencaoSemaforo(StateMachine):
 ####################### On_enter States ####################### 
     def on_enter_Final(self):
         print("\nEsse semáforo foi desativado devido aos muitos problemas.")
+        self._graph().write_png("python-statemachine/psmManutencao.png")
    
     def on_enter_Defeituoso(self):
         print('\nO Semáforo está apresentando muitos defeitos. Uma equipe foi chamada para manutenção.')
