@@ -14,9 +14,9 @@ class Semaforo(GraphMachine):
         {'trigger': 'start', 'source': 'Initial', 'dest': 'Vermelho'},
         {'trigger': 'tp_Verde', 'source': 'Vermelho', 'dest': 'Verde', 'conditions': 'c_EnergiaSuficiente'},
         {'trigger': 'tp_Vermelho', 'source': 'Amarelo', 'dest': 'Vermelho', 'conditions': 'c_EnergiaSuficiente', 'unless': 'c_MuitosDefeitos'},
-        {'trigger': 'tp_Defeito', 'source': 'Amarelo', 'dest': 'Amarelo', 'before': 'b_tp_Defeito', 'unless': ['c_EnergiaSuficiente', 'c_MuitosDefeitos']},
+        {'trigger': 'tp_Defeito', 'source': 'Amarelo', 'dest': 'Amarelo', 'before': 'before_tp_Defeito', 'unless': ['c_EnergiaSuficiente', 'c_MuitosDefeitos']},
         {'trigger': 'tp_Amarelo', 'source': 'Verde', 'dest': 'Amarelo', 'conditions': 'c_EnergiaSuficiente'},
-        {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo', 'before':'b_tp_Emergencia', 'unless': 'c_EnergiaSuficiente'},
+        {'trigger': 'tp_Emergencia', 'source': ['Verde', 'Vermelho'], 'dest': 'Amarelo', 'before':'before_tp_Emergencia', 'unless': 'c_EnergiaSuficiente'},
         {'trigger': 'end', 'source': 'Amarelo', 'dest': 'Final', 'conditions': 'c_MuitosDefeitos'}
      ]
     
@@ -43,10 +43,10 @@ class Semaforo(GraphMachine):
         return self.Defeitos > MAX_DEFEITOS
 
 ####################### Before Transitions ####################### 
-    def b_tp_Emergencia(self):
+    def before_tp_Emergencia(self):
         print(' Emergência!!! Energia Baixa. Mudando para o Amarelo')
     
-    def b_tp_Defeito(self):
+    def before_tp_Defeito(self):
         print(' A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
         recarga = random.randint(0,100)
         self.Energia = self.Energia + recarga
