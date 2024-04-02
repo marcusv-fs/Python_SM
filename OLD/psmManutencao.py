@@ -12,10 +12,10 @@ class ManutencaoSemaforo(StateMachine):
     Final = State()
 
 ####################### Transitions Statement  #######################  
-    Start = Initial.to(Funcional)
+    tp_Start = Initial.to(Funcional)
     tp_Funcional = Defeituoso.to(Funcional, cond="c_SemaforoConsertado", unless="c_End")
     tp_Defeituoso = Funcional.to(Defeituoso, unless="c_SemaforoConsertado")
-    End = Defeituoso.to(Final, cond="c_End")
+    tp_Final = Defeituoso.to(Final, cond="c_End")
 
 ####################### Init and util Functions ####################### 
     ciclos = 0
@@ -62,10 +62,10 @@ manutencaoSemaforo = ManutencaoSemaforo()
 semaforo1 = Semaforo()
 
 ####################### Running the State Machine ####################### 
-manutencaoSemaforo.Start()
+manutencaoSemaforo.tp_Start()
 while manutencaoSemaforo.current_state.id != 'Final':
     if manutencaoSemaforo.ciclos >= MAX_CICLOS:
-        manutencaoSemaforo.End()
+        manutencaoSemaforo.tp_Final()
     else:
         if(manutencaoSemaforo.semaforoFuncional == False):
             manutencaoSemaforo.tp_Defeituoso()

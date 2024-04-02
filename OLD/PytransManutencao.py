@@ -14,7 +14,7 @@ class ManutencaoSemaforo(GraphMachine):
         {'trigger': 'Start', 'source': 'Initial', 'dest': 'Funcional'},
         {'trigger': 'tp_Funcional', 'source': 'Defeituoso', 'dest': 'Funcional', 'conditions': 'c_SemaforoConsertado', 'unless': 'c_End'},
         {'trigger': 'tp_Defeituoso', 'source': 'Funcional', 'dest': 'Defeituoso', 'unless': 'c_SemaforoConsertado'},
-        {'trigger': 'End', 'source': 'Defeituoso', 'dest': 'Final', 'conditions': 'c_End'}
+        {'trigger': 'tp_Final', 'source': 'Defeituoso', 'dest': 'Final', 'conditions': 'c_End'}
     ]
     
 ####################### Init and util Functions ####################### 
@@ -67,8 +67,10 @@ semaforo1 = Semaforo()
 ####################### Running the State Machine ####################### 
 manutencaoSemaforo.Start()
 while manutencaoSemaforo.state != 'Final':
+    if manutencaoSemaforo.state == 'Initial':
+        semaforo1.run()
     if manutencaoSemaforo.ciclos >= MAX_CICLOS:
-        manutencaoSemaforo.End()
+        manutencaoSemaforo.tp_Final()
     else:
         if(manutencaoSemaforo.semaforoFuncional == False):
             manutencaoSemaforo.tp_Defeituoso()
