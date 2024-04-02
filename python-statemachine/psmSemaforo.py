@@ -110,23 +110,3 @@ class Semaforo(StateMachine):
 ####################### Instantiating all objects #######################  
 machine = Semaforo()
 machine.run()
-
-# ####################### Running the State Machine ####################### 
-# machine.tp_Start()
-# while True:
-#     if(machine.current_state.id == 'Final'):
-#         break
-#     else:
-#         if machine.Energia < MIN_ENERGIA:
-#             if machine.current_state.id != 'Amarelo':
-#                 machine.tp_Emergencia()
-#             else:
-#                 machine.tp_Defeito()
-#         else:
-#             # machine.tp_Normal() # Desse jeito, podemos deletar tudo pra baixo e deixar só essa linha
-#             if(machine.current_state.id == 'Vermelho'):
-#                 machine.tp_Verde()  
-#             elif(machine.current_state.id == 'Amarelo'):
-#                 machine.tp_Vermelho()
-#             else:
-#                 machine.tp_Amarelo()
