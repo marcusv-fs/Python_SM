@@ -83,22 +83,22 @@ class Semaforo(StateMachine):
 
             if(self.current_state.id == 'Vermelho' and self.Energia >= MIN_ENERGIA):
                 self.tp_Verde()
-            if(self.current_state.id == 'Vermelho' and self.Energia <= MIN_ENERGIA):
+            if(self.current_state.id == 'Vermelho' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.current_state.id == 'Amarelo' and self.Energia >= MIN_ENERGIA):
                 self.tp_Vermelho()
-            if(self.current_state.id == 'Amarelo' and self.Energia <= MIN_ENERGIA):
+            if(self.current_state.id == 'Amarelo' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.current_state.id == 'Verde' and self.Energia >= MIN_ENERGIA):
                 self.tp_Amarelo()
-            if(self.current_state.id == 'Verde' and self.Energia <= MIN_ENERGIA):
+            if(self.current_state.id == 'Verde' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.current_state.id == 'SemEnergia' and self.Energia >= MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
                 self.tp_Normalizou()
-            if(self.current_state.id == 'SemEnergia' and self.Energia <= MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
+            if(self.current_state.id == 'SemEnergia' and self.Energia < MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
                 self.tp_Defeito()
             if(self.current_state.id == 'SemEnergia' and self.Defeitos > MAX_DEFEITOS):
                 self.tp_End()

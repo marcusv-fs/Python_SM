@@ -46,7 +46,7 @@ class Semaforo(GraphMachine):
     def before_tp_Defeito(self):
         print(' A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
 
-####################### On_enter States ####################### 
+####################### On_enter States #######################     
     def on_enter_Final(self):
         print(" O semáforo apresenta muitos defeitos. Finalizando semáforo")
    
@@ -80,22 +80,22 @@ class Semaforo(GraphMachine):
 
             if(self.state == 'Vermelho' and self.Energia >= MIN_ENERGIA):
                 self.tp_Verde()
-            if(self.state == 'Vermelho' and self.Energia <= MIN_ENERGIA):
+            if(self.state == 'Vermelho' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.state == 'Amarelo' and self.Energia >= MIN_ENERGIA):
                 self.tp_Vermelho()
-            if(self.state == 'Amarelo' and self.Energia <= MIN_ENERGIA):
+            if(self.state == 'Amarelo' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.state == 'Verde' and self.Energia >= MIN_ENERGIA):
                 self.tp_Amarelo()
-            if(self.state == 'Verde' and self.Energia <= MIN_ENERGIA):
+            if(self.state == 'Verde' and self.Energia < MIN_ENERGIA):
                 self.tp_Defeito()
 
             if(self.state == 'SemEnergia' and self.Energia >= MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
                 self.tp_Normalizou()
-            if(self.state == 'SemEnergia' and self.Energia <= MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
+            if(self.state == 'SemEnergia' and self.Energia < MIN_ENERGIA and self.Defeitos <= MAX_DEFEITOS):
                 self.tp_Defeito()
             if(self.state == 'SemEnergia' and self.Defeitos > MAX_DEFEITOS):
                 self.tp_End()
