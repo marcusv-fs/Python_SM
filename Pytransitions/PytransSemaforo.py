@@ -2,130 +2,128 @@ import random, time
 from transitions.extensions import GraphMachine
 
 
-class Semaforo(GraphMachine):
+class Semaphore(GraphMachine):
 ####################### States Declaration #######################   
-    states = ['Initial','Vermelho','Amarelo', 'SemEnergia','Verde', 'Junction1', 'Final']
+    states = ['Initial','Red','Yellow', 'NoEnergy','Green', 'Junction1', 'Final']
 
 ####################### Transitions Statement  #######################  
     transitions = [
-        {'trigger': 'tp_Start', 'source': 'Initial', 'dest': 'Vermelho'},
-        {'trigger': 'tp_Verde', 'source': 'Vermelho', 'dest': 'Verde', 'conditions': 'c_EnergiaSuficiente'},
-        {'trigger': 'tp_Amarelo', 'source': 'Verde', 'dest': 'Amarelo', 'conditions': 'c_EnergiaSuficiente'},
-        {'trigger': 'tp_Vermelho', 'source': 'Amarelo', 'dest': 'Vermelho', 'conditions': 'c_EnergiaSuficiente', 'unless': 'c_MuitosDefeitos'},
+        {'trigger': 'tp_Start', 'source': 'Initial', 'dest': 'Red'},
+        {'trigger': 'tp_Green', 'source': 'Red', 'dest': 'Green', 'conditions': 'c_EnoughEnergy'},
+        {'trigger': 'tp_Yellow', 'source': 'Green', 'dest': 'Yellow', 'conditions': 'c_EnoughEnergy'},
+        {'trigger': 'tp_Red', 'source': 'Yellow', 'dest': 'Red', 'before':['make_a_noise', 'before_tp_Red'], 'conditions': 'c_EnoughEnergy', 'unless': 'c_TooManyErrors'},
         
-        {'trigger': 'tp_Junction1', 'source': 'Amarelo', 'dest': 'Junction1', 'unless': 'c_EnergiaSuficiente'},
-        {'trigger': 'tp_LowEnergy', 'source': 'Junction1', 'dest': 'SemEnergia', 'unless': 'c_MuitosDefeitos'},
-        {'trigger': 'tp_End2', 'source': 'Junction1', 'dest': 'Final', 'conditions': 'c_MuitosDefeitos'},
+        {'trigger': 'tp_Junction1', 'source': 'Yellow', 'dest': 'Junction1', 'unless': 'c_EnoughEnergy'},
+        {'trigger': 'tp_LowEnergy', 'source': 'Junction1', 'dest': 'NoEnergy', 'unless': 'c_TooManyErrors'},
+        {'trigger': 'tp_End2', 'source': 'Junction1', 'dest': 'Final', 'conditions': 'c_TooManyErrors'},
         
-        
-        {'trigger': 'tp_Defeito', 'source': ['Verde', 'Vermelho', 'SemEnergia'], 'dest': 'SemEnergia', 'before':'before_tp_Defeito', 'unless': 'c_EnergiaSuficiente'},
-        {'trigger': 'tp_Normalizou', 'source': 'SemEnergia', 'dest': 'Vermelho', 'conditions': 'c_EnergiaSuficiente', 'unless': 'c_MuitosDefeitos'},
-        {'trigger': 'tp_End', 'source': 'SemEnergia', 'dest': 'Final', 'conditions': 'c_MuitosDefeitos'}
+        {'trigger': 'tp_Defeito', 'source': ['Green', 'Red', 'NoEnergy'], 'dest': 'NoEnergy', 'before':'before_tp_Defeito', 'unless': 'c_EnoughEnergy'},
+        {'trigger': 'tp_Normalizou', 'source': 'NoEnergy', 'dest': 'Red', 'conditions': 'c_EnoughEnergy', 'unless': 'c_TooManyErrors'},
+        {'trigger': 'tp_End', 'source': 'NoEnergy', 'dest': 'Final', 'conditions': 'c_TooManyErrors'}
      ]
     
 ####################### Init and util Functions ####################### 
     def __init__(self):
-        super().__init__(name="Semaforo", states=Semaforo.states, transitions=Semaforo.transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
-        self.Energia = 100
-        self.Defeitos = 0
-        self.MIN_ENERGIA = 10
-        self.MAX_DEFEITOS = 100
+        super().__init__(name="Semaphore", states=Semaphore.states, transitions=Semaphore.transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
+        self.Energy = 100
+        self.Errors = 0
+        self.MIN_ENERGY = 10
+        self.MAX_ERRORS = 100
         self.TIME_SLEEP = 0.1
 
-        self.cont1 = 0
-        self.cont2 = 0
-
-
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Pytransitions/PytransSemaforo.png', prog='dot')
+        self.get_graph().draw('Pytransitions/PytransSemaphore.png', prog='dot')
+
+    def recharge(self):
+        recarga = random.randint(0,100)
+        self.Energy = self.Energy + recarga
+        print(" " + str(recarga) + " energy units have now been recharged.")
+        print("///////////////////////////////////////////////////////////////////////\n")
 
 ####################### Transition Conditions ####################### 
-    def c_EnergiaSuficiente(self):
-        return self.Energia >= self.MIN_ENERGIA
+    def c_EnoughEnergy(self):
+        return self.Energy >= self.MIN_ENERGY
     
-    def c_MuitosDefeitos(self):
-        return self.Defeitos > self.MAX_DEFEITOS
+    def c_TooManyErrors(self):
+        return self.Errors >= self.MAX_ERRORS
 
 ####################### Before Transitions ####################### 
     def before_tp_Defeito(self):
-        print(' A energia está muito baixa. O semáforo está com defeito. Energia atual: ' + str(self.Energia))
+        print(" The Energy is very low. The traffic light is faulty. Current energy: " + str(self.Energy))
+
+    def make_a_noise(self):
+        print(" Beep beep!")
+
+    def before_tp_Red(self):
+        print(" I'm switching to Red!")
+        self.make_a_noise()
 
 ####################### On_enter States #######################     
     def on_enter_Final(self):
-        print(" O semáforo apresenta muitos defeitos. Finalizando semáforo")
+        print(" The traffic light has many errors. Finishing traffic light.")
    
-    def on_enter_Vermelho(self):
-        print(' Estou no Vermelho. Energia atual: ' + str(self.Energia))
-        self.Energia = self.Energia - 10
+    def on_enter_Red(self):
+        print(" I am in the Red state. Current Energy: " + str(self.Energy))
+        self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
-    def on_enter_SemEnergia(self):
-        print(" Sem energia. Aguardando normalização.")
-        print(' Energia atual: ' + str(self.Energia))
-        self.Defeitos = self.Defeitos + 1
-        print(" Defeitos: " + str(self.Defeitos))
-        if(self.Defeitos <= self.MAX_DEFEITOS):
-            recarga = random.randint(0,100)
-            self.Energia = self.Energia + recarga
-            print(" Foram recarregados " + str(recarga) + " de energia agora")
+    def on_enter_NoEnergy(self):
+        print(" No energy. Waiting for normalization.")
+        print(" Current Energy : " + str(self.Energy))
+        self.Errors = self.Errors + 1
+        print(" Errors: " + str(self.Errors))
+        if(self.Errors <= self.MAX_ERRORS):
+            self.recharge()
 
 
-    def on_enter_Amarelo(self):               
-        print(' Estou no Amarelo. Energia atual: ' + str(self.Energia))
-        self.Energia = self.Energia - 10
+    def on_enter_Yellow(self):               
+        print(" Estou no Yellow. Energy atual: " + str(self.Energy))
+        self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
-    def on_enter_Verde(self):
-        print(' Estou no Verde. Energia atual: ' + str(self.Energia))
-        self.Energia = self.Energia - 10
+    def on_enter_Green(self):
+        print(" I am in the Red state. Current Energy: " + str(self.Energy))
+        self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
     def on_enter_Junction1(self):               
-        print("Entrei na junction")
-        if(self.Defeitos > self.MAX_DEFEITOS):
-            print("Irei finalizar o semáforo")
-        else:
-            print("Irei para o estado de baixa energia")
+        print(" I entered the junction")
 
     def run(self):
         while True:
             if(self.state == 'Initial'):
                 self.tp_Start()
 
-            if(self.state == 'Vermelho' and self.Energia >= self.MIN_ENERGIA):
-                self.tp_Verde()
-            if(self.state == 'Vermelho' and self.Energia < self.MIN_ENERGIA):
+            if(self.state == 'Red' and self.Energy >= self.MIN_ENERGY):
+                self.tp_Green()
+            if(self.state == 'Red' and self.Energy < self.MIN_ENERGY):
                 self.tp_Defeito()
 
-            if(self.state == 'Amarelo' and self.Energia >= self.MIN_ENERGIA):
-                self.tp_Vermelho()
-            if(self.state == 'Amarelo' and self.Energia < self.MIN_ENERGIA):
+            if(self.state == 'Yellow' and self.Energy >= self.MIN_ENERGY):
+                self.tp_Red()
+            if(self.state == 'Yellow' and self.Energy < self.MIN_ENERGY):
                 self.tp_Junction1()
 
-            if(self.state == 'Junction1' and self.Defeitos > self.MAX_DEFEITOS):
-                self.cont1 = self.cont1 + 1
-                print(self.cont1)
+            if(self.state == 'Junction1' and self.Errors >= self.MAX_ERRORS):
                 self.tp_End2()
-            if(self.state == 'Junction1' and self.Defeitos < self.MAX_DEFEITOS):
-                self.cont2 = self.cont2 + 1
-                print(self.cont2)
+            if(self.state == 'Junction1' and self.Errors < self.MAX_ERRORS):
                 self.tp_LowEnergy()
 
-            if(self.state == 'Verde' and self.Energia >= self.MIN_ENERGIA):
-                self.tp_Amarelo()
-            if(self.state == 'Verde' and self.Energia < self.MIN_ENERGIA):
+            if(self.state == 'Green' and self.Energy >= self.MIN_ENERGY):
+                self.tp_Yellow()
+            if(self.state == 'Green' and self.Energy < self.MIN_ENERGY):
                 self.tp_Defeito()
 
-            if(self.state == 'SemEnergia' and self.Energia >= self.MIN_ENERGIA and self.Defeitos <= self.MAX_DEFEITOS):
+            if(self.state == 'NoEnergy' and self.Energy >= self.MIN_ENERGY and self.Errors <= self.MAX_ERRORS):
                 self.tp_Normalizou()
-            if(self.state == 'SemEnergia' and self.Energia < self.MIN_ENERGIA and self.Defeitos <= self.MAX_DEFEITOS):
+            if(self.state == 'NoEnergy' and self.Energy < self.MIN_ENERGY and self.Errors <= self.MAX_ERRORS):
                 self.tp_Defeito()
-            if(self.state == 'SemEnergia' and self.Defeitos > self.MAX_DEFEITOS):
+            if(self.state == 'NoEnergy' and self.Errors >= self.MAX_ERRORS):
                 self.tp_End()
             
             if(self.state == 'Final'):
                 break
 
 # ####################### Instantiating and Running the State Machine #######################  
-machine = Semaforo()
+machine = Semaphore()
 machine.run()
