@@ -86,6 +86,6 @@ class SMovement(GraphMachine):
                 print("\n Finishing the program. \n")
                 break
 
-# ####################### Instantiating and Running the State Machine #######################  
+######################## Instantiating and Running the State Machine #######################  
 machine = SMovement()
 machine.run()
