@@ -32,7 +32,7 @@ class Semaphore(GraphMachine):
         self.TIME_SLEEP = 0.1
 
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Pytransitions/PytransSemaphore.png', prog='dot')
+        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.png', prog='dot')
 
     def recharge(self):
         recarga = random.randint(0,100)
