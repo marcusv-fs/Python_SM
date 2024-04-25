@@ -45,9 +45,11 @@ class SMovement(GraphMachine):
 
 ####################### Before Transitions ####################### 
     def before_tp_Turning(self):
+        ##### Reset MBC #####
         print("Reseting the time.")
         self.MBC = time.time()
         self.MBC_Reseted = True
+        ##### Stop the robot #####
         self.stop()
 
 
