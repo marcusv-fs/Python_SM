@@ -28,6 +28,9 @@ class SMovement(GraphMachine):
         ##############################Util Functions##############################
     def move(self, lv, av):
         print("Move(" + str(lv) + ", " + str(av) + ")")
+
+    def stop(self):
+        print("Stopping the robot.")
             
 
 ####################### Transition Conditions ####################### 
@@ -45,6 +48,7 @@ class SMovement(GraphMachine):
         print("Reseting the time.")
         self.MBC = time.time()
         self.MBC_Reseted = True
+        self.stop()
 
 
 ####################### On_enter States #######################        
