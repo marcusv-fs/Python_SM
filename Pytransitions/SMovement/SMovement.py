@@ -59,6 +59,10 @@ class SMovement(GraphMachine):
         self.move(self.lv, 0)
         time.sleep(0.1)
 
+    def on_exit_Moving(self):
+        print("Exit Moving state.")
+        time.sleep(0.1)
+
     def on_enter_Turning(self):
         print("Moved to the Turning state.")
         self.move(0, self.av)
