@@ -34,11 +34,6 @@ class Semaphore(GraphMachine):
         ####################### Draw State Machine ######################
         self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.png', prog='dot')
 
-    def recharge(self):
-        recarga = random.randint(0,100)
-        self.Energy = self.Energy + recarga
-        print(" " + str(recarga) + " energy units have now been recharged.")
-        print("///////////////////////////////////////////////////////////////////////\n")
 
 ####################### Transition Conditions ####################### 
     def c_EnoughEnergy(self):
@@ -73,16 +68,20 @@ class Semaphore(GraphMachine):
         self.Errors = self.Errors + 1
         print(" Errors: " + str(self.Errors))
         if(self.Errors <= self.MAX_ERRORS):
-            self.recharge()
+            #recharge = random.randint(0,100)
+            recharge = recharge = 35
+            self.Energy = self.Energy + recharge
+            print(" " + str(recharge) + " energy units have now been recharged.")
+            print("///////////////////////////////////////////////////////////////////////\n")
 
 
     def on_enter_Yellow(self):               
-        print(" Estou no Yellow. Energy atual: " + str(self.Energy))
+        print(" I am in the Yellow state. Current Energy: " + str(self.Energy))
         self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
     def on_enter_Green(self):
-        print(" I am in the Red state. Current Energy: " + str(self.Energy))
+        print(" I am in the Green state. Current Energy: " + str(self.Energy))
         self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
