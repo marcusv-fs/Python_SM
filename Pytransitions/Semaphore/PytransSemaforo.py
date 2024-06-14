@@ -1,3 +1,4 @@
+from distutils.errors import UnknownFileError
 import random, time
 from transitions.extensions import GraphMachine
 
@@ -28,11 +29,24 @@ class Semaphore(GraphMachine):
         self.Energy = 100
         self.Errors = 0
         self.MIN_ENERGY = 10
-        self.MAX_ERRORS = 100
+        self.MAX_ERRORS = 10
         self.TIME_SLEEP = 0.1
 
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.png', prog='dot')
+        
+        try:
+            self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore4.cgimage', prog='dot')
+            #Generates the digraph textual description, ignore the error
+        except:
+            pass
+        
+        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.canon', prog='dot')
+        
+        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.plain', prog='dot')
+
+        
+
+        
 
 
 ####################### Transition Conditions ####################### 

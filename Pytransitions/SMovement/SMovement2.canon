@@ -1,0 +1,27 @@
+digraph "State Machine" {
+	graph [color=black,
+		directed=true,
+		fillcolor=white,
+		label="State Machine",
+		rankdir=LR,
+		"strict"=false,
+		style=solid
+	];
+	node [color=black,
+		fillcolor=white,
+		label="\N",
+		peripheries=1,
+		shape=rectangle,
+		style="rounded, filled"
+	];
+	edge [color=black];
+	Initial	[color=red,
+		fillcolor=darksalmon,
+		label="Initial\l",
+		peripheries=2];
+	Moving	[label="Moving\l- enter:\l  + on_enter_Moving\l- exit:\l  + on_exit_Moving\l"];
+	Initial -> Moving	[label=tp_Start];
+	Turning	[label="Turning\l- enter:\l  + on_enter_Turning\l"];
+	Moving -> Turning	[label="tp_Turning [c_Obs]"];
+	Turning -> Moving	[label="tp_Moving [c_Time]"];
+}
