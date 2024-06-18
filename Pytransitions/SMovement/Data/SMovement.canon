@@ -1,11 +1,6 @@
-digraph "State Machine" {
-	graph [color=black,
-		directed=true,
-		fillcolor=white,
-		label="State Machine",
-		rankdir=LR,
-		"strict"=false,
-		style=solid
+strict digraph "" {
+	graph [label="State Machine",
+		rankdir=LR
 	];
 	node [color=black,
 		fillcolor=white,

@@ -26,16 +26,17 @@ class SMovement(GraphMachine):
         self.MBC_Reseted = False
         self.Obstacle = False
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Pytransitions/SMovement/SMovement2.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/SMovement/Data/SMovement.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/SMovement/Data/SMovement.png', prog='dot') 
 
         ##############################Util Functions##############################
     def move(self, lv, av):
         print("Move(" + str(lv) + ", " + str(av) + ")")
-        print("moveCall."+ str(lv) + "."+ str(av)+" -> ") 
+        file.write("moveCall."+ str(lv) + "."+ str(av)+" -> ") 
 
     def stop(self):
         print("Stopping the robot.")
-        print("stopCall -> ")
+        file.write("stopCall -> ")
             
 
 ####################### Transition Conditions ####################### 
@@ -63,7 +64,7 @@ class SMovement(GraphMachine):
         print("Moved to the Moving state.")
         self.move(self.lv, 0)
         time.sleep(0.1)
-        print("tock -> ")
+        file.write("tock -> ")
 
     def on_exit_Moving(self):
         print("Exit Moving state.")
@@ -88,7 +89,7 @@ class SMovement(GraphMachine):
                 
             print("Now Obstacle is " + str(self.Obstacle))
             if(self.state == 'Moving' and self.Obstacle):
-                print("obstacle.in -> ")
+                file.write("obstacle.in -> ")
                 self.tp_Turning()
                 cond = 1
 
@@ -98,7 +99,7 @@ class SMovement(GraphMachine):
                 cond = 1
                 
             if cond == 0:
-                print("tock -> state:" + str(self.state) + " obstacle:" + str(self.Obstacle) )
+                file.write("tock -> ")
             
             ####################### Test Sector #######################
             self.Obstacle = random.choice([True, False])
@@ -112,4 +113,6 @@ class SMovement(GraphMachine):
 ######################## Instantiating and Running the State Machine #######################  
 machine = SMovement()
 
+file = open("Pytransitions/SMovement/Data/trace.txt", "w")
 machine.run()
+file.close()

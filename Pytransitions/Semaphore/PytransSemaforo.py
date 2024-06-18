@@ -33,21 +33,17 @@ class Semaphore(GraphMachine):
         self.TIME_SLEEP = 0.1
 
         ####################### Draw State Machine ######################
-        
         try:
-            self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore4.cgimage', prog='dot')
+            self.get_graph().draw('Pytransitions/Semaphore/Data/PytransSemaphore1.cgimage', prog='dot')
             #Generates the digraph textual description, ignore the error
         except:
             pass
         
-        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.canon', prog='dot')
+        self.get_graph().draw('Pytransitions/Semaphore/Data/PytransSemaphore.canon', prog='dot')
         
-        self.get_graph().draw('Pytransitions/Semaphore/PytransSemaphore.plain', prog='dot')
+        self.get_graph().draw('Pytransitions/Semaphore/Data/PytransSemaphore.plain', prog='dot')
 
-        
-
-        
-
+        self.get_graph().draw('Pytransitions/Semaphore/Data/PytransSemaphore.png', prog='dot')
 
 ####################### Transition Conditions ####################### 
     def c_EnoughEnergy(self):
@@ -59,48 +55,61 @@ class Semaphore(GraphMachine):
 ####################### Before Transitions ####################### 
     def before_tp_Defeito(self):
         print(" The Energy is very low. The traffic light is faulty. Current energy: " + str(self.Energy))
-
+        file.write(" \nThe Energy is very low. The traffic light is faulty. Current energy: " + str(self.Energy))
+        
     def make_a_noise(self):
-        print(" Beep beep!")
+        print("Beep beep!")
+        file.write(" \nBeep beep!")
 
     def before_tp_Red(self):
         print(" I'm switching to Red!")
+        file.write(" \nI'm switching to Red!")
         self.make_a_noise()
 
 ####################### On_enter States #######################     
     def on_enter_Final(self):
         print(" The traffic light has many errors. Finishing traffic light.")
-   
+        file.write(" \nThe traffic light has many errors. Finishing traffic light.")
+
     def on_enter_Red(self):
         print(" I am in the Red state. Current Energy: " + str(self.Energy))
+        file.write(" \nI am in the Red state. Current Energy: " + str(self.Energy))
         self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
     def on_enter_NoEnergy(self):
         print(" No energy. Waiting for normalization.")
-        print(" Current Energy : " + str(self.Energy))
+        file.write(" \nNo energy. Waiting for normalization.")
+        print(" Current Energy : " + str(self.Energy)) 
+        file.write(" \nCurrent Energy : " + str(self.Energy))
         self.Errors = self.Errors + 1
         print(" Errors: " + str(self.Errors))
+        file.write(" \nErrors: " + str(self.Errors))
         if(self.Errors <= self.MAX_ERRORS):
             #recharge = random.randint(0,100)
             recharge = recharge = 35
             self.Energy = self.Energy + recharge
             print(" " + str(recharge) + " energy units have now been recharged.")
+            file.write(" \n" + str(recharge) + " energy units have now been recharged.")
             print("///////////////////////////////////////////////////////////////////////\n")
+            file.write("\n///////////////////////////////////////////////////////////////////////\n")
 
 
     def on_enter_Yellow(self):               
         print(" I am in the Yellow state. Current Energy: " + str(self.Energy))
+        file.write(" \nI am in the Yellow state. Current Energy: " + str(self.Energy))
         self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
     def on_enter_Green(self):
         print(" I am in the Green state. Current Energy: " + str(self.Energy))
+        file.write(" \nI am in the Green state. Current Energy: " + str(self.Energy))
         self.Energy = self.Energy - 10
         time.sleep(self.TIME_SLEEP)
 
     def on_enter_Junction1(self):               
         print(" I entered the junction")
+        file.write(" \nI entered the junction")
 
     def run(self):
         while True:
@@ -139,4 +148,6 @@ class Semaphore(GraphMachine):
 
 # ####################### Instantiating and Running the State Machine #######################  
 machine = Semaphore()
+file = open("Pytransitions/Semaphore/Data/trace.txt", "w")
 machine.run()
+file.close()

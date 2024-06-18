@@ -1,11 +1,6 @@
-digraph "State Machine" {
-	graph [color=black,
-		directed=true,
-		fillcolor=white,
-		label="State Machine",
-		rankdir=LR,
-		"strict"=false,
-		style=solid
+strict digraph "" {
+	graph [label="State Machine",
+		rankdir=LR
 	];
 	node [color=black,
 		fillcolor=white,
@@ -25,16 +20,16 @@ digraph "State Machine" {
 	Red -> NoEnergy	[label="tp_Defeito [!c_EnoughEnergy]"];
 	Green	[label="Green\l- enter:\l  + on_enter_Green\l"];
 	Red -> Green	[label="tp_Green [c_EnoughEnergy]"];
-	Yellow	[label="Yellow\l- enter:\l  + on_enter_Yellow\l"];
-	Yellow -> Red	[label="tp_Red [c_EnoughEnergy & !c_TooManyErrors]"];
-	Junction1	[label="Junction1\l- enter:\l  + on_enter_Junction1\l"];
-	Yellow -> Junction1	[label="tp_Junction1 [!c_EnoughEnergy]"];
 	NoEnergy -> Red	[label="tp_Normalizou [c_EnoughEnergy & !c_TooManyErrors]"];
 	NoEnergy -> NoEnergy	[label="tp_Defeito [!c_EnoughEnergy]"];
 	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
 	NoEnergy -> Final	[label="tp_End [c_TooManyErrors]"];
-	Green -> Yellow	[label="tp_Yellow [c_EnoughEnergy]"];
 	Green -> NoEnergy	[label="tp_Defeito [!c_EnoughEnergy]"];
+	Yellow	[label="Yellow\l- enter:\l  + on_enter_Yellow\l"];
+	Green -> Yellow	[label="tp_Yellow [c_EnoughEnergy]"];
+	Yellow -> Red	[label="tp_Red [c_EnoughEnergy & !c_TooManyErrors]"];
+	Junction1	[label="Junction1\l- enter:\l  + on_enter_Junction1\l"];
+	Yellow -> Junction1	[label="tp_Junction1 [!c_EnoughEnergy]"];
 	Junction1 -> NoEnergy	[label="tp_LowEnergy [!c_TooManyErrors]"];
 	Junction1 -> Final	[label="tp_End2 [c_TooManyErrors]"];
 }

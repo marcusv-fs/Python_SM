@@ -1,6 +1,0 @@
-# Criar um semáforo com 3 estados
-# 1 - Vermelho, 2 - Amarelo, 3 - Verde
-# Verde -> Amarelo -> Vermelho -> Verde
-# Ele deve demorar 10s no vermelho, 2s no amarelo e 5s no verde.
-# Se receber um sinal de um botão enquanto está no verde, 
-# ele deve mudar de estado para o amarelo imediatamente

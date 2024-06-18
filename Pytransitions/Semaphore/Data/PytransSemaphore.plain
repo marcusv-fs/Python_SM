@@ -1,0 +1,21 @@
+graph 1 39.153 3.0625
+node Initial 0.46528 1.9236 0.93056 0.61111 "Initial\l" rounded, filled rectangle red darksalmon
+node Red 3.2153 1.9236 1.9306 0.73611 "Red\l- enter:\l  + on_enter_Red\l" rounded, filled rectangle black white
+node NoEnergy 32.569 1.5069 2.5417 0.73611 "NoEnergy\l- enter:\l  + on_enter_NoEnergy\l" rounded, filled rectangle black white
+node Green 9.8403 1.3819 2.1528 0.73611 "Green\l- enter:\l  + on_enter_Green\l" rounded, filled rectangle black white
+node Yellow 18.264 0.6875 2.1806 0.73611 "Yellow\l- enter:\l  + on_enter_Yellow\l" rounded, filled rectangle black white
+node Junction1 25.965 0.6875 2.4861 0.73611 "Junction1\l- enter:\l  + on_enter_Junction1\l" rounded, filled rectangle black white
+node Final 38.132 0.85417 2.0417 0.73611 "Final\l- enter:\l  + on_enter_Final\l" rounded, filled rectangle black white
+edge Initial Red 4 0.93481 1.9236 1.2543 1.9236 1.6957 1.9236 2.1041 1.9236 tp_Start 1.5903 2.0278 solid black
+edge Red NoEnergy 10 4.1848 1.976 5.4677 2.0417 7.818 2.1458 9.8264 2.1458 9.8264 2.1458 9.8264 2.1458 25.979 2.1458 27.774 2.1458 29.831 1.9072 31.16 1.7216 "tp_Defeito [!c_EnoughEnergy]" 18.264 2.25 solid black
+edge Red Green 7 4.1857 1.7726 4.2684 1.7617 4.3509 1.7517 4.4306 1.7431 5.8643 1.5876 7.5201 1.4887 8.6153 1.4344 "tp_Green [c_EnoughEnergy]" 5.8333 1.8472 solid black
+edge NoEnergy Red 16 31.703 1.8758 31.457 1.9708 31.186 2.065 30.931 2.1319 28.779 2.6951 28.203 2.8542 25.979 2.8542 9.8264 2.8542 9.8264 2.8542 9.8264 2.8542 7.4129 2.8542 6.8023 2.6902 4.4306 2.2431 4.394 2.2362 4.357 2.2288 4.3197 2.2209 "tp_Normalizou [c_EnoughEnergy & !c_TooManyErrors]" 18.264 2.9583 solid black
+edge NoEnergy NoEnergy 7 32.018 1.8811 32.006 2.0155 32.19 2.125 32.569 2.125 32.813 2.125 32.975 2.08 33.058 2.0124 "tp_Defeito [!c_EnoughEnergy]" 32.569 2.2292 solid black
+edge NoEnergy Final 4 33.846 1.358 34.785 1.2473 36.056 1.0974 36.967 0.98995 "tp_End [c_TooManyErrors]" 35.535 1.4306 solid black
+edge Green NoEnergy 4 10.919 1.3878 14.626 1.4082 26.973 1.4762 31.156 1.4992 "tp_Defeito [!c_EnoughEnergy]" 22.861 1.5694 solid black
+edge Green Yellow 7 10.918 1.2593 11.386 1.2076 11.942 1.1491 12.444 1.1042 14.026 0.96268 15.853 0.83792 17.028 0.76265 "tp_Yellow [c_EnoughEnergy]" 13.861 1.2083 solid black
+edge Yellow Red 7 17.171 0.59541 15.226 0.44952 11.006 0.22504 7.4861 0.67361 6.3728 0.81549 5.1478 1.2008 4.2989 1.5065 "tp_Red [c_EnoughEnergy & !c_TooManyErrors]" 9.8403 0.77778 solid black
+edge Yellow Junction1 4 19.357 0.6875 20.725 0.6875 23.084 0.6875 24.578 0.6875 "tp_Junction1 [!c_EnoughEnergy]" 22.861 0.79167 solid black
+edge Junction1 NoEnergy 7 27.213 0.76878 28.441 0.85381 30.241 0.99046 30.931 1.1042 31.005 1.1164 31.081 1.1304 31.157 1.1455 "tp_LowEnergy [!c_TooManyErrors]" 29.194 1.2083 solid black
+edge Junction1 Final 4 27.21 0.7044 29.566 0.73674 34.681 0.80697 36.97 0.8384 "tp_End2 [c_TooManyErrors]" 32.569 0.90278 solid black
+stop

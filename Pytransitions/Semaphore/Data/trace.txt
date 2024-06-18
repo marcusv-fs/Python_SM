@@ -1,0 +1,134 @@
+ 
+I am in the Red state. Current Energy: 100 
+I am in the Green state. Current Energy: 90 
+I am in the Yellow state. Current Energy: 80 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 70 
+I am in the Green state. Current Energy: 60 
+I am in the Yellow state. Current Energy: 50 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 40 
+I am in the Green state. Current Energy: 30 
+I am in the Yellow state. Current Energy: 20 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 10 
+The Energy is very low. The traffic light is faulty. Current energy: 0 
+No energy. Waiting for normalization. 
+Current Energy : 0 
+Errors: 1 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 35 
+I am in the Green state. Current Energy: 25 
+I am in the Yellow state. Current Energy: 15 
+I entered the junction 
+No energy. Waiting for normalization. 
+Current Energy : 5 
+Errors: 2 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 40 
+I am in the Green state. Current Energy: 30 
+I am in the Yellow state. Current Energy: 20 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 10 
+The Energy is very low. The traffic light is faulty. Current energy: 0 
+No energy. Waiting for normalization. 
+Current Energy : 0 
+Errors: 3 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 35 
+I am in the Green state. Current Energy: 25 
+I am in the Yellow state. Current Energy: 15 
+I entered the junction 
+No energy. Waiting for normalization. 
+Current Energy : 5 
+Errors: 4 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 40 
+I am in the Green state. Current Energy: 30 
+I am in the Yellow state. Current Energy: 20 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 10 
+The Energy is very low. The traffic light is faulty. Current energy: 0 
+No energy. Waiting for normalization. 
+Current Energy : 0 
+Errors: 5 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 35 
+I am in the Green state. Current Energy: 25 
+I am in the Yellow state. Current Energy: 15 
+I entered the junction 
+No energy. Waiting for normalization. 
+Current Energy : 5 
+Errors: 6 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 40 
+I am in the Green state. Current Energy: 30 
+I am in the Yellow state. Current Energy: 20 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 10 
+The Energy is very low. The traffic light is faulty. Current energy: 0 
+No energy. Waiting for normalization. 
+Current Energy : 0 
+Errors: 7 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 35 
+I am in the Green state. Current Energy: 25 
+I am in the Yellow state. Current Energy: 15 
+I entered the junction 
+No energy. Waiting for normalization. 
+Current Energy : 5 
+Errors: 8 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 40 
+I am in the Green state. Current Energy: 30 
+I am in the Yellow state. Current Energy: 20 
+Beep beep! 
+I'm switching to Red! 
+Beep beep! 
+I am in the Red state. Current Energy: 10 
+The Energy is very low. The traffic light is faulty. Current energy: 0 
+No energy. Waiting for normalization. 
+Current Energy : 0 
+Errors: 9 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+I am in the Red state. Current Energy: 35 
+I am in the Green state. Current Energy: 25 
+I am in the Yellow state. Current Energy: 15 
+I entered the junction 
+No energy. Waiting for normalization. 
+Current Energy : 5 
+Errors: 10 
+35 energy units have now been recharged.
+///////////////////////////////////////////////////////////////////////
+ 
+The traffic light has many errors. Finishing traffic light.
