@@ -7,13 +7,13 @@ from transitions.extensions import GraphMachine
 
 class SMovement(GraphMachine):
 ####################### States Declaration #######################   
-    states = ['Initial','Moving', 'Turning']
+    states = ['Initial','Moving', 'MovementAndAvoidance']
 
 ####################### Transitions Statement  #######################  
     transitions = [
         {'trigger': 'tp_Start', 'source': 'Initial', 'dest': 'Moving'},
-        {'trigger': 'tp_Moving', 'source': 'Turning', 'dest': 'Moving', 'conditions': 'c_Time'},
-        {'trigger': 'tp_Turning', 'source': 'Moving', 'dest': 'Turning', 'conditions': 'c_Obs', 'before': 'before_tp_Turning'},
+        {'trigger': 'tp_Moving', 'source': 'MovementAndAvoidance', 'dest': 'Moving', 'conditions': 'c_Time'},
+        {'trigger': 'tp_MovementAndAvoidance', 'source': 'Moving', 'dest': 'MovementAndAvoidance', 'conditions': 'c_Obs', 'before': 'before_tp_MovementAndAvoidance'},
         ]
     
 ####################### Init and util Functions ####################### 
@@ -50,7 +50,7 @@ class SMovement(GraphMachine):
         return time.time() - self.MBC >= self.PI/self.av
 
 ####################### Before Transitions ####################### 
-    def before_tp_Turning(self):
+    def before_tp_MovementAndAvoidance(self):
         ##### Reset MBC #####
         print("Reseting the time.")
         self.MBC = time.time()
@@ -70,8 +70,8 @@ class SMovement(GraphMachine):
         print("Exit Moving state.")
         time.sleep(0.1)
 
-    def on_enter_Turning(self):
-        print("Moved to the Turning state.")
+    def on_enter_MovementAndAvoidance(self):
+        print("Moved to the MovementAndAvoidance state.")
         self.move(0, self.av)
 
 
@@ -90,11 +90,11 @@ class SMovement(GraphMachine):
             print("Now Obstacle is " + str(self.Obstacle))
             if(self.state == 'Moving' and self.Obstacle):
                 file.write("obstacle.in -> ")
-                self.tp_Turning()
+                self.tp_MovementAndAvoidance()
                 cond = 1
 
             print("MBC (" + str(time.time() - self.MBC) + ") >= PI/av (" + str(self.PI/self.av) + ")? Answer: " + str(self.c_Time()))
-            if(self.state == 'Turning' and self.c_Time()):
+            if(self.state == 'MovementAndAvoidance' and self.c_Time()):
                 self.tp_Moving()
                 cond = 1
                 

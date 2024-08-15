@@ -1,1 +1,1 @@
-moveCall.1.0 -> tock -> tock -> obstacle.in -> stopCall -> moveCall.0.1 -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> moveCall.1.0 -> tock -> obstacle.in -> stopCall -> moveCall.0.1 -> tock -> 
+moveCall.1.0 -> tock -> tock -> tock -> obstacle.in -> stopCall -> moveCall.0.1 -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> tock -> moveCall.1.0 -> tock -> tock -> 

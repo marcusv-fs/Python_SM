@@ -19,9 +19,9 @@ digraph "State Machine" {
 		fillcolor=darksalmon,
 		label="Initial\l",
 		peripheries=2];
-	Moving	[label="Moving\l- enter:\l  + on_enter_Moving\l- exit:\l  + on_exit_Moving\l"];
-	Initial -> Moving	[label=tp_Start];
-	Turning	[label="Turning\l- enter:\l  + on_enter_Turning\l"];
-	Moving -> Turning	[label="tp_Turning [c_Obs]"];
-	Turning -> Moving	[label="tp_Moving [c_Time]"];
+	Move	[label="Move\l- enter:\l  + on_enter_Move\l"];
+	Initial -> Move	[label=Initial_to_Move];
+	Avoid	[label="Avoid\l- enter:\l  + on_enter_Avoid\l"];
+	Move -> Avoid	[label="Move_to_Avoid [Cond_Move_to_Avoid]"];
+	Avoid -> Move	[label=Avoid_to_Move];
 }

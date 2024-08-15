@@ -1,0 +1,31 @@
+digraph "State Machine" {
+	graph [color=black,
+		directed=true,
+		fillcolor=white,
+		label="State Machine",
+		rankdir=LR,
+		"strict"=false,
+		style=solid
+	];
+	node [color=black,
+		fillcolor=white,
+		label="\N",
+		peripheries=1,
+		shape=rectangle,
+		style="rounded, filled"
+	];
+	edge [color=black];
+	Initial	[color=red,
+		fillcolor=darksalmon,
+		label="Initial\l",
+		peripheries=2];
+	Junction1	[label="Junction1\l"];
+	Initial -> Junction1	[label=Initial_to_Junction1];
+	Turn180	[label="Turn180\l- enter:\l  + on_enter_Turn180\l"];
+	Junction1 -> Turn180	[label="Junction1_to_Turn180 [cond_Junction1_to_Turn180]"];
+	RandomTurn	[label="RandomTurn\l- enter:\l  + on_enter_RandomTurn\l"];
+	Junction1 -> RandomTurn	[label="Junction1_to_RandomTurn [cond_Junction1_to_RandomTurn]"];
+	Final	[label="Final\l"];
+	Turn180 -> Final	[label=Turn180_and_RandomTurn_to_Final];
+	RandomTurn -> Final	[label=Turn180_and_RandomTurn_to_Final];
+}
