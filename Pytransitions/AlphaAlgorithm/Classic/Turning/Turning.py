@@ -31,9 +31,9 @@ class Turning(GraphMachine):
         self.turned = False
         
         ####################### Draw State Machine ######################
-        self.file = open("Pytransitions/AlphaAlgorithm/Turning/Data/Turning_trace.txt", "w")
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Turning/Data/Turning.canon', prog='dot') 
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Turning/Data/Turning.png', prog='dot') 
+        self.file = open("Pytransitions/AlphaAlgorithm/Classic/Turning/Data/Turning_trace.txt", "w")
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Classic/Turning/Data/Turning.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Classic/Turning/Data/Turning.png', prog='dot') 
 
         ##############################Util Functions##############################
         

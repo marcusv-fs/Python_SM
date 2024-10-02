@@ -34,9 +34,9 @@ class MovementAndAvoidance(GraphMachine):
         self.const = const
         
         ####################### Draw State Machine ######################
-        self.file = open("Pytransitions/AlphaAlgorithm/MovementAndAvoidance/Data/MovementAndAvoidance_trace.txt", "w")
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/MovementAndAvoidance/Data/MovementAndAvoidance.canon', prog='dot') 
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/MovementAndAvoidance/Data/MovementAndAvoidance.png', prog='dot') 
+        self.file = open("Pytransitions/AlphaAlgorithm/Classic/MovementAndAvoidance/Data/MovementAndAvoidance_trace.txt", "w")
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Classic/MovementAndAvoidance/Data/MovementAndAvoidance.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Classic/MovementAndAvoidance/Data/MovementAndAvoidance.png', prog='dot') 
 
         ##############################Util Functions##############################
         

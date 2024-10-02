@@ -30,8 +30,8 @@ class AlphaAlgorithm(GraphMachine):
         self.alpha = 15
 
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Data/AlphaAlgorithm.canon', prog='dot') 
-        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Data/AlphaAlgorithm.png', prog='dot')  
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Classic/Data/AlphaAlgorithm.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/AlphaAlgorithm/Data/Classic/AlphaAlgorithm.png', prog='dot')  
 
 ####################### Transition Conditions ####################### 
     def cond_MovementAndAvoidance_to_Turning(self):
