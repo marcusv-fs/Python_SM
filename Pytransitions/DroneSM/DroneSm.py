@@ -22,8 +22,11 @@ class DroneSM(GraphMachine):
     def __init__(self):
         super().__init__(name="DroneSM", states=DroneSM.states, transitions=DroneSM.transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
 
-        self.aTargetAltitude = 10
+        #connection_string = "tcp:127.0.0.1:5760"
+        self.connection_string = "127.0.0.1:14550"
+        self.aTargetAltitude = 20
         self.sleep_time = 45
+        self.vehicle = connect(self.connection_string, wait_ready=False)
 
         ####################### Draw State Machine ######################
         self.get_graph().draw('Data/DroneSM.canon', prog='dot') 
@@ -33,7 +36,7 @@ class DroneSM(GraphMachine):
     def cond_TurnOn_TakeOff(self):
         if (self.aTargetAltitude > 0):
             # Confirm vehicle armed before attempting to take off
-            if (not vehicle.armed):
+            if (not self.vehicle.armed):
                 print(" Waiting for arming...")
                 time.sleep(1)
                 return False
@@ -43,8 +46,8 @@ class DroneSM(GraphMachine):
 
     def cond_TakeOff_Mission(self):
         Finished = False
-        print(" Altitude: ", vehicle.location.global_relative_frame.alt)
-        if vehicle.location.global_relative_frame.alt >= self.aTargetAltitude * 0.95:
+        print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
+        if self.vehicle.location.global_relative_frame.alt >= self.aTargetAltitude * 0.95:
             print("Reached target altitude")
             Finished =  True
         time.sleep(1)
@@ -53,7 +56,7 @@ class DroneSM(GraphMachine):
 ####################### Before Transitions ####################### 
     def before_Mission_Final(self):
         print("Returning to Launch")
-        vehicle.mode = VehicleMode("RTL")
+        self.vehicle.mode = VehicleMode("RTL")
         time.sleep(self.sleep_time)
 
 ####################### On_enter States #######################        
@@ -63,46 +66,43 @@ class DroneSM(GraphMachine):
 
         # Connect to the Vehicle
         print('Connecting to vehicle on: %s' % connection_string)
-        vehicle = connect(connection_string, wait_ready=False)
+        self.vehicle = connect(connection_string, wait_ready=False)
 
         print("Basic pre-arm checks")
         # Don't try to arm until autopilot is ready
-        while not vehicle.is_armable:
+        while not self.vehicle.is_armable:
             print(" Waiting for vehicle to initialise...")
         time.sleep(1)
 
     def on_enter_TurnOn(self):
         print("Arming motors")
         # Copter should arm in GUIDED mode
-        vehicle.mode = VehicleMode("GUIDED")
-        vehicle.armed = True
+        self.vehicle.mode = VehicleMode("GUIDED")
+        self.vehicle.armed = True
 
     def on_enter_TakeOff(self):
         print("Taking off!")
-        vehicle.simple_takeoff(self.aTargetAltitude)  # Take off to target altitude
+        self.vehicle.simple_takeoff(self.aTargetAltitude)  # Take off to target altitude
         time.sleep(3)
 
     def on_enter_Mission(self):
-        print("Set default/target airspeed to 3")
-        vehicle.airspeed = 120
-
         print("Going towards first point for 30 seconds ...")
         point1 = LocationGlobalRelative(-35.361354, 149.165218, self.aTargetAltitude)
-        vehicle.simple_goto(point1)
+        self.vehicle.simple_goto(point1, 0, 120)
 
         # sleep so we can see the change in map
         time.sleep(30)
 
         print("Going towards second point for 30 seconds (groundspeed set to 10 m/s) ...")
         point2 = LocationGlobalRelative(-35.363244, 149.168801, self.aTargetAltitude)
-        vehicle.simple_goto(point2, groundspeed=120)
+        self.vehicle.simple_goto(point2, groundspeed=120, airspeed=0)
 
         time.sleep(30)
 
     def on_enter_Final(self):
         # Close vehicle object before exiting script
         print("Close vehicle object")
-        vehicle.close()
+        self.vehicle.close()
 
 
     def run(self):
@@ -111,7 +111,7 @@ class DroneSM(GraphMachine):
                 self.Initial_to_TurnOn()
 
             if(self.state == 'TurnOn'):
-                print(" Altitude: ", vehicle.location.global_relative_frame.alt)
+                print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
                 if (self.cond_TurnOn_TakeOff()):
                     self.TurnOn_to_TakeOff()
 
@@ -127,14 +127,6 @@ class DroneSM(GraphMachine):
 
 
 ######################## Instantiating and Running the State Machine #######################  
-
-#connection_string = "tcp:127.0.0.1:5760"
-connection_string = "127.0.0.1:14550"
-
-# Connect to the Vehicle
-print('Connecting to vehicle on: %s' % connection_string)
-vehicle = connect(connection_string, wait_ready=False)
-
 machine = DroneSM()
 
 machine.run()
