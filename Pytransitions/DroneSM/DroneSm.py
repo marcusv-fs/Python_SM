@@ -34,24 +34,14 @@ class DroneSM(GraphMachine):
 
 ####################### Transition Conditions ####################### 
     def cond_TurnOn_TakeOff(self):
-        if (self.aTargetAltitude > 0):
-            # Confirm vehicle armed before attempting to take off
-            if (not self.vehicle.armed):
-                print(" Waiting for arming...")
-                time.sleep(1)
-                return False
-            else:            
-                return True 
+        if (self.vehicle.armed):         
+            return True 
         return False
 
     def cond_TakeOff_Mission(self):
-        Finished = False
-        print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
-        if self.vehicle.location.global_relative_frame.alt >= self.aTargetAltitude * 0.95:
-            print("Reached target altitude")
-            Finished =  True
-        time.sleep(1)
-        return Finished
+        if (self.vehicle.location.global_relative_frame.alt >= self.aTargetAltitude * 0.95):
+            return  True
+        return False
 
 ####################### Before Transitions ####################### 
     def before_Mission_Final(self):
@@ -93,7 +83,7 @@ class DroneSM(GraphMachine):
         # sleep so we can see the change in map
         time.sleep(30)
 
-        print("Going towards second point for 30 seconds (groundspeed set to 10 m/s) ...")
+        print("Going towards second point for 30 seconds ...")
         point2 = LocationGlobalRelative(-35.363244, 149.168801, self.aTargetAltitude)
         self.vehicle.simple_goto(point2, groundspeed=120, airspeed=0)
 
@@ -110,14 +100,13 @@ class DroneSM(GraphMachine):
             if(self.state == 'Initial'):
                 self.Initial_to_TurnOn()
 
-            if(self.state == 'TurnOn'):
+            if(self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()):
                 print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
-                if (self.cond_TurnOn_TakeOff()):
-                    self.TurnOn_to_TakeOff()
+                self.TurnOn_to_TakeOff()
 
-            if(self.state == 'TakeOff'):
-                if (self.cond_TakeOff_Mission()):
-                    self.TakeOff_to_Mission()
+            if(self.state == 'TakeOff' and self.cond_TakeOff_Mission()):
+                print("Reached target altitude")
+                self.TakeOff_to_Mission()
             
             if(self.state == 'Mission'):
                 self.Mission_to_Final()
