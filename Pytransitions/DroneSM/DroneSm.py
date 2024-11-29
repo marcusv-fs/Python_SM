@@ -8,11 +8,13 @@ from transitions.extensions import GraphMachine
 
 class DroneSM(GraphMachine):
     ####################### States Declaration #######################   
-    states = ['Initial','TurnOn', 'TakeOff', 'Mission', 'Final']
+    states = ['Initial', 'Start','TurnOn', 'TakeOff', 'Mission', 'Final']
 
 ####################### Transitions Statement  #######################  
     transitions = [
-        {'trigger': 'Initial_to_TurnOn', 'source': 'Initial', 'dest': 'TurnOn'},
+        {'trigger': 'Initial_to_Start', 'source': 'Initial', 'dest': 'Start'},
+        {'trigger': 'Start_to_Start', 'source': 'Start', 'dest': 'Start', 'before': 'before_Start_Start'},
+        {'trigger': 'Start_to_TurnOn', 'source': 'Start', 'dest': 'TurnOn'},
         {'trigger': 'TurnOn_to_TakeOff', 'source': 'TurnOn', 'dest': 'TakeOff', 'conditions': 'cond_TurnOn_TakeOff'},
         {'trigger': 'TakeOff_to_Mission', 'source': 'TakeOff', 'dest': 'Mission', 'conditions': 'cond_TakeOff_Mission'},
         {'trigger': 'Mission_to_Final', 'source': 'Mission', 'dest': 'Final', 'before': 'before_Mission_Final'}
@@ -42,6 +44,19 @@ class DroneSM(GraphMachine):
         if (self.vehicle.location.global_relative_frame.alt >= self.aTargetAltitude * 0.95):
             return  True
         return False
+    
+    def cond_Start_Start(self):
+        if (not self.vehicle.is_armable):
+            print("Waiting for vehicle to initialise...")
+            return True
+        return False
+    
+    def cond_Start_TurnOn(self):
+        if (self.vehicle.is_armable):
+            print("...")
+            return True
+        return False
+
 
 ####################### Before Transitions ####################### 
     def before_Mission_Final(self):
@@ -49,20 +64,23 @@ class DroneSM(GraphMachine):
         self.vehicle.mode = VehicleMode("RTL")
         time.sleep(self.sleep_time)
 
-####################### On_enter States #######################        
-    def on_enter_Initial(self):
+    def before_Start_Start(self):
+        print('...')
+        time.sleep(1)
+
+####################### On_enter States #######################    
+    def on_enter_Init(self):
         #connection_string = "tcp:127.0.0.1:5760"
         connection_string = "127.0.0.1:14550"
 
         # Connect to the Vehicle
         print('Connecting to vehicle on: %s' % connection_string)
         self.vehicle = connect(connection_string, wait_ready=False)
-
-        print("Basic pre-arm checks")
+     
+    def on_enter_Start(self):
+        print("Performing basic pre-arming checks...")
         # Don't try to arm until autopilot is ready
-        while not self.vehicle.is_armable:
-            print(" Waiting for vehicle to initialise...")
-        time.sleep(1)
+        
 
     def on_enter_TurnOn(self):
         print("Arming motors")
@@ -98,7 +116,14 @@ class DroneSM(GraphMachine):
     def run(self):
         while True:
             if(self.state == 'Initial'):
-                self.Initial_to_TurnOn()
+                self.Initial_to_Start()
+                
+            if(self.state == 'Start' and not self.vehicle.is_armable):
+                print(" Waiting for vehicle to initialise...")
+                self.Start_to_Start()
+
+            if(self.state == 'Start' and self.vehicle.is_armable):
+                self.Start_to_TurnOn()
 
             if(self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()):
                 print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
