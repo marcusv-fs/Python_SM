@@ -1,0 +1,28 @@
+strict digraph "" {
+	graph [label="State Machine",
+		rankdir=LR
+	];
+	node [color=black,
+		fillcolor=white,
+		label="\N",
+		peripheries=1,
+		shape=rectangle,
+		style="rounded,filled"
+	];
+	edge [color=black];
+	Initial	[color=red,
+		fillcolor=darksalmon,
+		label="Initial\l",
+		peripheries=2];
+	Start	[label="Start\l- enter:\l  + on_enter_Start\l"];
+	Initial -> Start	[label=Initial_to_Start];
+	Start -> Start	[label=Start_to_Start];
+	TurnOn	[label="TurnOn\l- enter:\l  + on_enter_TurnOn\l"];
+	Start -> TurnOn	[label=Start_to_TurnOn];
+	TakeOff	[label="TakeOff\l- enter:\l  + on_enter_TakeOff\l"];
+	TurnOn -> TakeOff	[label="TurnOn_to_TakeOff [cond_TurnOn_TakeOff]"];
+	Mission	[label="Mission\l- enter:\l  + on_enter_Mission\l"];
+	TakeOff -> Mission	[label="TakeOff_to_Mission [cond_TakeOff_Mission]"];
+	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
+	Mission -> Final	[label=Mission_to_Final];
+}

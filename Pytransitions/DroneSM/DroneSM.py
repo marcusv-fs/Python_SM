@@ -24,10 +24,25 @@ class DroneSM(GraphMachine):
     def __init__(self):
         super().__init__(name="DroneSM", states=DroneSM.states, transitions=DroneSM.transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
 
-        #connection_string = "tcp:127.0.0.1:5760"
-        self.connection_string = "127.0.0.1:14550"
-        self.aTargetAltitude = 20
-        self.sleep_time = 45
+        ################## Reading values from txt config file ########
+        file = open("Data/config.txt", "r")
+        line = file.readline()
+        lineCont = 0
+        while line != "":
+            line = file.readline()
+            if lineCont == 0:
+                print("connection_string: ", line)
+                self.connection_string = line
+                #connection_string = "tcp:127.0.0.1:5760"
+            if lineCont == 1:
+                print("aTargetAltitude: ", line)
+                self.aTargetAltitude = float(line)
+            if lineCont == 2:
+                print("sleep_time: ", line)
+                self.sleep_time = float(line)
+            lineCont += 1
+        file.close() 
+
         self.vehicle = connect(self.connection_string, wait_ready=False)
 
         ####################### Draw State Machine ######################
