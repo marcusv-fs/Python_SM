@@ -1,4 +1,3 @@
-from distutils.errors import UnknownFileError
 import random, time
 from transitions.extensions import GraphMachine
 

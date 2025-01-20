@@ -7,7 +7,7 @@ strict digraph "" {
 		label="\N",
 		peripheries=1,
 		shape=rectangle,
-		style="rounded, filled"
+		style="rounded,filled"
 	];
 	edge [color=black];
 	Initial	[color=red,

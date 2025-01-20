@@ -1,11 +1,11 @@
 graph 1 39.153 3.0625
-node Initial 0.46528 1.9236 0.93056 0.61111 "Initial\l" rounded, filled rectangle red darksalmon
-node Red 3.2153 1.9236 1.9306 0.73611 "Red\l- enter:\l  + on_enter_Red\l" rounded, filled rectangle black white
-node NoEnergy 32.569 1.5069 2.5417 0.73611 "NoEnergy\l- enter:\l  + on_enter_NoEnergy\l" rounded, filled rectangle black white
-node Green 9.8403 1.3819 2.1528 0.73611 "Green\l- enter:\l  + on_enter_Green\l" rounded, filled rectangle black white
-node Yellow 18.264 0.6875 2.1806 0.73611 "Yellow\l- enter:\l  + on_enter_Yellow\l" rounded, filled rectangle black white
-node Junction1 25.965 0.6875 2.4861 0.73611 "Junction1\l- enter:\l  + on_enter_Junction1\l" rounded, filled rectangle black white
-node Final 38.132 0.85417 2.0417 0.73611 "Final\l- enter:\l  + on_enter_Final\l" rounded, filled rectangle black white
+node Initial 0.46528 1.9236 0.93056 0.61111 "Initial\l" rounded,filled rectangle red darksalmon
+node Red 3.2153 1.9236 1.9306 0.73611 "Red\l- enter:\l  + on_enter_Red\l" rounded,filled rectangle black white
+node NoEnergy 32.569 1.5069 2.5417 0.73611 "NoEnergy\l- enter:\l  + on_enter_NoEnergy\l" rounded,filled rectangle black white
+node Green 9.8403 1.3819 2.1528 0.73611 "Green\l- enter:\l  + on_enter_Green\l" rounded,filled rectangle black white
+node Yellow 18.264 0.6875 2.1806 0.73611 "Yellow\l- enter:\l  + on_enter_Yellow\l" rounded,filled rectangle black white
+node Junction1 25.965 0.6875 2.4861 0.73611 "Junction1\l- enter:\l  + on_enter_Junction1\l" rounded,filled rectangle black white
+node Final 38.132 0.85417 2.0417 0.73611 "Final\l- enter:\l  + on_enter_Final\l" rounded,filled rectangle black white
 edge Initial Red 4 0.93481 1.9236 1.2543 1.9236 1.6957 1.9236 2.1041 1.9236 tp_Start 1.5903 2.0278 solid black
 edge Red NoEnergy 10 4.1848 1.976 5.4677 2.0417 7.818 2.1458 9.8264 2.1458 9.8264 2.1458 9.8264 2.1458 25.979 2.1458 27.774 2.1458 29.831 1.9072 31.16 1.7216 "tp_Defeito [!c_EnoughEnergy]" 18.264 2.25 solid black
 edge Red Green 7 4.1857 1.7726 4.2684 1.7617 4.3509 1.7517 4.4306 1.7431 5.8643 1.5876 7.5201 1.4887 8.6153 1.4344 "tp_Green [c_EnoughEnergy]" 5.8333 1.8472 solid black
