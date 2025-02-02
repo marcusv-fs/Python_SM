@@ -1,0 +1,40 @@
+
+#########run#########
+-> self.state == 'Initial'
+on_enter_Start
+cond_Start_Start = False
+cond_Start_Start = True
+-> self.state == 'Start' and self.cond_Start_Wait()
+on_enter_Wait
+cond_Wait_TurnOn = False
+cond_Wait_TurnOn = False
+-> tock
+cond_Wait_TurnOn = False
+-> tock
+cond_Wait_TurnOn = True
+-> self.state == 'Wait' and self.cond_Wait_TurnOn()
+before_Wait_TurnOn
+on_enter_TurnOn
+cond_TurnOn_TakeOff = False
+cond_TurnOn_TakeOff = False
+-> tock
+cond_TurnOn_TakeOff = True
+-> self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()
+cond_TurnOn_TakeOff = True
+on_enter_TakeOff
+cond_TakeOff_Mission = False
+cond_TakeOff_Mission = False
+-> tock
+cond_TakeOff_Mission = False
+-> tock
+cond_TakeOff_Mission = True
+-> self.state == 'TakeOff' and self.cond_TakeOff_Mission()
+cond_TakeOff_Mission = True
+on_enter_Mission
+Going to -35.361354; 149.165218; 20.0
+Going to -35.363244; 149.168801; 20.0
+-> self.state == 'Mission'
+before_Mission_Final
+Returning to Launch
+on_enter_Final
+-> self.state == 'Final'
