@@ -17,7 +17,7 @@ class DroneSM(GraphMachine):
         {'trigger': 'Wait_to_TurnOn', 'source': 'Wait', 'dest': 'TurnOn', 'before': 'before_Wait_TurnOn'},
         {'trigger': 'TurnOn_to_TakeOff', 'source': 'TurnOn', 'dest': 'TakeOff', 'conditions': 'cond_TurnOn_TakeOff'},
         {'trigger': 'TakeOff_to_CheckHeight', 'source': 'TakeOff', 'dest': 'CheckHeight'},
-        {'trigger': 'CheckHeight_to_CheckHeight', 'source': 'CheckHeight', 'dest': 'CheckHeight', 'conditions': 'cond_CheckHeight_CheckHeight'},
+        {'trigger': 'CheckHeight_to_CheckHeight', 'source': 'CheckHeight', 'dest': 'CheckHeight', 'conditions': 'cond_CheckHeight_CheckHeight', 'before': 'before_CheckHeight_CheckHeight'},
         {'trigger': 'CheckHeight_to_Mission', 'source': 'CheckHeight', 'dest': 'Mission', 'conditions': 'cond_CheckHeight_Mission'},
         {'trigger': 'Mission_to_Final', 'source': 'Mission', 'dest': 'Final', 'before': 'before_Mission_Final'}
         ]
@@ -74,10 +74,12 @@ class DroneSM(GraphMachine):
         if self.start:
             configFile = "Pytransitions/DroneSM/Data/config.txt"
             self.heightTg = float(self.update_value(configFile,'heightTg'))
+            self.heightTg = random.randint(0, 2)
+
             print(self.heightTg)
             file.write("\ncond_Wait_TurnOn = True")
 
-            text = " -> DroneSM::start.in." + str(random.randint(0, 2))
+            text = " -> DroneSM::start.in." + str(self.heightTg)
             trace.write(text) 
             return True
         file.write("\ncond_Wait_TurnOn = False")
@@ -111,11 +113,15 @@ class DroneSM(GraphMachine):
         print("Returning to Launch")
         self.vehicle.mode = VehicleMode("RTL")
         time.sleep(self.sleep_time)
+        trace.write("\n -> tock")
+
 
     def before_Start_Start(self):
         file.write("\nbefore_Start_Start")
         print('...')
         time.sleep(1)
+        trace.write("\n -> tock")
+
 
     def before_Wait_TurnOn(self):
         file.write("\nbefore_Wait_TurnOn")
@@ -129,6 +135,11 @@ class DroneSM(GraphMachine):
 
 
         self.vehicle = connect(self.connection_string, wait_ready=False)
+
+    def before_CheckHeight_CheckHeight(self):
+        file.write("\nbefore_CheckHeight_CheckHeight")
+        time.sleep(1)
+        trace.write("\n -> tock")
 
 ####################### On_enter States #######################    
     def on_enter_Init(self):
@@ -159,7 +170,7 @@ class DroneSM(GraphMachine):
 
     def on_enter_TakeOff(self):
         file.write("\non_enter_TakeOff")
-        text = "\n -> DroneSM::takeoffCall." + str(random.randint(0, 2))
+        text = "\n -> DroneSM::takeoffCall." + str(self.heightTg)
         trace.write(text)
         print("Taking off!")
         self.vehicle.simple_takeoff(self.heightTg)  # Take off to target altitude
