@@ -2,10 +2,7 @@
 #########run#########
 -> self.state == 'Initial'
 on_enter_Start
-cond_Start_Start = True
--> self.state == 'Start' and self.cond_Start_Start()
-before_Start_Start
-on_enter_Start
+cond_Start_Start = False
 cond_Start_Start = True
 -> self.state == 'Start' and self.cond_Start_Wait()
 on_enter_Wait
@@ -41,8 +38,8 @@ cond_CheckHeight_Mission = True
 -> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()
 cond_CheckHeight_Mission = True
 on_enter_Mission
-Going to -35.361354; 149.165218; 2.0
-Going to -35.363244; 149.168801; 2.0
+Going to -35.361354; 149.165218; 2
+Going to -35.363244; 149.168801; 2
 -> self.state == 'Mission'
 before_Mission_Final
 Returning to Launch

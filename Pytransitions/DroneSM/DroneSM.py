@@ -30,7 +30,7 @@ class DroneSM(GraphMachine):
         self.connection_string = "127.0.0.1:14550"
         self.heightTg = 0.0
         self.HeightD = 0.0
-        self.sleep_time = 0
+        self.sleep_time = 25
         self.start = False
 
         self.vehicle = connect(self.connection_string, wait_ready=False)
@@ -70,7 +70,7 @@ class DroneSM(GraphMachine):
         file.write("\ncond_Start_Start = False")
         return False
     
-    def  cond_Wait_TurnOn(self):
+    def cond_Wait_TurnOn(self):
         if self.start:
             configFile = "Pytransitions/DroneSM/Data/config.txt"
             self.heightTg = float(self.update_value(configFile,'heightTg'))
@@ -126,13 +126,6 @@ class DroneSM(GraphMachine):
     def before_Wait_TurnOn(self):
         file.write("\nbefore_Wait_TurnOn")
         ################## Reading values from txt config file ########
-        configFile = "Pytransitions/DroneSM/Data/config.txt"
-        self.heightTg = float(self.update_value(configFile,'heightTg'))
-        print("self.heightTg = ", self.heightTg)
-
-        self.sleep_time = int(self.update_value(configFile,'sleep_time'))
-        print("self.sleep_time = ", self.sleep_time)
-
 
         self.vehicle = connect(self.connection_string, wait_ready=False)
 
@@ -172,7 +165,7 @@ class DroneSM(GraphMachine):
 
     def on_enter_TakeOff(self):
         file.write("\non_enter_TakeOff")
-        text = "\n -> DroneSM::takeoffCall." + str(self.heightTg)
+        text = "\n -> DroneSM::takeoffCall." + str(int(self.heightTg))
         trace.write(text)
         print("Taking off!")
         self.vehicle.simple_takeoff(self.heightTg)  # Take off to target altitude
