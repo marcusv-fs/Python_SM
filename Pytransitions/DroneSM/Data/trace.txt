@@ -1,5 +1,8 @@
- DroneSM =  -> DroneSM::start.in.0 -> tock
+ DroneSM = 
+ -> tock -> DroneSM::start.in.2
  -> DroneSM::takeoffCall.2.0
  -> tock -> tock -> tock
+ -> tock
+ -> tock
  -> tock -> DroneSM::gotoCall.1.1.1  -> tock  -> DroneSM::gotoCall.2.2.2  -> tock 
  -> tock -> DroneSM::terminate -> SKIP

@@ -167,6 +167,8 @@ class DroneSM(GraphMachine):
         # Copter should arm in GUIDED mode
         self.vehicle.mode = VehicleMode("GUIDED")
         self.vehicle.armed = True
+        time.sleep(1)
+
 
     def on_enter_TakeOff(self):
         file.write("\non_enter_TakeOff")
@@ -186,22 +188,22 @@ class DroneSM(GraphMachine):
 
     def on_enter_Mission(self):
         file.write("\non_enter_Mission")
-        print("Going towards first point for 30 seconds ...")
+        print("Going towards first point for 25 seconds ...")
         point1 = LocationGlobalRelative(-35.361354, 149.165218, self.heightTg)
         text = "\nGoing to " + str(point1.lat) + "; "+ str(point1.lon) + "; " + str(point1.alt) 
         file.write(text)
         trace.write(" -> DroneSM::gotoCall.1.1.1 ")
         self.vehicle.simple_goto(point1, 0, 120)
-        time.sleep(30)
+        time.sleep(25)
         trace.write(" -> tock ")
 
-        print("Going towards second point for 30 seconds ...")
+        print("Going towards second point for 25 seconds ...")
         point2 = LocationGlobalRelative(-35.363244, 149.168801, self.heightTg)
         self.vehicle.simple_goto(point2, groundspeed=120, airspeed=0)
         text = "\nGoing to " + str(point2.lat) + "; "+ str(point2.lon) + "; " + str(point2.alt) 
         file.write(text)
         trace.write(" -> DroneSM::gotoCall.2.2.2 ")
-        time.sleep(30)
+        time.sleep(25)
         trace.write(" -> tock ")
 
 
