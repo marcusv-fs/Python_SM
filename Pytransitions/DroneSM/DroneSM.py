@@ -7,7 +7,7 @@ from transitions.extensions import GraphMachine
 
 class DroneSM(GraphMachine):
     ####################### States Declaration #######################   
-    states = ['Initial', 'Start', 'Wait', 'TurnOn', 'TakeOff', 'Mission', 'Final']
+    states = ['Initial', 'Start', 'Wait', 'TurnOn', 'TakeOff', 'CheckHeight', 'Mission', 'Final']
 
 ####################### Transitions Statement  #######################  
     transitions = [
@@ -16,7 +16,9 @@ class DroneSM(GraphMachine):
         {'trigger': 'Start_to_Wait', 'source': 'Start', 'dest': 'Wait'},
         {'trigger': 'Wait_to_TurnOn', 'source': 'Wait', 'dest': 'TurnOn', 'before': 'before_Wait_TurnOn'},
         {'trigger': 'TurnOn_to_TakeOff', 'source': 'TurnOn', 'dest': 'TakeOff', 'conditions': 'cond_TurnOn_TakeOff'},
-        {'trigger': 'TakeOff_to_Mission', 'source': 'TakeOff', 'dest': 'Mission', 'conditions': 'cond_TakeOff_Mission'},
+        {'trigger': 'TakeOff_to_CheckHeight', 'source': 'TakeOff', 'dest': 'CheckHeight'},
+        {'trigger': 'CheckHeight_to_CheckHeight', 'source': 'CheckHeight', 'dest': 'CheckHeight', 'conditions': 'cond_CheckHeight_CheckHeight'},
+        {'trigger': 'CheckHeight_to_Mission', 'source': 'CheckHeight', 'dest': 'Mission', 'conditions': 'cond_CheckHeight_Mission'},
         {'trigger': 'Mission_to_Final', 'source': 'Mission', 'dest': 'Final', 'before': 'before_Mission_Final'}
         ]
     
@@ -26,15 +28,30 @@ class DroneSM(GraphMachine):
 
         #connection_string = "tcp:127.0.0.1:5760"
         self.connection_string = "127.0.0.1:14550"
-        self.heightTg = 0
+        self.heightTg = 0.0
+        self.HeightD = 0.0
         self.sleep_time = 0
         self.start = False
 
         self.vehicle = connect(self.connection_string, wait_ready=False)
 
         ####################### Draw State Machine ######################
-        self.get_graph().draw('Data/DroneSM.canon', prog='dot') 
-        self.get_graph().draw('Data/DroneSM.png', prog='dot')  
+        self.get_graph().draw('Pytransitions/DroneSM/Data/DroneSM.canon', prog='dot') 
+        self.get_graph().draw('Pytransitions/DroneSM/Data/DroneSM.png', prog='dot')  
+
+    def update_value(self, configFile, key):
+        try:
+            with open(configFile, 'r', encoding='utf-8') as f:
+                for line in f:
+                    line = line.strip()
+                    if '=' in line:
+                        current_key, valor = line.split('=', 1)
+                        if current_key.strip() == key:
+                            return valor.strip()
+            return None  # Retorna None se a chave não for encontrada
+        except FileNotFoundError:
+            print("Value not found!")
+            return None
 
 ####################### Transition Conditions ####################### 
     def cond_Start_Start(self):
@@ -55,8 +72,12 @@ class DroneSM(GraphMachine):
     
     def  cond_Wait_TurnOn(self):
         if self.start:
+            configFile = "Pytransitions/DroneSM/Data/config.txt"
+            self.heightTg = float(self.update_value(configFile,'heightTg'))
+            print(self.heightTg)
             file.write("\ncond_Wait_TurnOn = True")
-            text = " -> DroneSM::start.in." + str(self.heightTg)
+
+            text = " -> DroneSM::start.in." + str(random.randint(0, 2))
             trace.write(text) 
             return True
         file.write("\ncond_Wait_TurnOn = False")
@@ -69,11 +90,18 @@ class DroneSM(GraphMachine):
         file.write("\ncond_TurnOn_TakeOff = False")
         return False
 
-    def cond_TakeOff_Mission(self):
-        if (self.vehicle.location.global_relative_frame.alt >= self.heightTg * 0.95):
-            file.write("\ncond_TakeOff_Mission = True")
+    def cond_CheckHeight_CheckHeight(self):
+        if (self.HeightD < self.heightTg * 0.95):
+            file.write("\ncond_CheckHeight_CheckHeight = True")
             return  True
-        file.write("\ncond_TakeOff_Mission = False")
+        file.write("\ncond_CheckHeight_CheckHeight = False")
+        return False
+
+    def cond_CheckHeight_Mission(self):
+        if (self.HeightD >= self.heightTg * 0.95):
+            file.write("\ncond_CheckHeight_Mission = True")
+            return  True
+        file.write("\ncond_CheckHeight_Mission = False")
         return False
 
 ####################### Before Transitions ####################### 
@@ -92,19 +120,13 @@ class DroneSM(GraphMachine):
     def before_Wait_TurnOn(self):
         file.write("\nbefore_Wait_TurnOn")
         ################## Reading values from txt config file ########
-        configFile = open("Pytransitions/DroneSM/Data/config.txt", "r")
-        line = configFile.readline()
-        lineCont = 0
-        while line != "":
-            line = configFile.readline()
-            if lineCont == 0:
-                print("heightTg: ", line)
-                self.heightTg = float(line)
-            if lineCont == 1:
-                print("sleep_time: ", line)
-                self.sleep_time = float(line)
-            lineCont += 1
-        configFile.close() 
+        configFile = "Pytransitions/DroneSM/Data/config.txt"
+        self.heightTg = float(self.update_value(configFile,'heightTg'))
+        print("self.heightTg = ", self.heightTg)
+
+        self.sleep_time = int(self.update_value(configFile,'sleep_time'))
+        print("self.sleep_time = ", self.sleep_time)
+
 
         self.vehicle = connect(self.connection_string, wait_ready=False)
 
@@ -137,12 +159,18 @@ class DroneSM(GraphMachine):
 
     def on_enter_TakeOff(self):
         file.write("\non_enter_TakeOff")
-        text = "\n -> DroneSM::takeoffCall." + str(self.heightTg)
+        text = "\n -> DroneSM::takeoffCall." + str(random.randint(0, 2))
         trace.write(text)
         print("Taking off!")
         self.vehicle.simple_takeoff(self.heightTg)  # Take off to target altitude
         time.sleep(3)
         trace.write("\n -> tock -> tock -> tock")
+
+    def on_enter_CheckHeight(self):
+        file.write("\non_enter_CheckHeight")
+        self.HeightD = self.vehicle.location.global_relative_frame.alt
+        print("self.HeightD = ", self.HeightD)
+        # Don't try to arm until autopilot is ready
 
 
     def on_enter_Mission(self):
@@ -152,13 +180,9 @@ class DroneSM(GraphMachine):
         text = "\nGoing to " + str(point1.lat) + "; "+ str(point1.lon) + "; " + str(point1.alt) 
         file.write(text)
         trace.write(" -> DroneSM::gotoCall.1.1.1 ")
-
         self.vehicle.simple_goto(point1, 0, 120)
-
-        # sleep so we can see the change in map
         time.sleep(30)
         trace.write(" -> tock ")
-
 
         print("Going towards second point for 30 seconds ...")
         point2 = LocationGlobalRelative(-35.363244, 149.168801, self.heightTg)
@@ -166,7 +190,6 @@ class DroneSM(GraphMachine):
         text = "\nGoing to " + str(point2.lat) + "; "+ str(point2.lon) + "; " + str(point2.alt) 
         file.write(text)
         trace.write(" -> DroneSM::gotoCall.2.2.2 ")
-
         time.sleep(30)
         trace.write(" -> tock ")
 
@@ -175,8 +198,7 @@ class DroneSM(GraphMachine):
         file.write("\non_enter_Final")
         # Close vehicle object before exiting script
         print("Close vehicle object")
-        trace.write(" -> DroneSM::terminate ")
-
+        trace.write(" -> DroneSM::terminate -> SKIP")
         self.vehicle.close()
 
 
@@ -211,15 +233,29 @@ class DroneSM(GraphMachine):
 
             if(self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()):
                 file.write("\n-> self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()")
-                print(" Altitude: ", self.vehicle.location.global_relative_frame.alt)
+                print(" Altitude: ", self.HeightD)
                 cont +=1
                 self.TurnOn_to_TakeOff()
 
-            if(self.state == 'TakeOff' and self.cond_TakeOff_Mission()):
+            if(self.state == 'TakeOff'):
                 file.write("\n-> self.state == 'TakeOff' and self.cond_TakeOff_Mission()")
                 print("Reached target altitude")
                 cont +=1
-                self.TakeOff_to_Mission()
+                self.TakeOff_to_CheckHeight()
+
+            if(self.state == "CheckHeight" and self.cond_CheckHeight_CheckHeight()):
+                print("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                file.write("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_CheckHeight()")
+                cont +=1
+                self.CheckHeight_to_CheckHeight()
+
+                
+            if(self.state == "CheckHeight" and self.cond_CheckHeight_Mission()):
+                file.write("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                print("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                cont +=1
+                self.CheckHeight_to_Mission()
+
             
             if(self.state == 'Mission'):
                 file.write("\n-> self.state == 'Mission'")

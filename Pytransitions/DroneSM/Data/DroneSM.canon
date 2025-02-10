@@ -23,8 +23,11 @@ strict digraph "" {
 	Wait -> TurnOn	[label=Wait_to_TurnOn];
 	TakeOff	[label="TakeOff\l- enter:\l  + on_enter_TakeOff\l"];
 	TurnOn -> TakeOff	[label="TurnOn_to_TakeOff [cond_TurnOn_TakeOff]"];
+	CheckHeight	[label="CheckHeight\l- enter:\l  + on_enter_CheckHeight\l"];
+	TakeOff -> CheckHeight	[label=TakeOff_to_CheckHeight];
+	CheckHeight -> CheckHeight	[label="CheckHeight_to_CheckHeight [cond_CheckHeight_CheckHeight]"];
 	Mission	[label="Mission\l- enter:\l  + on_enter_Mission\l"];
-	TakeOff -> Mission	[label="TakeOff_to_Mission [cond_TakeOff_Mission]"];
+	CheckHeight -> Mission	[label="CheckHeight_to_Mission [cond_CheckHeight_Mission]"];
 	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
 	Mission -> Final	[label=Mission_to_Final];
 }
