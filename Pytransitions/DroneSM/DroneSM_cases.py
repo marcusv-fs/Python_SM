@@ -212,80 +212,65 @@ class DroneSM(GraphMachine):
         file.write("\n#########run#########")
         trace.write(" DroneSM = ")
 
-        cont = 0
-        
         while True:
-            if(self.state == 'Initial'):
-                file.write("\n-> self.state == 'Initial'")
-                cont +=1
-                self.Initial_to_Start()
+            match (self.state):
+                case 'Initial':
+                    file.write("\n-> self.state == 'Initial'")
+                    self.Initial_to_Start()
+                    
+                case 'Start' if self.cond_Start_Start():
+                    file.write("\n-> self.state == 'Start' and self.cond_Start_Start()")
+                    print(" Waiting for vehicle to initialise...")
+                    self.Start_to_Start()
+
+                case 'Start' if self.cond_Start_Wait():
+                    file.write("\n-> self.state == 'Start' and self.cond_Start_Wait()")
+                    print(" Starded...")
+                    self.Start_to_Wait()
+
+                case 'Wait' if self.cond_Wait_TurnOn():
+                    file.write("\n-> self.state == 'Wait' and self.cond_Wait_TurnOn()")
+                    print(" Waiting...")
+                    self.Wait_to_TurnOn()
+
+                case 'TurnOn' if self.cond_TurnOn_TakeOff():
+                    file.write("\n-> self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()")
+                    print(" Altitude: ", self.HeightD)
+                    self.TurnOn_to_TakeOff()
+
+                case 'TakeOff':
+                    file.write("\n-> self.state == 'TakeOff' and self.cond_TakeOff_Mission()")
+                    print("Reached target altitude")
+                    self.TakeOff_to_CheckHeight()
+
+                case "CheckHeight" if self.cond_CheckHeight_CheckHeight():
+                    print("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                    file.write("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_CheckHeight()")
+                    self.CheckHeight_to_CheckHeight()
+
+                case "CheckHeight" if self.cond_CheckHeight_Mission():
+                    file.write("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                    print("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
+                    self.CheckHeight_to_Mission()
+
+                case 'Mission':
+                    file.write("\n-> self.state == 'Mission'")
+                    self.Mission_to_Final()
+
+                case 'Final':
+                    file.write("\n-> self.state == 'Final'")
+                    break
                 
-            if(self.state == 'Start' and self.cond_Start_Start()):
-                file.write("\n-> self.state == 'Start' and self.cond_Start_Start()")
-                print(" Waiting for vehicle to initialise...")
-                cont +=1
-                self.Start_to_Start()
-
-            if(self.state == 'Start' and self.cond_Start_Wait()):
-                file.write("\n-> self.state == 'Start' and self.cond_Start_Wait()")
-                print(" Starded...")
-                cont +=1
-                self.Start_to_Wait()
-
-            if(self.state == 'Wait' and self.cond_Wait_TurnOn()):
-                file.write("\n-> self.state == 'Wait' and self.cond_Wait_TurnOn()")
-                print(" Waiting...")
-                cont +=1
-                self.Wait_to_TurnOn()
-
-            if(self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()):
-                file.write("\n-> self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()")
-                print(" Altitude: ", self.HeightD)
-                cont +=1
-                self.TurnOn_to_TakeOff()
-
-            if(self.state == 'TakeOff'):
-                file.write("\n-> self.state == 'TakeOff' and self.cond_TakeOff_Mission()")
-                print("Reached target altitude")
-                cont +=1
-                self.TakeOff_to_CheckHeight()
-
-            if(self.state == "CheckHeight" and self.cond_CheckHeight_CheckHeight()):
-                print("\n-> self.state == 'CheckHeight' and self.cond_CheckHeight_Mission()")
-                file.write("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_CheckHeight()")
-                cont +=1
-                self.CheckHeight_to_CheckHeight()
-
-                
-            if(self.state == "CheckHeight" and self.cond_CheckHeight_Mission()):
-                file.write("\n-> self.state == 'CheckHeight' and self.cond_CheckHeight_Mission()")
-                print("\n-> self.state == 'TakeOff' and self.cond_CheckHeight_Mission()")
-                cont +=1
-                self.CheckHeight_to_Mission()
-
-            
-            if(self.state == 'Mission'):
-                file.write("\n-> self.state == 'Mission'")
-                cont +=1
-                self.Mission_to_Final()
-
-            if(self.state == 'Final'):
-                file.write("\n-> self.state == 'Final'")
-                cont +=1
-                break
-            
-            if(cont == 0):
-                file.write("\n-> tock")
-                trace.write(" -> tock")
-                time.sleep(5)
-            else:
-                cont = 0           
+                case _:
+                    file.write("\n-> tock")
+                    trace.write(" -> tock")
+                    time.sleep(5)
 
             self.start = random.choice([True, False])
 
 ######################## Instantiating and Running the State Machine #######################  
-file = open("Pytransitions/DroneSM/Data/log.txt", "w")
-trace = open("Pytransitions/DroneSM/Data/trace.txt", "w")
+file = open("Pytransitions/DroneSM/Data/log_cases.txt", "w")
+trace = open("Pytransitions/DroneSM/Data/trace_cases.txt", "w")
 machine = DroneSM()
 machine.run()
 file.close()
