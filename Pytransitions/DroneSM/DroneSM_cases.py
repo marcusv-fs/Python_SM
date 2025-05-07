@@ -225,7 +225,7 @@ class DroneSM(GraphMachine):
 
                 case 'Start' if self.cond_Start_Wait():
                     file.write("\n-> self.state == 'Start' and self.cond_Start_Wait()")
-                    print(" Starded...")
+                    print(" Started...")
                     self.Start_to_Wait()
 
                 case 'Wait' if self.cond_Wait_TurnOn():

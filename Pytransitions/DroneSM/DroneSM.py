@@ -228,7 +228,7 @@ class DroneSM(GraphMachine):
 
             if(self.state == 'Start' and self.cond_Start_Wait()):
                 file.write("\n-> self.state == 'Start' and self.cond_Start_Wait()")
-                print(" Starded...")
+                print(" Started...")
                 cont +=1
                 self.Start_to_Wait()
 
@@ -284,8 +284,8 @@ class DroneSM(GraphMachine):
             self.start = random.choice([True, False])
 
 ######################## Instantiating and Running the State Machine #######################  
-file = open("Pytransitions/DroneSM/Data/log.txt", "w")
-trace = open("Pytransitions/DroneSM/Data/trace.txt", "w")
+file = open("Pytransitions/DroneSM/Data/log_if.txt", "w")
+trace = open("Pytransitions/DroneSM/Data/trace_if.txt", "w")
 machine = DroneSM()
 machine.run()
 file.close()
