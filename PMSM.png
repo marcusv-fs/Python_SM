@@ -1,0 +1,38 @@
+---
+State Machine
+---
+stateDiagram-v2
+  direction LR
+  classDef s_default fill:white,color:black
+  classDef s_inactive fill:white,color:black
+  classDef s_parallel color:black,fill:white
+  classDef s_active color:red,fill:darksalmon
+  classDef s_previous color:blue,fill:azure
+  
+  state "Initial\n- enter:\n  + on_enter_Initial" as Initial
+  Class Initial s_active
+  state "Connect\n- enter:\n  + on_enter_Connect" as Connect
+  Class Connect s_default
+  state "Wait\n- enter:\n  + on_enter_Wait" as Wait
+  Class Wait s_default
+  state "TurnOn\n- enter:\n  + on_enter_TurnOn" as TurnOn
+  Class TurnOn s_default
+  state "TakeOff\n- enter:\n  + on_enter_TakeOff" as TakeOff
+  Class TakeOff s_default
+  state "CheckHeight\n- enter:\n  + on_enter_CheckHeight" as CheckHeight
+  Class CheckHeight s_default
+  state "Mission\n- enter:\n  + on_enter_Mission" as Mission
+  Class Mission s_default
+  state "Final\n- enter:\n  + on_enter_Final" as Final
+  Class Final s_default
+  
+  Initial --> Connect: Initial_to_Connect
+  Connect --> Connect: Connect_to_Connect
+  Connect --> Wait: Connect_to_Wait
+  Wait --> TurnOn: Wait_to_TurnOn
+  TurnOn --> TakeOff: TurnOn_to_TakeOff [cond_TurnOn_TakeOff]
+  TakeOff --> CheckHeight: TakeOff_to_CheckHeight
+  CheckHeight --> CheckHeight: CheckHeight_to_CheckHeight [cond_CheckHeight_CheckHeight]
+  CheckHeight --> Mission: CheckHeight_to_Mission [cond_CheckHeight_Mission]
+  Mission --> Final: Mission_to_Final
+  [*] --> Initial

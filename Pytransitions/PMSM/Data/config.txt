@@ -1,0 +1,3 @@
+
+heightTg=2
+sleep_time=45
