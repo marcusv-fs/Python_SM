@@ -1,0 +1,28 @@
+---
+State Machine
+---
+stateDiagram-v2
+  direction LR
+  classDef s_default fill:white,color:black
+  classDef s_inactive fill:white,color:black
+  classDef s_parallel color:black,fill:white
+  classDef s_active color:red,fill:darksalmon
+  classDef s_previous color:blue,fill:azure
+  
+  state "Initial" as Initial
+  Class Initial s_active
+  state "Junction1" as Junction1
+  Class Junction1 s_default
+  state "Turn180\n- enter:\n  + on_enter_Turn180" as Turn180
+  Class Turn180 s_default
+  state "RandomTurn\n- enter:\n  + on_enter_RandomTurn" as RandomTurn
+  Class RandomTurn s_default
+  state "Final" as Final
+  Class Final s_default
+  
+  Initial --> Junction1: Initial_to_Junction1
+  Junction1 --> Turn180: Junction1_to_Turn180 [cond_Junction1_to_Turn180]
+  Junction1 --> RandomTurn: Junction1_to_RandomTurn [cond_Junction1_to_RandomTurn]
+  Turn180 --> Final: Turn180_and_RandomTurn_to_Final
+  RandomTurn --> Final: Turn180_and_RandomTurn_to_Final
+  [*] --> Initial

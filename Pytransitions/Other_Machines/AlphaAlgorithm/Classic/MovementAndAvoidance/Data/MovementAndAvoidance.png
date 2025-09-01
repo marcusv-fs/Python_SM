@@ -1,0 +1,22 @@
+---
+State Machine
+---
+stateDiagram-v2
+  direction LR
+  classDef s_default fill:white,color:black
+  classDef s_inactive fill:white,color:black
+  classDef s_parallel color:black,fill:white
+  classDef s_active color:red,fill:darksalmon
+  classDef s_previous color:blue,fill:azure
+  
+  state "Initial" as Initial
+  Class Initial s_active
+  state "Move\n- enter:\n  + on_enter_Move" as Move
+  Class Move s_default
+  state "Avoid\n- enter:\n  + on_enter_Avoid" as Avoid
+  Class Avoid s_default
+  
+  Initial --> Move: Initial_to_Move
+  Move --> Avoid: Move_to_Avoid [Cond_Move_to_Avoid]
+  Avoid --> Move: Avoid_to_Move
+  [*] --> Initial

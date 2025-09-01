@@ -1,0 +1,22 @@
+---
+State Machine
+---
+stateDiagram-v2
+  direction LR
+  classDef s_default fill:white,color:black
+  classDef s_inactive fill:white,color:black
+  classDef s_parallel color:black,fill:white
+  classDef s_active color:red,fill:darksalmon
+  classDef s_previous color:blue,fill:azure
+  
+  state "Initial" as Initial
+  Class Initial s_active
+  state "MovementAndAvoidance\n- enter:\n  + on_enter_MovementAndAvoidance" as MovementAndAvoidance
+  Class MovementAndAvoidance s_default
+  state "Turning\n- enter:\n  + on_enter_Turning" as Turning
+  Class Turning s_default
+  
+  Initial --> MovementAndAvoidance: Initial_to_MovementAndAvoidance
+  MovementAndAvoidance --> Turning: MovementAndAvoidance_to_Turning [cond_MovementAndAvoidance_to_Turning]
+  Turning --> MovementAndAvoidance: Turning_to_MovementAndAvoidance [cond_Turning_to_MovementAndAvoidance]
+  [*] --> Initial
