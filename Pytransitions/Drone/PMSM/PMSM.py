@@ -25,7 +25,7 @@ class PMSM(GraphMachine):
     
 ####################### Init and util Functions ####################### 
 
-        super().__init__(name="PMSM", states=states, transitions=transitions, initial='Initial')
+        super().__init__(name="PMSM", states=states, transitions=transitions, initial='Initial', show_conditions=True, show_state_attributes=True)
 
         #connection_string = "tcp:127.0.0.1:5760"
         self.connection_string = "udp:127.0.0.1:14551"

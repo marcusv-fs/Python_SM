@@ -1,0 +1,31 @@
+running egg_info
+creating ../../build/simple_ros2_machine/simple_ros2_machine.egg-info
+writing ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/PKG-INFO
+writing dependency_links to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/dependency_links.txt
+writing requirements to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/requires.txt
+writing top-level names to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/top_level.txt
+writing manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+reading manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/build
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/build/lib
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine
+copying simple_ros2_machine/__init__.py -> /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine
+running install
+running install_lib
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine
+copying /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine/__init__.py -> /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine
+byte-compiling /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/share/ament_index
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/share/ament_index/resource_index
+creating /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/share/ament_index/resource_index/packages
+copying resource/simple_ros2_machine -> /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/share/ament_index/resource_index/packages
+copying package.xml -> /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/share/simple_ros2_machine
+running install_egg_info
+Copying ../../build/simple_ros2_machine/simple_ros2_machine.egg-info to /home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine-0.0.0-py3.12.egg-info
+running install_scripts
+writing list of installed files to '/home/mvfs/Python_SM/Pytransitions/Drone/ROS2JJ/build/simple_ros2_machine/install.log'

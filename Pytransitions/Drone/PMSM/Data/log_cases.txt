@@ -14,17 +14,3 @@ cond_TurnOn_TakeOff = True
 -> self.state == 'TurnOn' and self.cond_TurnOn_TakeOff()
 cond_TurnOn_TakeOff = True
 on_enter_TakeOff
--> self.state == 'TakeOff' and self.cond_TakeOff_Mission()
-on_enter_CheckHeight
-cond_CheckHeight_CheckHeight = False
-cond_CheckHeight_Mission = True
--> self.state == 'CheckHeight' and self.cond_CheckHeight_Mission()
-cond_CheckHeight_Mission = True
-on_enter_Mission
-Going to -35.361354; 149.165218; 3
-Going to 35.361354; 149.165218; 3
--> self.state == 'Mission'
-before_Mission_Final
-Returning to Launch
-on_enter_Final
--> self.state == 'Final'

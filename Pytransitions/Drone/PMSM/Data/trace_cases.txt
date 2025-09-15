@@ -1,4 +1,2 @@
  PMSM =  -> PMSM::Connect.in.0.0
- -> PMSM::takeoffCall.3
- -> tock -> tock -> tock -> PMSM::gotoCall.1.1.1  -> tock  -> PMSM::gotoCall.1.1.1  -> tock 
- -> tock -> PMSM::terminate -> SKIP
+ -> PMSM::takeoffCall.4
