@@ -20,6 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'machine1 = simple_ros2_machine.machine1:main',
+            'machine1 = simple_ros2_machine.machine_treads1:main',
+            'machine2 = simple_ros2_machine.machine2:main',
         ],
     },
 )

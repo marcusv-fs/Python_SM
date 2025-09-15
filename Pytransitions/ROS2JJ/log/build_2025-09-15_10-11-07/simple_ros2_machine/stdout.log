@@ -1,0 +1,21 @@
+running egg_info
+writing ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/PKG-INFO
+writing dependency_links to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/dependency_links.txt
+writing requirements to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/requires.txt
+writing top-level names to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/top_level.txt
+reading manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+running build
+running build_py
+copying simple_ros2_machine/machine1_treads.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine
+running install
+running install_lib
+copying /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine/machine1_treads.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine
+byte-compiling /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine/machine1_treads.py to machine1_treads.cpython-312.pyc
+running install_data
+running install_egg_info
+removing '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine-0.0.0-py3.12.egg-info' (and everything under it)
+Copying ../../build/simple_ros2_machine/simple_ros2_machine.egg-info to /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine-0.0.0-py3.12.egg-info
+running install_scripts
+writing list of installed files to '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/install.log'

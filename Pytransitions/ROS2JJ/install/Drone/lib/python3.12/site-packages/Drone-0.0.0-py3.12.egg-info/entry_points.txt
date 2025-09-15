@@ -1,0 +1,2 @@
+[console_scripts]
+PMSMROS = Drone.PMSMROS:main

@@ -1,0 +1,36 @@
+running egg_info
+creating ../../build/Drone/Drone.egg-info
+writing ../../build/Drone/Drone.egg-info/PKG-INFO
+writing dependency_links to ../../build/Drone/Drone.egg-info/dependency_links.txt
+writing entry points to ../../build/Drone/Drone.egg-info/entry_points.txt
+writing requirements to ../../build/Drone/Drone.egg-info/requires.txt
+writing top-level names to ../../build/Drone/Drone.egg-info/top_level.txt
+writing manifest file '../../build/Drone/Drone.egg-info/SOURCES.txt'
+reading manifest file '../../build/Drone/Drone.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/Drone/Drone.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib/Drone
+copying Drone/PMSMROS.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib/Drone
+copying Drone/__init__.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib/Drone
+running install
+running install_lib
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone
+copying /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib/Drone/PMSMROS.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone
+copying /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/build/lib/Drone/__init__.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone
+byte-compiling /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone/PMSMROS.py to PMSMROS.cpython-312.pyc
+byte-compiling /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone/__init__.py to __init__.cpython-312.pyc
+running install_data
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/share/ament_index
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/share/ament_index/resource_index
+creating /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/share/ament_index/resource_index/packages
+copying resource/Drone -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/share/ament_index/resource_index/packages
+copying package.xml -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/share/Drone
+running install_egg_info
+Copying ../../build/Drone/Drone.egg-info to /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/python3.12/site-packages/Drone-0.0.0-py3.12.egg-info
+running install_scripts
+Installing PMSMROS script to /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/Drone/lib/Drone
+writing list of installed files to '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/Drone/install.log'

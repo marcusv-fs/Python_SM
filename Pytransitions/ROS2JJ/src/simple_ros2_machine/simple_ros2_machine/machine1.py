@@ -5,8 +5,6 @@ import os, time, rclpy
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
 from std_msgs.msg import Int32
-from transitions.extensions import GraphMachine
-
 
 class Machine1(GraphMachine):
 ####################### States Declaration #######################   
@@ -20,14 +18,16 @@ class Machine1(GraphMachine):
     
 ####################### Init and util Functions ####################### 
     def __init__(self, node: Node):
-        super().__init__(model=self, 
-                         states=Machine1.states,
-                         transitions=Machine1.transitions,
-                         initial='Initial', 
-                         auto_transitions=False,
-                         show_conditions=True,
-                         show_state_attributes=True,
-                         name="Machine1")
+        super().__init__(
+            model=self, 
+            states=Machine1.states,
+            transitions=Machine1.transitions,
+            initial='Initial', 
+            auto_transitions=False,
+            show_conditions=True,
+            show_state_attributes=True,
+            name="Machine1"
+        )
         self.stop_command = 0 
         self.finished = False
         self.node = node
@@ -36,22 +36,21 @@ class Machine1(GraphMachine):
         try:
             out_dir = 'Pytransitions/ROS2JJ/src/simple_ros2_machine/Data/'
             os.makedirs(out_dir, exist_ok=True)
-            self.get_graph().draw(out_dir, 'Machine1.canon', prog='dot') 
-            self.get_graph().draw(out_dir, 'Machine1.png', prog='dot')  
+            
+            self.get_graph().draw(os.path.join(out_dir, 'Machine1.canon'), prog='dot')
+            self.get_graph().draw(os.path.join(out_dir, 'Machine1.png'), prog='dot') 
 
         except Exception as e:
             self.node.get_logger().warn(f"Não foi possível gerar diagrama: {e}")
 
-        ##############################Util Functions##############################
+    ##############################Util Functions##############################
     def move(self):
         self.node.get_logger().info("Moving...")
-
 
 ####################### Transition Conditions ####################### 
     def c_Final(self):
         print(f"stop_command value = {self.stop_command == 1}")
         return self.stop_command == 1
-        
 
 ####################### Before Transitions ####################### 
 
@@ -68,25 +67,27 @@ class Machine1(GraphMachine):
         self.node.get_logger().info("Entrou em Final. Máquina finalizada.")
         self.finished = True
 
-    def run(self):
-        self.cycle = 0
-        while True:
-            print("\n/////////////////////// Cycle: " + str(self.cycle) + " ///////////////////////\n")
-            cond = 0
+    # ####################### Main Loop #######################
+    # def run(self):
+    #     self.cycle = 0
+    #     while True:
+    #         print("\n/////////////////////// Cycle: " + str(self.cycle) + " ///////////////////////\n")
+    #         cond = 0
             
-            print("Now my current state is " + self.state)
+    #         print("Now my current state is " + self.state)
 
-            if(self.state == 'Initial'):
-                self.Initial_to_Operational()
+    #         if(self.state == 'Initial'):
+    #             self.Initial_to_Operational()
 
-            if(self.state == 'Operational'):
-                self.Operational_to_Final()
-                self.stop_command = 1
+    #         if(self.state == 'Operational'):
+    #             self.Operational_to_Final()
 
-            if(self.state == 'Final'):
-                print("Finished.")   
+    #         if(self.state == 'Final'):
+    #             print("Finished.")   
             
-            self.cycle += 1
+    #         self.cycle += 1
+    #         time.sleep(0.5)
+
 
 class MachineNode(Node):
     def __init__(self):
@@ -103,11 +104,12 @@ class MachineNode(Node):
 
     def command_callback(self, msg: Int32):
         self.machine.stop_command = msg.data
+        self.get_logger().warn(f"\n Command received in: {time.time()} ###")
         self.get_logger().info(f"Comando recebido: {self.machine.stop_command}")
 
     def timer_callback(self):
         if self.machine.finished:
-            self.get_logger().info("Final detectado, encerrando timer.")
+            self.get_logger().info("Encerrando ROS 2...")
             self.timer.cancel()
             rclpy.shutdown()
             return

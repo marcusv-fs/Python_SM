@@ -1,0 +1,26 @@
+[1.609s] Invoking command in '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/src/simple_ros2_machine': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/simple_ros2_machine build --build-base /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build install --record /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/install.log --single-version-externally-managed install_data
+[1.994s] running egg_info
+[2.066s] writing ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/PKG-INFO
+[2.067s] writing dependency_links to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/dependency_links.txt
+[2.067s] writing requirements to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/requires.txt
+[2.067s] writing top-level names to ../../build/simple_ros2_machine/simple_ros2_machine.egg-info/top_level.txt
+[2.194s] reading manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+[2.195s] adding license file 'LICENSE'
+[2.197s] writing manifest file '../../build/simple_ros2_machine/simple_ros2_machine.egg-info/SOURCES.txt'
+[2.198s] running build
+[2.198s] running build_py
+[2.199s] copying simple_ros2_machine/machine1_treads.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine
+[2.200s] copying simple_ros2_machine/machine1.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine
+[2.200s] running install
+[2.224s] running install_lib
+[2.291s] copying /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine/machine1_treads.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine
+[2.291s] copying /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build/lib/simple_ros2_machine/machine1.py -> /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine
+[2.292s] byte-compiling /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine/machine1_treads.py to machine1_treads.cpython-312.pyc
+[2.295s] byte-compiling /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine/machine1.py to machine1.cpython-312.pyc
+[2.300s] running install_data
+[2.301s] running install_egg_info
+[2.370s] removing '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine-0.0.0-py3.12.egg-info' (and everything under it)
+[2.371s] Copying ../../build/simple_ros2_machine/simple_ros2_machine.egg-info to /home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages/simple_ros2_machine-0.0.0-py3.12.egg-info
+[2.374s] running install_scripts
+[2.822s] writing list of installed files to '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/install.log'
+[2.889s] Invoked command in '/home/mvfs/Python_SM/Pytransitions/ROS2JJ/src/simple_ros2_machine' returned '0': DEBUGINFOD_URLS=https://debuginfod.ubuntu.com PYTHONPATH=/home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/mvfs/Python_SM/Pytransitions/ROS2JJ/install/simple_ros2_machine/lib/python3.12/site-packages:${PYTHONPATH} VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/simple_ros2_machine build --build-base /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/build install --record /home/mvfs/Python_SM/Pytransitions/ROS2JJ/build/simple_ros2_machine/install.log --single-version-externally-managed install_data
