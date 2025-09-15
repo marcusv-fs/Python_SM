@@ -19,8 +19,8 @@ digraph "State Machine" {
 		fillcolor=darksalmon,
 		label="Initial\l- enter:\l  + on_enter_Initial\l",
 		peripheries=2];
-	Operational	[label="Operational\l- enter:\l  + on_enter_Operational\l"];
-	Initial -> Operational	[label=Initial_to_Operational];
+	Waiting	[label="Waiting\l- enter:\l  + on_enter_Waiting\l"];
+	Initial -> Waiting	[label=Initial_to_Waiting];
 	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
-	Operational -> Final	[label="Operational_to_Final [c_Final]"];
+	Waiting -> Final	[label="Waiting_to_Final [c_Final]"];
 }
