@@ -36,6 +36,7 @@ class Machine2(GraphMachine):
         self.publisher2 = self.node.create_publisher(Int32, '/trigger_P2P1', 10)
         self.publisher3 = self.node.create_publisher(Int32, '/trigger_P2P3', 10)
         self.publisher4 = self.node.create_publisher(Int32, '/trigger_P3Fn', 10)
+        self.msg = Int32()
 
         ####################### Draw State Machine ######################
         try:
@@ -60,18 +61,18 @@ class Machine2(GraphMachine):
         try:
             user_input = input("Digite 1 para trigger 1, 2 para trigger 2, ..., 4 para trigger final e 5 para finalizar: ")
             self.value = int(user_input.strip())
-            msg = Int32()
-            msg.data = 1
+            
+            self.msg.data = 1
 
             match(self.value):
                 case 1:
-                    self.publisher1.publish(msg)
+                    self.publisher1.publish(self.msg)
                 case 2:
-                    self.publisher2.publish(msg)
+                    self.publisher2.publish(self.msg)
                 case 3:
-                    self.publisher3.publish(msg)
+                    self.publisher3.publish(self.msg)
                 case 4:
-                    self.publisher4.publish(msg)
+                    self.publisher4.publish(self.msg)
                 case _:
                     self.node.get_logger().error("Nenhum valor publicado")
             now = time.time()
