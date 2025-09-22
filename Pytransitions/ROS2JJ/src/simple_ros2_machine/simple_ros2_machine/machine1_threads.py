@@ -1,5 +1,7 @@
 # pip install transitions
 # pip install graphviz
+# pip install pyyaml
+# pip install numpy
 
 import os, time, rclpy, threading
 from transitions.extensions import GraphMachine
@@ -8,12 +10,15 @@ from std_msgs.msg import Int32
 
 class Machine1(GraphMachine):
 ####################### States Declaration #######################   
-    states = ['Initial','Operational', 'Final']
+    states = ['Initial','Phase1', 'Phase2', 'Phase3', 'Final']
 
 ####################### Transitions Statement  #######################  
     transitions = [
-        {'trigger': 'Initial_to_Operational', 'source': 'Initial', 'dest': 'Operational'},
-        {'trigger': 'Operational_to_Final', 'source': 'Operational', 'dest': 'Final', 'conditions': 'c_Final'},
+        {'trigger': 'Initial_to_Phase1', 'source': 'Initial', 'dest': 'Phase1'},
+        {'trigger': 'Phase1_to_Phase2', 'source': 'Phase1', 'dest': 'Phase2', 'conditions': 'cond_Phase1_Phase2'},
+        {'trigger': 'Phase2_to_Phase1', 'source': 'Phase2', 'dest': 'Phase1', 'conditions': 'cond_Phase2_Phase1'},
+        {'trigger': 'Phase2_to_Phase3', 'source': 'Phase2', 'dest': 'Phase3', 'conditions': 'cond_Phase2_Phase3'},
+        {'trigger': 'Phase3_to_Final', 'source': 'Phase3', 'dest': 'Final', 'conditions': 'cond_Phase3_Final'},
     ]
     
 ####################### Init and util Functions ####################### 
@@ -28,7 +33,10 @@ class Machine1(GraphMachine):
             show_state_attributes=True,
             name="Machine1"
         )
-        self.stop_command = 0 
+        self.trigger_P1P2 = 0 
+        self.trigger_P2P1 = 0 
+        self.trigger_P2P3 = 0 
+        self.trigger_P3Fn = 0 
         self.finished = False
         self.node = node
 
@@ -48,45 +56,85 @@ class Machine1(GraphMachine):
         self.node.get_logger().info("Moving...")
 
 ####################### Transition Conditions ####################### 
-    def c_Final(self):
-        print(f"stop_command value = {self.stop_command == 1}")
-        return self.stop_command == 1
+    def cond_Phase1_Phase2(self):
+            print(f"trigger_P1P2 value = {self.trigger_P1P2 == 1}")
+            return self.trigger_P1P2 == 1
+    def cond_Phase2_Phase1(self):
+            print(f"trigger_P2P1 value = {self.trigger_P2P1 == 1}")
+            return self.trigger_P2P1 == 1
+    def cond_Phase2_Phase3(self):
+            print(f"trigger_P2P3 value = {self.trigger_P2P3 == 1}")
+            return self.trigger_P2P3 == 1
+    def cond_Phase3_Final(self):
+        print(f"trigger_P3Fn value = {self.trigger_P3Fn == 1}")
+        return self.trigger_P3Fn == 1
 
 ####################### Before Transitions ####################### 
 
 ####################### On_enter States #######################      
     def on_enter_Initial(self):
         self.node.get_logger().info("Entrou em Initial")
+        self.tock = 0
 
-    def on_enter_Operational(self):
-        self.node.get_logger().info("Entrou em Operational")
+    def on_enter_Phase1(self):
+        self.node.get_logger().info("Entrou em Phase1")
         self.move()
         time.sleep(0.1)
+        self.tock = 0
+
+    def on_enter_Phase2(self):
+        self.node.get_logger().info("Entrou em Phase2")
+        self.move()
+        time.sleep(0.1)
+        self.tock = 0
+
+
+    def on_enter_Phase3(self):
+        self.node.get_logger().info("Entrou em Phase3")
+        self.move()
+        time.sleep(0.1)
+        self.tock = 0
+
 
     def on_enter_Final(self):
         self.node.get_logger().info("Entrou em Final. Máquina finalizada.")
         self.finished = True
+        self.tock = 0
 
     ####################### Main Loop #######################
     def run(self):
         self.cycle = 0
+        self.tock = 0
         while not self.finished:
-            print(f"\n/////////////////////// Cycle: {self.cycle} ///////////////////////\n")
-            print("Now my current state is " + self.state)
-
-            if self.state == 'Initial':
-                self.Initial_to_Operational()
-
-            elif self.state == 'Operational':
-                self.Operational_to_Final()
-
-            elif self.state == 'Final':
-                print("Finished.")
-                self.finished = True
-                break
+            if self.tock == 1:
+                print(f"\n/////////////////////// Cycle: {self.cycle} ///////////////////////\n")
+                self.cycle += 1
+                time.sleep(0.5)
+                print("tock -> ")
             
-            self.cycle += 1
-            time.sleep(0.5)
+            print("Now my current state is " + self.state)
+            self.tock = 1
+
+            match(self.state):
+                case 'Initial':
+                    self.Initial_to_Phase1()
+
+                case 'Phase1':
+                    self.Phase1_to_Phase2()
+
+                case 'Phase2':
+                    if self.cond_Phase2_Phase1():
+                        self.Phase2_to_Phase1()
+                    elif self.cond_Phase2_Phase3():
+                        self.Phase2_to_Phase3()
+
+                case 'Phase3':
+                    self.Phase3_to_Final()
+
+                case 'Final':
+                    print("Finished.")
+                    self.finished = True
+                    break
 
 
 class MachineNode(Node):
@@ -96,12 +144,36 @@ class MachineNode(Node):
         self.machine = Machine1(self)
 
         # subscriber para receber comandos
-        self.create_subscription(Int32, '/machine1_command', self.command_callback, 10)
+        self.create_subscription(Int32, '/trigger_P1P2', self.P1P2_callback, 10)
+        self.create_subscription(Int32, '/trigger_P2P1', self.P2P1_callback, 10)
+        self.create_subscription(Int32, '/trigger_P2P3', self.P2P3_callback, 10)
+        self.create_subscription(Int32, '/trigger_P3Fn', self.P3Fn_callback, 10)
 
-    def command_callback(self, msg: Int32):
-        self.machine.stop_command = msg.data
-        self.get_logger().warn(f"\n Command received in: {time.time()} ###")
-        self.get_logger().info(f"Comando recebido: {self.machine.stop_command}")
+    def reset_triggers(self):
+        self.machine.trigger_P1P2 = 0
+        self.machine.trigger_P2P1 = 0
+        self.machine.trigger_P2P3 = 0
+        self.machine.trigger_P3Fn = 0
+
+    def P1P2_callback(self, msg: Int32):
+        self.reset_triggers()
+        self.machine.trigger_P1P2 = msg.data
+        self.get_logger().warn(f"\n Command received: {self.machine.trigger_P1P2}, in: {time.time()} ###")
+
+    def P2P1_callback(self, msg: Int32):
+        self.reset_triggers()
+        self.machine.trigger_P2P1 = msg.data
+        self.get_logger().warn(f"\n Command received: {self.machine.trigger_P2P1}, in: {time.time()} ###")
+
+    def P2P3_callback(self, msg: Int32):
+        self.reset_triggers()
+        self.machine.trigger_P2P3 = msg.data
+        self.get_logger().warn(f"\n Command received: {self.machine.trigger_P2P3}, in: {time.time()} ###")
+
+    def P3Fn_callback(self, msg: Int32):
+        self.reset_triggers()
+        self.machine.trigger_P3Fn = msg.data
+        self.get_logger().warn(f"\n Command received: {self.machine.trigger_P3Fn}, in: {time.time()} ###")
 
 
 ######################## MAIN ########################

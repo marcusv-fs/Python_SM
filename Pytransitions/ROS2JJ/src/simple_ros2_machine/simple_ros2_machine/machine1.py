@@ -67,27 +67,8 @@ class Machine1(GraphMachine):
         self.node.get_logger().info("Entrou em Final. Máquina finalizada.")
         self.finished = True
 
-    # ####################### Main Loop #######################
-    # def run(self):
-    #     self.cycle = 0
-    #     while True:
-    #         print("\n/////////////////////// Cycle: " + str(self.cycle) + " ///////////////////////\n")
-    #         cond = 0
-            
-    #         print("Now my current state is " + self.state)
-
-    #         if(self.state == 'Initial'):
-    #             self.Initial_to_Operational()
-
-    #         if(self.state == 'Operational'):
-    #             self.Operational_to_Final()
-
-    #         if(self.state == 'Final'):
-    #             print("Finished.")   
-            
-    #         self.cycle += 1
-    #         time.sleep(0.5)
-
+        self.node.get_logger().info("Encerrando ROS 2...")
+        rclpy.shutdown()
 
 class MachineNode(Node):
     def __init__(self):
@@ -108,12 +89,6 @@ class MachineNode(Node):
         self.get_logger().info(f"Comando recebido: {self.machine.stop_command}")
 
     def timer_callback(self):
-        if self.machine.finished:
-            self.get_logger().info("Encerrando ROS 2...")
-            self.timer.cancel()
-            rclpy.shutdown()
-            return
-        
         self.get_logger().info(f"\n ### Cycle {self.cycle} ###")
         self.get_logger().info(f"Estado atual: {self.machine.state}")
 

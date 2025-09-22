@@ -32,7 +32,10 @@ class Machine2(GraphMachine):
         self.node = node
         self.finished = False
         self.value = 0
-        self.publisher = self.node.create_publisher(Int32, '/machine1_command', 10)
+        self.publisher1 = self.node.create_publisher(Int32, '/trigger_P1P2', 10)
+        self.publisher2 = self.node.create_publisher(Int32, '/trigger_P2P1', 10)
+        self.publisher3 = self.node.create_publisher(Int32, '/trigger_P2P3', 10)
+        self.publisher4 = self.node.create_publisher(Int32, '/trigger_P3Fn', 10)
 
         ####################### Draw State Machine ######################
         try:
@@ -46,7 +49,7 @@ class Machine2(GraphMachine):
 ####################### Transition Conditions ####################### 
     def c_Final(self):
         print(f"[M2] End condition? value={self.value}")
-        return self.value == 1
+        return self.value == 5
 
 ####################### On_enter States #######################    
     def on_enter_Initial(self):
@@ -55,11 +58,22 @@ class Machine2(GraphMachine):
     def on_enter_Waiting(self):
         self.node.get_logger().info("[M2] Aguardando comando no console...")
         try:
-            user_input = input("Digite 1 para finalizar ou 0 para continuar: ")
+            user_input = input("Digite 1 para trigger 1, 2 para trigger 2, ..., 4 para trigger final e 5 para finalizar: ")
             self.value = int(user_input.strip())
             msg = Int32()
-            msg.data = self.value
-            self.publisher.publish(msg)
+            msg.data = 1
+
+            match(self.value):
+                case 1:
+                    self.publisher1.publish(msg)
+                case 2:
+                    self.publisher2.publish(msg)
+                case 3:
+                    self.publisher3.publish(msg)
+                case 4:
+                    self.publisher4.publish(msg)
+                case _:
+                    self.node.get_logger().error("Nenhum valor publicado")
             now = time.time()
             self.node.get_logger().warn(f"[M2] Publicado {self.value} em /machine1_command at {now}")
         except Exception as e:
@@ -68,6 +82,8 @@ class Machine2(GraphMachine):
     def on_enter_Final(self):
         self.node.get_logger().info("[M2] Entrou em Final. Máquina finalizada.")
         self.finished = True
+        self.node.get_logger().info("[M2] Encerrando ROS 2...")
+        rclpy.shutdown()
 
 
 class Machine2Node(Node):
@@ -79,12 +95,6 @@ class Machine2Node(Node):
         self.cycle = 0
 
     def timer_callback(self):
-        if self.machine.finished:
-            self.get_logger().info("[M2] Encerrando ROS 2...")
-            self.timer.cancel()
-            rclpy.shutdown()
-            return
-
         self.get_logger().info(f"\n[M2] ### Cycle {self.cycle} ###")
         self.get_logger().info(f"[M2] Estado atual: {self.machine.state}")
 

@@ -19,8 +19,13 @@ digraph "State Machine" {
 		fillcolor=darksalmon,
 		label="Initial\l- enter:\l  + on_enter_Initial\l",
 		peripheries=2];
-	Operational	[label="Operational\l- enter:\l  + on_enter_Operational\l"];
-	Initial -> Operational	[label=Initial_to_Operational];
+	Phase1	[label="Phase1\l- enter:\l  + on_enter_Phase1\l"];
+	Initial -> Phase1	[label=Initial_to_Phase1];
+	Phase2	[label="Phase2\l- enter:\l  + on_enter_Phase2\l"];
+	Phase1 -> Phase2	[label="Phase1_to_Phase2 [cond_Phase1_Phase2]"];
+	Phase2 -> Phase1	[label="Phase2_to_Phase1 [cond_Phase2_Phase1]"];
+	Phase3	[label="Phase3\l- enter:\l  + on_enter_Phase3\l"];
+	Phase2 -> Phase3	[label="Phase2_to_Phase3 [cond_Phase2_Phase3]"];
 	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
-	Operational -> Final	[label="Operational_to_Final [c_Final]"];
+	Phase3 -> Final	[label="Phase3_to_Final [cond_Phase3_Final]"];
 }
