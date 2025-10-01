@@ -4,7 +4,8 @@
 import os, time, rclpy
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
-from std_msgs.msg import Int32
+from std_msgs.msg import Bool
+from std_msgs.msg import UInt8
 
 
 class Machine2(GraphMachine):
@@ -32,11 +33,12 @@ class Machine2(GraphMachine):
         self.node = node
         self.finished = False
         self.value = 0
-        self.publisher1 = self.node.create_publisher(Int32, '/trigger_P1P2', 10)
-        self.publisher2 = self.node.create_publisher(Int32, '/trigger_P2P1', 10)
-        self.publisher3 = self.node.create_publisher(Int32, '/trigger_P2P3', 10)
-        self.publisher4 = self.node.create_publisher(Int32, '/trigger_P3Fn', 10)
-        self.msg = Int32()
+        self.publisher1 = self.node.create_publisher(Bool, '/trigger_P1P2', 10)
+        self.publisher2 = self.node.create_publisher(Bool, '/trigger_P2P1', 10)
+        self.publisher3 = self.node.create_publisher(Bool, '/trigger_P2P3', 10)
+        self.publisher4 = self.node.create_publisher(UInt8, '/trigger_P3Fn', 10)
+        self.msg = Bool()
+        self.msg4 = UInt8()
 
         ####################### Draw State Machine ######################
         try:
@@ -62,7 +64,7 @@ class Machine2(GraphMachine):
             user_input = input("Digite 1 para trigger 1, 2 para trigger 2, ..., 4 para trigger final e 5 para finalizar: ")
             self.value = int(user_input.strip())
             
-            self.msg.data = 1
+            self.msg.data = True
 
             match(self.value):
                 case 1:
@@ -72,7 +74,10 @@ class Machine2(GraphMachine):
                 case 3:
                     self.publisher3.publish(self.msg)
                 case 4:
-                    self.publisher4.publish(self.msg)
+                    user_input = input("Digite o valor que quer enviar: (> 5 finaliza machine 1) ")
+                    self.value2 = int(user_input.strip())
+                    self.msg4.data = self.value2
+                    self.publisher4.publish(self.msg4)
                 case _:
                     self.node.get_logger().error("Nenhum valor publicado")
             now = time.time()

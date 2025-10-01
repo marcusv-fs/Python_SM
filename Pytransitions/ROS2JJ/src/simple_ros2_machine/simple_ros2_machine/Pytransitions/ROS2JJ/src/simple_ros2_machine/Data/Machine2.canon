@@ -1,0 +1,26 @@
+digraph "State Machine" {
+	graph [color=black,
+		directed=true,
+		fillcolor=white,
+		label="State Machine",
+		rankdir=LR,
+		"strict"=false,
+		style=solid
+	];
+	node [color=black,
+		fillcolor=white,
+		label="\N",
+		peripheries=1,
+		shape=rectangle,
+		style="rounded,filled"
+	];
+	edge [color=black];
+	Initial	[color=red,
+		fillcolor=darksalmon,
+		label="Initial\l- enter:\l  + on_enter_Initial\l",
+		peripheries=2];
+	Waiting	[label="Waiting\l- enter:\l  + on_enter_Waiting\l"];
+	Initial -> Waiting	[label=Initial_to_Waiting];
+	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
+	Waiting -> Final	[label="Waiting_to_Final [c_Final]"];
+}

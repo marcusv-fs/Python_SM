@@ -4,7 +4,7 @@
 import os, time, rclpy
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
-from std_msgs.msg import Int32
+from std_msgs.msg import Bool
 
 class Machine1(GraphMachine):
 ####################### States Declaration #######################   
@@ -77,13 +77,13 @@ class MachineNode(Node):
         self.machine = Machine1(self)
 
         #subscriber para receber comandos
-        self.create_subscription(Int32, '/machine1_command', self.command_callback, 10)
+        self.create_subscription(Bool, '/machine1_command', self.command_callback, 10)
 
         #timer para executar ciclos periódicos da máquina
         self.timer = self.create_timer(0.5, self.timer_callback)
         self.cycle = 0
 
-    def command_callback(self, msg: Int32):
+    def command_callback(self, msg: Bool):
         self.machine.stop_command = msg.data
         self.get_logger().warn(f"\n Command received in: {time.time()} ###")
         self.get_logger().info(f"Comando recebido: {self.machine.stop_command}")
@@ -115,4 +115,4 @@ if __name__ == '__main__':
     main()
 
 # Comando para enviar a mensagem no tópico 
-# ros2 topic pub /machine1_command std_msgs/msg/Int32 "{data: 1}"
+# ros2 topic pub /machine1_command std_msgs/msg/Bool "{data: 1}"
