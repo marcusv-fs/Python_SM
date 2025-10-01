@@ -99,7 +99,6 @@ class Machine1(GraphMachine):
         self.move()
         time.sleep(0.1)
 
-
     def on_enter_Phase3(self):
         self.node.get_logger().info("Entrou em Phase3")
         self.move()
@@ -114,15 +113,15 @@ class Machine1(GraphMachine):
         while not self.finished:
             self.tock = 1
             for transition in self.transitions:
-                state = self.state
-                if state in str(transition.get("source")):
+                if self.state in str(transition.get("source")):
                     if self.may_trigger(transition.get("trigger")):
-                        self.trigger(transition.get("trigger"))
                         self.tock = 0
-
+                        self.trigger(transition.get("trigger"))
             if self.tock == 1:
                 print("tock -> ")
-                time.sleep(0.5)  
+                time.sleep(0.5) 
+            else:
+                print ("--------------NOOOOOOT tock")
 
             print(f"Current State: {self.state}")
 
