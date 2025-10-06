@@ -1,6 +1,3 @@
-# machine2_node.py
-# pip install transitions graphviz
-
 import os, time, rclpy, threading
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
@@ -22,11 +19,7 @@ class FRTL(GraphMachine):
         {'trigger': 'Phases_to_Final', 'source': 'Phases', 'dest': 'Final', 'before': 'before_Phases_Final'}
         ]
     
-    def __init__(self, node: Node):
-        
-    
-####################### Init and util Functions ####################### 
-
+    def __init__(self, node: Node):    
         super().__init__(
             model=self,
             name="FRTL",
@@ -53,8 +46,6 @@ class FRTL(GraphMachine):
 
         self.trigger_start = False
 
-        
-
         ####################### Draw State Machine ######################
         try:
             out_dir = 'Pytransitions/ROS2JJ/src/FRTL/FRTL/Data/'
@@ -65,7 +56,6 @@ class FRTL(GraphMachine):
 
         except Exception as e:
             self.node.get_logger().error(f"Não foi possível gerar diagrama: {e}")
-
 
 ####################### Transition Conditions ####################### 
     def cond_Connect_Connect(self):
@@ -82,7 +72,6 @@ class FRTL(GraphMachine):
         if self.trigger_start:
             return True
         return False
-
 
 ####################### Before Transitions ####################### 
     def reset_trigger_start(self):
@@ -106,7 +95,6 @@ class FRTL(GraphMachine):
         self.node.get_logger().warn("\non_enter_Connect")
         self.uav = auxFuncs.connect_drone(self.connection_string)
         self.connectionState = auxFuncs.wait_for_heartbeat(self.uav)
-        # Connect to the drone
 
     def on_enter_Wait(self):
         self.node.get_logger().warn("\non_enter_Wait")
@@ -118,7 +106,6 @@ class FRTL(GraphMachine):
         self.node.get_logger().warn("\non_enter_StartEngines")
         auxFuncs.set_mode(self.uav, "GUIDED")
         auxFuncs.arm_drone(self.uav)
-        #auxFuncs.wait_for_arming(self.drone)
         time.sleep(1)
 
     def on_enter_TakeOff(self):
@@ -199,9 +186,7 @@ def main(args=None):
     # Quando FSM termina, encerra ROS
     node.get_logger().info("Encerrando ROS 2...")
     rclpy.shutdown()
-    
     ros_thread.join()
-
     print("Programa encerrado!")
 
 if __name__ == '__main__':
