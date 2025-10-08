@@ -83,48 +83,60 @@ class FRTL(GraphMachine):
     def before_Phases_Final(self):
         print("Returning to Launch")
         auxFuncs.move_to_gps_absolute(self.uav, self.start_time, self.home_pos['lat'], self.home_pos['lon'], 4, 0)
-        auxFuncs.land_now(self.uav)
-        time.sleep(2)
-        auxFuncs.disarm_drone(self.uav)
+        auxFuncs.land_and_disarm(self.uav)
+
+####################### Mission Functions ####################### 
+    def exec_mission(self):
+        print("Landing...")
+        auxFuncs.land_and_disarm(self.uav)
+        time.sleep(1)
+        auxFuncs.set_mode(self.uav, "GUIDED")
+        time.sleep(1)
+        auxFuncs.arm_drone(self.uav)
+        print("Arming...")
+        time.sleep(1)
+        print("Taking Off...")
+        auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
+
 
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
-        self.node.get_logger().warn("\non_enter_Connect")
+        self.node.get_logger().warn("on_enter_Connect")
         self.uav = auxFuncs.connect_drone(self.connection_string)
         self.connectionState = auxFuncs.wait_for_heartbeat(self.uav)
 
     def on_enter_Wait(self):
-        self.node.get_logger().warn("\non_enter_Wait")
+        self.node.get_logger().warn("on_enter_Wait")
         auxFuncs.set_home_to_current_position(self.uav)
         self.home_pos = auxFuncs.get_home_position(self.uav)
         print("Waiting for start...\n")
 
     def on_enter_StartEngines(self):
-        self.node.get_logger().warn("\non_enter_StartEngines")
+        self.node.get_logger().warn("on_enter_StartEngines")
         auxFuncs.set_mode(self.uav, "GUIDED")
         auxFuncs.arm_drone(self.uav)
         time.sleep(1)
 
     def on_enter_TakeOff(self):
-        self.node.get_logger().warn("\non_enter_TakeOff")
+        self.node.get_logger().warn("on_enter_TakeOff")
         auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
 
     def on_enter_Phases(self):
-        self.node.get_logger().warn("\non_enter_Phases")
-        print("Going towards first point for 25 seconds ...")
+        self.node.get_logger().warn("on_enter_Phases")
+        print("Going towards first point...")
         auxFuncs.move_to_relative(self.uav, self.start_time, -5, 5, 0, 0)
-        self.node.get_logger().warn("\n Reached position 1")
-        time.sleep(2)
+        print(" Reached position 1")
+        self.exec_mission()
 
-
-        print("Going towards second point for 25 seconds ...")
+        print("Going towards first point...")
         auxFuncs.move_to_relative(self.uav, self.start_time, 10, -10, 0, 0)
-        self.node.get_logger().warn("\n Reached position 2")
-        time.sleep(2)
+        print(" Reached position 2")
+        self.exec_mission()
+
 
 
     def on_enter_Final(self):
-        self.node.get_logger().warn("\non_enter_Final")
+        self.node.get_logger().warn("on_enter_Final")
         auxFuncs.close_connection(self.uav)
         self.finished = True
 
@@ -157,7 +169,10 @@ class FrtlNode(Node):
     def start_callback(self, msg: UInt8):
         self.machine.trigger_start = True
         self.machine.phase = msg.data
-        self.get_logger().warn(f"\n Command received: {self.machine.trigger_start}, in: {time.time()} ###")
+        self.get_logger().info(f"\n Command received: {self.machine.trigger_start}, in: {time.time()} ###")
+        if(msg.data == 2):
+            auxFuncs.set_mode(self.machine.uav, "EMERGENCY")
+            exit(1)
 
 ######################## MAIN ########################
 def ros_spin_thread(node):

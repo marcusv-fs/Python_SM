@@ -145,14 +145,14 @@ def move_to_gps_absolute(vehicle, start_time, lat, lon, alt, yaw_deg=0):
         print(f"Movendo para GPS: lat={lat:.6f}, lon={lon:.6f}, alt={alt}m")
         
         # Parâmetros de tolerância e timeout
-        tolerance = 5.0  # 5 metros de tolerância (GPS é menos preciso)
+        tolerance = 0.2  # 5 metros de tolerância (GPS é menos preciso)
         timeout = 60     # 60 segundos máximo
         start_wait = time.time()
         
         while True:
             # Verifica timeout
             if time.time() - start_wait > timeout:
-                print("Timeout: Drone não chegou à posição GPS desejada a tempo")
+                #print("Timeout: Drone não chegou à posição GPS desejada a tempo")
                 break
             
             # Obtém posição GPS atual
@@ -179,7 +179,7 @@ def move_to_gps_absolute(vehicle, start_time, lat, lon, alt, yaw_deg=0):
             # Distância 3D total (priorizando horizontal)
             total_dist = math.sqrt(horizontal_dist**2 + vertical_dist**2)
             
-            print(f"Distância ao alvo: Horizontal={horizontal_dist:.1f}m, Vertical={vertical_dist:.1f}m, Total={total_dist:.1f}m")
+            #print(f"Distância ao alvo: Horizontal={horizontal_dist:.1f}m, Vertical={vertical_dist:.1f}m, Total={total_dist:.1f}m")
             
             # Verifica se chegou perto o suficiente do alvo
             if horizontal_dist <= tolerance and vertical_dist <= tolerance:
@@ -217,7 +217,7 @@ def move_to_absolute(vehicle, start_time, x, y, z, yaw_deg):
             0, 0, 0,             # Aceleração
             yaw_rad, 0           # Yaw e yaw_rate
         )
-        print(f"Comando de movimento absoluto enviado para: x={x}, y={y}, z={z}, yaw={yaw_deg}°")
+        #print(f"Comando de movimento absoluto enviado para: x={x}, y={y}, z={z}, yaw={yaw_deg}°")
 
         # Parâmetros de tolerância e timeout
         tolerance = 0.1  # 1 metro de tolerância
@@ -227,7 +227,7 @@ def move_to_absolute(vehicle, start_time, x, y, z, yaw_deg):
         while True:
             # Verifica timeout
             if time.time() - start_wait > timeout:
-                print("Timeout: Drone não chegou à posição desejada a tempo")
+                #print("Timeout: Drone não chegou à posição desejada a tempo")
                 break
             
             # Obtém posição atual no frame NED:cite[6]
@@ -241,7 +241,7 @@ def move_to_absolute(vehicle, start_time, x, y, z, yaw_deg):
                            (current_y - y)**2 + 
                            (current_z - (-z))**2)  # Nota: z de entrada é invertido para o frame NED
             
-            print(f"Posição atual: x={current_x:.2f}, y={current_y:.2f}, z={current_z:.2f} | Distância ao alvo: {dist:.2f}m")
+            #print(f"Posição atual: x={current_x:.2f}, y={current_y:.2f}, z={current_z:.2f} | Distância ao alvo: {dist:.2f}m")
 
             # Verifica se chegou perto o suficiente do alvo
             if dist <= tolerance:
@@ -252,7 +252,7 @@ def move_to_absolute(vehicle, start_time, x, y, z, yaw_deg):
             time.sleep(0.1)
         
     except Exception as e:
-        print(f"Erro ao mover para posição absoluta: {e}")
+        #print(f"Erro ao mover para posição absoluta: {e}")
         exit(1)
 
 def move_to_relative(vehicle, start_time, dx, dy, dz, yaw_deg):
@@ -300,11 +300,11 @@ def move_to_relative(vehicle, start_time, dx, dy, dz, yaw_deg):
             0, 0, 0,             # Aceleração
             yaw_rad, 0           # Yaw e yaw_rate
         )
-        #print(f"Movendo para posição relativa: dx={dx}, dy={dy}, dz={dz}, yaw={yaw_deg}°")
+        print(f"Movendo para posição relativa: dx={dx}, dy={dy}, dz={dz}, yaw={yaw_deg}°")
         
         # Parâmetros de tolerância e timeout
         tolerance = 0.1  # 1 metro de tolerância
-        timeout = 30     # 30 segundos máximo
+        timeout = 10     # 30 segundos máximo
         start_wait = time.time()
         
         while True:
@@ -325,7 +325,7 @@ def move_to_relative(vehicle, start_time, dx, dy, dz, yaw_deg):
             
             # Verifica se chegou perto o suficiente do alvo
             if dist <= tolerance:
-                #print(f"Posição alcançada! Erro: {dist:.2f} metros")
+                print(f"Posição alcançada! Erro: {dist:.2f} metros")
                 break
             
             # Pequena pausa para não sobrecarregar
@@ -356,21 +356,27 @@ def takeoff_relative(vehicle, tg_altitude=10, home_altitude = 0):
         )
         pos = get_global_position(vehicle)
         cont = 0
-        altura = (abs(pos['alt']) - abs(home_altitude))
-        while ((altura < abs(tg_altitude * 0.95)) and (altura < (abs(tg_altitude) - 0.5))):
+        altitude = (abs(pos['alt']) - abs(home_altitude))
+        while ((altitude < abs(tg_altitude * 0.95)) and (altitude < (abs(tg_altitude) - 0.5))):
             try:
                 pos = get_global_position(vehicle)
-                altura = (abs(pos['alt']) - abs(home_altitude))
-                #print(f"Altitude: {altura} - tg_Altitude: {tg_altitude}")
+                altitude = (abs(pos['alt']) - abs(home_altitude))
+                #print(f"Altitude: {altitude} - tg_Altitude: {tg_altitude}")
 
-                if(cont > 5):
-                    #print("ERRORRRRR")
+                if(cont > 20):
+                    print("ERRORRRRR")
                     cont = 0
                     move_to_relative(vehicle, time.time(), 0, 0, tg_altitude + 0.5, 0)
                     time.sleep(2)
+
+                time.sleep(1)
+                cont += 1
             except:
                 #print("Error while getting Height")
                 exit(1)   
+        
+        print(f"Altitude alcançada: {altitude}. Erro: {tg_altitude - altitude}")
+        
         
     except Exception as e:
         #print(f"Erro ao enviar decolagem relativa: {e}")
@@ -392,6 +398,11 @@ def set_mode(vehicle, mode):
         bool: True se o modo foi definido com sucesso, False caso contrário.
     """
     try:
+        #print(f"Comando para mudar para o modo '{mode}' enviado.")
+        emergency = False
+        if mode == "EMERGENCY":
+            emergency = True
+            mode = "RTL"
         mode_mapping = vehicle.mode_mapping()
         if mode not in mode_mapping:
             #print(f"Modo '{mode}' não é suportado pelo firmware.")
@@ -399,7 +410,10 @@ def set_mode(vehicle, mode):
 
         mode_id = mode_mapping[mode]
         vehicle.set_mode(mode_id)
-        #print(f"Comando para mudar para o modo '{mode}' enviado.")
+        
+        if emergency:
+            close_connection(vehicle)
+
         return True
     except Exception as e:
         #print(f"Erro ao mudar modo de voo: {e}")
@@ -588,7 +602,7 @@ def get_home_position(vehicle, timeout=5):
         exit(1)
         return None
 
-def land_now(vehicle):
+def land_and_disarm(vehicle):
     """
     Envia comando de pouso (LAND) para o drone e aguarda até o pouso ser completado.
 
@@ -606,14 +620,14 @@ def land_now(vehicle):
             0, 0,       # Latitude e Longitude = atual
             0           # Altitude = atual
         )
-        # print("Comando de pouso enviado. Aguardando pouso...")
+        # #print("Comando de pouso enviado. Aguardando pouso...")
         timeout = 120 
         start_time = time.time()
         landed = False
         
         while True:
             if time.time() - start_time > timeout:
-                # print("Timeout: Pouso não foi completado dentro do tempo esperado")
+                # #print("Timeout: Pouso não foi completado dentro do tempo esperado")
                 break
             
             status_msg = vehicle.recv_match(type='HEARTBEAT', blocking=True, timeout=1)
@@ -625,21 +639,21 @@ def land_now(vehicle):
             if extended_sys_state:
                 # MAV_LANDED_STATE: 0=undef, 1=on ground, 2=in air, 3=takeoff, 4=landing
                 if extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_ON_GROUND:
-                    # print("✅ouso completado! Drone está no solo.")
+                    # #print("✅ouso completado! Drone está no solo.")
                     landed = True
                     break
                 elif extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_LANDING:
                     alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
                     if alt_msg:
                         relative_alt = alt_msg.relative_alt / 1000.0  # mm para metros
-                        # print(f"Pousando... Altitude relativa: {relative_alt:.1f}m")
+                        # #print(f"Pousando... Altitude relativa: {relative_alt:.1f}m")
             
             # Alternativa: verifica altitude relativa como fallback
             alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
             if alt_msg:
                 relative_alt = alt_msg.relative_alt / 1000.0  # mm para metros
                 if relative_alt < 0.3:  # Menos de 30cm do solo
-                    # print(f"✅ Pouso completado! Altitude relativa: {relative_alt:.1f}m")
+                    # #print(f"✅ Pouso completado! Altitude relativa: {relative_alt:.1f}m")
                     landed = True
                     break
             
@@ -647,12 +661,12 @@ def land_now(vehicle):
             time.sleep(0.5)
         
         # if landed:
-        #     print("🎉 Pouso finalizado com sucesso!")
+        #     #print("🎉 Pouso finalizado com sucesso!")
         # else:
-        #     print("⚠️  Pouso não confirmado dentro do tempo limite")
+        #     #print("⚠️  Pouso não confirmado dentro do tempo limite")
             
         return landed
         
     except Exception as e:
-        print(f"❌ Erro durante o pouso: {e}")
+        #print(f"❌ Erro durante o pouso: {e}")
         return False
