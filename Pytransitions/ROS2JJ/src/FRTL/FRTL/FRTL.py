@@ -82,13 +82,10 @@ class FRTL(GraphMachine):
 
     def before_Phases_Final(self):
         print("Returning to Launch")
-        auxFuncs.set_mode(self.uav, 'RTL')
-        while True:
-            cond = auxFuncs.has_reached_position(self.uav, self.home_pos['lat'], self.home_pos['lon'], self.home_pos['alt'])
-            time.sleep(1)
-            if cond:
-                print("Posição alvo alcançada!")
-                break
+        auxFuncs.move_to_gps_absolute(self.uav, self.start_time, self.home_pos['lat'], self.home_pos['lon'], 4, 0)
+        auxFuncs.land_now(self.uav)
+        time.sleep(2)
+        auxFuncs.disarm_drone(self.uav)
 
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
@@ -116,12 +113,15 @@ class FRTL(GraphMachine):
         self.node.get_logger().warn("\non_enter_Phases")
         print("Going towards first point for 25 seconds ...")
         auxFuncs.move_to_relative(self.uav, self.start_time, -5, 5, 0, 0)
-        text = "\nGoing to " + str(-35.361354) + "; "+ str(149.165218) + "; " + str(self.targetHeight) 
-        time.sleep(10)
+        self.node.get_logger().warn("\n Reached position 1")
+        time.sleep(2)
+
 
         print("Going towards second point for 25 seconds ...")
-        auxFuncs.move_to_relative(self.uav, self.start_time, 5, -5, 0, 0)
-        time.sleep(10)
+        auxFuncs.move_to_relative(self.uav, self.start_time, 10, -10, 0, 0)
+        self.node.get_logger().warn("\n Reached position 2")
+        time.sleep(2)
+
 
     def on_enter_Final(self):
         self.node.get_logger().warn("\non_enter_Final")
