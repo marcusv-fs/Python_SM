@@ -438,6 +438,28 @@ def wait_for_heartbeat(vehicle, timeout=5):
         #print(f"Falha ao receber heartbeat: {e}")
         exit(1)
         return 2
+    
+def get_local_position(vehicle, timeout=5):
+    """
+    Aguarda e retorna a posição loca (X, Y, Z).
+
+    Args:
+        vehicle: objeto pymavlink (mavutil.mavlink_connection).
+        timeout (int): tempo máximo para aguardar a mensagem (em segundos).
+
+    Returns:
+        dict ou None: dicionário com 'X', 'Y', 'Z' em graus/metros, ou None se timeout.
+    """
+    try:
+        pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
+        if pos_msg is None:
+            #print("Timeout ao receber GLOBAL_POSITION_INT.")
+            return None
+        return pos_msg.x, pos_msg.y, pos_msg.z
+    except Exception as e:
+        #print(f"Erro ao obter posição global: {e}")
+        exit(1)
+        return None
 
 def get_global_position(vehicle, timeout=5):
     """

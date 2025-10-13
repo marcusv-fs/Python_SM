@@ -1,8 +1,252 @@
-import os, time, rclpy, threading
+import os, time, rclpy, threading, math
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
 from std_msgs.msg import UInt8
 import auxFuncs
+from dataclasses import dataclass
+
+@dataclass
+class Position:
+    X: float
+    Y: float
+    Z: float
+
+@dataclass
+class Target:
+    id: int
+    pos: Position
+    visited: bool = False
+    
+class Phase1(GraphMachine):
+    ####################### States Declaration #######################   
+    states = ['Initial', 'Explore', 'SearchForBases', 'GoToBase', 'ApproachToBase', 'LandAndScore', 'TakeOff', 'Final']
+
+    ####################### Transitions Statement  #######################  
+    transitions = [
+        {'trigger': 'Initial_to_Explore', 'source': 'Initial', 'dest': 'Explore', 'before': 'before_Initial_Explore'},
+
+        {'trigger': 'Explore_to_SearchForBases', 'source': 'Explore', 'dest': 'SearchForBases', 'conditions': 'cond_Explore_SearchForBases'},
+        {'trigger': 'Explore_to_Final', 'source': 'Explore', 'dest': 'Final', 'conditions': 'cond_Explore_Final'},
+
+        {'trigger': 'SearchForBases_to_Explore', 'source': 'SearchForBases', 'dest': 'Explore', 'conditions': 'cond_SearchForBases_Explore', 'before': 'before_SearchForBases_Explore'},
+        {'trigger': 'SearchForBases_to_GoToBase', 'source': 'SearchForBases', 'dest': 'GoToBase', 'conditions': 'cond_SearchForBases_GoToBase', 'before': 'before_SearchForBases_GoToBase'},
+
+        {'trigger': 'GoToBase_to_ApproachToBase', 'source': 'GoToBase', 'dest': 'ApproachToBase'},
+
+        {'trigger': 'ApproachToBase_to_ApproachToBase', 'source': 'ApproachToBase', 'dest': 'ApproachToBase', 'conditions': 'cond_ApproachToBase_ApproachToBase', 'before': 'before_ApproachToBase_ApproachToBase'},
+        {'trigger': 'ApproachToBase_to_LandAndScore', 'source': 'ApproachToBase', 'dest': 'LandAndScore', 'conditions': 'cond_ApproachToBase_LandAndScore'},
+
+        {'trigger': 'LandAndScore_to_TakeOff', 'source': 'LandAndScore', 'dest': 'TakeOff'},
+
+        {'trigger': 'TakeOff_to_Explore', 'source': 'TakeOff', 'dest': 'Explore', 'conditions': 'cond_TakeOff_Explore'},
+        {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final', 'conditions': 'cond_TakeOff_Final'},
+    ]
+
+    def __init__(self, node: Node, uav):    
+        super().__init__(
+            model=self,
+            name="Phase1",
+            states=self.states,
+            transitions=self.transitions,
+            initial='Initial',
+            auto_transitions=False,
+            show_conditions=True,
+            show_state_attributes=True
+        )
+
+        self.uav = uav
+        self.finished = False
+        self.node = node
+        self.start_time = time.time()
+
+        self.count = 0
+        self.visitedBases = 0
+        self.bases: list[Target] = []
+        self.defPos = [Position(1,1,4), Position(2,2,4), Position(3,3,4)]
+        self.basePos = Position(0,0,0)
+        self.dronePos = Position(0,0,0)
+        self.distToTarget = 0.0
+
+        self.MAX_ATTEMPT = 3
+        self.SAFE_DISTANCE = 0.5
+
+        ####################### Draw State Machine ######################
+        try:
+            out_dir = 'Pytransitions/ROS2JJ/src/FRTL/FRTL/Data/'
+            os.makedirs(out_dir, exist_ok=True)
+            
+            self.get_graph().draw(os.path.join(out_dir, 'Phase1.canon'), prog='dot')
+            self.get_graph().draw(os.path.join(out_dir, 'Phase1.png'), prog='dot')
+
+        except Exception as e:
+            self.node.get_logger().error(f"Não foi possível gerar diagrama: {e}")
+
+####################### Mission Functions ####################### 
+    def move(self, pos: Position):
+        print("Moving to new Position...")
+        auxFuncs.move_to_relative(self.uav, self.start_time, pos.X, pos.Y, pos.Z, 0)
+
+    def SearchForBases(self):
+        Targets = [
+            Target(id=1, pos=Position(4.0, 4.0, 0.0)),
+            Target(id=2, pos=Position(2.5, 2.0, 0.0)),
+            Target(id=3, pos=Position(-2.3, 1.0, 0.0)),
+            Target(id=4, pos=Position(3.0, -1.5, 0.0)),
+            Target(id=5, pos=Position(0.5, 3.2, 0.0)),
+        ]
+        for base in Targets:
+            self.bases.append(base)
+    
+    def SearchNearestBase(self):
+        self.basePos = self.bases[self.visitedBases].pos
+    
+    def updateDronePos(self):
+        try:
+            pos = auxFuncs.get_local_position(self.uav, 5)
+            if pos is not None:
+                self.dronePos.X, self.dronePos.Y, self.dronePos.Z = pos
+            else:
+                raise ValueError("get_local_position returned None")
+        except Exception as e:
+            print(f"Erro ao atualizar a posição do drone: {e}")
+            auxFuncs.set_mode(self.machine.uav, "EMERGENCY")
+            exit(1)
+
+    def calcDist(self, basePos: Position, dronePos: Position):
+        return math.sqrt(
+        (basePos.X - dronePos.X) ** 2 +
+        (basePos.Y - dronePos.Y) ** 2
+    )
+
+    def markVisitedBases(self, current_position: Position):
+        closestBaseID = 0
+        dist = 9999999
+        for base in self.bases:
+            auxDist = self.calcDist(base.pos, current_position)
+            if dist < auxDist:
+                dist = auxDist
+                closestBaseID = base.id
+            
+        for base in self.bases:
+            if closestBaseID == base.id:
+                base.visited = True
+
+####################### Transition Conditions ####################### 
+    def cond_Explore_SearchForBases(self):
+        if self.count <= self.MAX_ATTEMPT:
+            return True
+        return False
+    
+    def cond_Explore_Final(self):
+        if self.count > self.MAX_ATTEMPT:
+            return True
+        return False
+
+    def cond_SearchForBases_Explore(self):
+        if len(self.bases) == 0:
+            return True
+        return False
+            
+    def cond_SearchForBases_GoToBase(self):
+        if len(self.bases) != 0:
+            return True
+        return False
+    
+    def cond_ApproachToBase_ApproachToBase(self):
+        if (self.distToTarget >= self.SAFE_DISTANCE):
+            return True
+        return False
+    
+    def cond_ApproachToBase_LandAndScore(self):
+        if (self.distToTarget < self.SAFE_DISTANCE):
+            return True
+        return False
+    
+    def cond_TakeOff_Explore(self):
+        if (self.visitedBases < 5):
+            return True
+        return False
+    
+    def cond_TakeOff_Final(self):
+        if (self.visitedBases >= 5):
+            return True
+        return False
+    
+    ####################### Before Transitions ####################### 
+    def before_Initial_Explore(self):
+        self.count = 1
+        self.visitedBases = 0
+
+    def before_SearchForBases_Explore(self):
+        self.count += 1
+        time.sleep(1)
+
+    def before_SearchForBases_GoToBase(self):
+        self.count = 1
+
+    def before_ApproachToBase_ApproachToBase(self):
+        self.move(self.basePos)
+        time.sleep(1)
+
+    ####################### On_enter States #######################         
+    def on_enter_Explore(self):
+        pass
+
+    def on_enter_SearchForBases(self):
+        self.node.get_logger().warn("on_enter_SearchForBases")
+        self.SearchForBases()
+
+    def on_enter_GoToBase(self):
+        self.node.get_logger().warn("on_enter_GoToBase")
+        self.basePos = self.bases[self.visitedBases].pos
+        self.move(self.basePos)
+        time.sleep(1)
+
+    def on_enter_ApproachToBase(self):
+        self.node.get_logger().warn("on_enter_ApproachToBase")
+        self.SearchNearestBase()
+        self.updateDronePos()
+        self.distToTarget = self.calcDist(self.basePos, self.dronePos)
+
+    def on_enter_LandAndScore(self):
+        self.node.get_logger().warn("on_enter_LandAndScore")
+        print("Landing...")
+        auxFuncs.land_and_disarm(self.uav)
+        time.sleep(1)
+        print("Update DronePos and markVisitedBases...")
+        self.updateDronePos()
+        self.markVisitedBases(self.dronePos)
+        self.visitedBases += 1
+
+    def on_enter_TakeOFF(self):
+        self.node.get_logger().warn("on_enter_TakeOff")
+        print("Changing to Guided...")
+        auxFuncs.set_mode(self.uav, "GUIDED")
+        time.sleep(1)
+        print("Arming...")
+        auxFuncs.arm_drone(self.uav)
+        time.sleep(1)
+        print("TakingOff...")
+        auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
+
+    ####################### run #######################   
+    def run(self):
+        while not self.finished:
+            self.tock = 1
+            for transition in self.transitions:
+                if self.state in str(transition.get("source")):
+                    if self.may_trigger(transition.get("trigger")):
+                        self.tock = 0
+                        self.node.get_logger().warn(f"Transition triggered: {transition.get("trigger")}")
+                        self.trigger(transition.get("trigger"))
+            
+            print(self.state)
+            
+            if self.tock == 1:
+                print("tock -> ")
+                time.sleep(0.5) 
+            else:
+                self.node.get_logger().warn("Not Tock")
 
 class FRTL(GraphMachine):
 ####################### States Declaration #######################   
@@ -85,20 +329,6 @@ class FRTL(GraphMachine):
         auxFuncs.move_to_gps_absolute(self.uav, self.start_time, self.home_pos['lat'], self.home_pos['lon'], 4, 0)
         auxFuncs.land_and_disarm(self.uav)
 
-####################### Mission Functions ####################### 
-    def exec_mission(self):
-        print("Landing...")
-        auxFuncs.land_and_disarm(self.uav)
-        time.sleep(1)
-        auxFuncs.set_mode(self.uav, "GUIDED")
-        time.sleep(1)
-        auxFuncs.arm_drone(self.uav)
-        print("Arming...")
-        time.sleep(1)
-        print("Taking Off...")
-        auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
-
-
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
         self.node.get_logger().warn("on_enter_Connect")
@@ -123,23 +353,16 @@ class FRTL(GraphMachine):
 
     def on_enter_Phases(self):
         self.node.get_logger().warn("on_enter_Phases")
-        print("Going towards first point...")
-        auxFuncs.move_to_relative(self.uav, self.start_time, -5, 5, 0, 0)
-        print(" Reached position 1")
-        self.exec_mission()
-
-        print("Going towards first point...")
-        auxFuncs.move_to_relative(self.uav, self.start_time, 10, -10, 0, 0)
-        print(" Reached position 2")
-        self.exec_mission()
-
-
+        if self.phase == 1:
+            mission = Phase1(self.node, self.uav)
+            mission.run()
 
     def on_enter_Final(self):
         self.node.get_logger().warn("on_enter_Final")
         auxFuncs.close_connection(self.uav)
         self.finished = True
 
+####################### run #######################   
     def run(self):
         while not self.finished:
             self.tock = 1
