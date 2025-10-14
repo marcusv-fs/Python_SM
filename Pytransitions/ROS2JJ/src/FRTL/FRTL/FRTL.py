@@ -5,6 +5,9 @@ from std_msgs.msg import UInt8
 import auxFuncs
 from dataclasses import dataclass
 
+global TARGET_HEIGHT
+TARGET_HEIGHT = 4
+
 @dataclass
 class Position:
     X: float
@@ -42,7 +45,7 @@ class Phase1(GraphMachine):
         {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final', 'conditions': 'cond_TakeOff_Final'},
     ]
 
-    def __init__(self, node: Node, uav):    
+    def __init__(self, node: Node, uav, home_pos):    
         super().__init__(
             model=self,
             name="Phase1",
@@ -55,6 +58,8 @@ class Phase1(GraphMachine):
         )
 
         self.uav = uav
+        self.targetHeight = TARGET_HEIGHT
+        self.home_pos = home_pos
         self.finished = False
         self.node = node
         self.start_time = time.time()
@@ -87,18 +92,29 @@ class Phase1(GraphMachine):
         auxFuncs.move_to_relative(self.uav, self.start_time, pos.X, pos.Y, pos.Z, 0)
 
     def SearchForBases(self):
-        Targets = [
-            Target(id=1, pos=Position(4.0, 4.0, 0.0)),
-            Target(id=2, pos=Position(2.5, 2.0, 0.0)),
-            Target(id=3, pos=Position(-2.3, 1.0, 0.0)),
-            Target(id=4, pos=Position(3.0, -1.5, 0.0)),
-            Target(id=5, pos=Position(0.5, 3.2, 0.0)),
-        ]
-        for base in Targets:
-            self.bases.append(base)
+        if self.visitedBases < 1:
+            Targets = [
+                Target(id=1, pos=Position((4.0 + self.dronePos.X), (4.0 + self.dronePos.Y), 0.0)),
+                Target(id=2, pos=Position((-2.5 + self.dronePos.X), (3.90 + self.dronePos.Y), 0.0)),
+                Target(id=3, pos=Position((4.0 + self.dronePos.X), (-3 + self.dronePos.Y), 0.0)),
+                Target(id=4, pos=Position((-2.5 + self.dronePos.X), (-2.5 + self.dronePos.Y), 0.0)),
+                Target(id=5, pos=Position((2.0 + self.dronePos.X), (2.0 + self.dronePos.Y), 0.0)),
+            ]
+            for base in Targets:
+                self.bases.append(base)
     
     def SearchNearestBase(self):
-        self.basePos = self.bases[self.visitedBases].pos
+        X = self.bases[self.visitedBases].pos.X - self.dronePos.X
+        Y = self.bases[self.visitedBases].pos.Y - self.dronePos.Y
+        Z = self.bases[self.visitedBases].pos.Z
+
+        basePosError = Position(X , Y, Z)
+
+        print(f"dronePos: {self.dronePos}")
+        print(f"basePos: {self.basePos}")
+        print(f"basePosError: {basePosError}")
+
+        self.basePos = basePosError
     
     def updateDronePos(self):
         try:
@@ -114,6 +130,12 @@ class Phase1(GraphMachine):
 
     def calcDist(self, basePos: Position, dronePos: Position):
         return math.sqrt(
+        (basePos.X) ** 2 +
+        (basePos.Y) ** 2
+    )
+
+    def calcDist2(self, basePos: Position, dronePos: Position):
+        return math.sqrt(
         (basePos.X - dronePos.X) ** 2 +
         (basePos.Y - dronePos.Y) ** 2
     )
@@ -122,8 +144,8 @@ class Phase1(GraphMachine):
         closestBaseID = 0
         dist = 9999999
         for base in self.bases:
-            auxDist = self.calcDist(base.pos, current_position)
-            if dist < auxDist:
+            auxDist = self.calcDist2(base.pos, current_position)
+            if dist > auxDist:
                 dist = auxDist
                 closestBaseID = base.id
             
@@ -193,23 +215,24 @@ class Phase1(GraphMachine):
         pass
 
     def on_enter_SearchForBases(self):
-        self.node.get_logger().warn("on_enter_SearchForBases")
+        self.node.get_logger().info("on_enter_SearchForBases")
         self.SearchForBases()
 
     def on_enter_GoToBase(self):
-        self.node.get_logger().warn("on_enter_GoToBase")
+        self.node.get_logger().info("on_enter_GoToBase")
         self.basePos = self.bases[self.visitedBases].pos
         self.move(self.basePos)
         time.sleep(1)
 
     def on_enter_ApproachToBase(self):
-        self.node.get_logger().warn("on_enter_ApproachToBase")
-        self.SearchNearestBase()
+        self.node.get_logger().info("on_enter_ApproachToBase")
         self.updateDronePos()
+        self.SearchNearestBase()
         self.distToTarget = self.calcDist(self.basePos, self.dronePos)
+        print({self.distToTarget})
 
     def on_enter_LandAndScore(self):
-        self.node.get_logger().warn("on_enter_LandAndScore")
+        self.node.get_logger().info("on_enter_LandAndScore")
         print("Landing...")
         auxFuncs.land_and_disarm(self.uav)
         time.sleep(1)
@@ -218,16 +241,21 @@ class Phase1(GraphMachine):
         self.markVisitedBases(self.dronePos)
         self.visitedBases += 1
 
-    def on_enter_TakeOFF(self):
-        self.node.get_logger().warn("on_enter_TakeOff")
+    def on_enter_TakeOff(self):
+        self.node.get_logger().info("on_enter_TakeOff")
         print("Changing to Guided...")
         auxFuncs.set_mode(self.uav, "GUIDED")
         time.sleep(1)
         print("Arming...")
         auxFuncs.arm_drone(self.uav)
-        time.sleep(1)
+        time.sleep(2)
         print("TakingOff...")
         auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
+
+    def on_enter_Final(self):
+        self.node.get_logger().info("on_enter_Phase1_Final")
+        self.finished = True
+    
 
     ####################### run #######################   
     def run(self):
@@ -237,7 +265,7 @@ class Phase1(GraphMachine):
                 if self.state in str(transition.get("source")):
                     if self.may_trigger(transition.get("trigger")):
                         self.tock = 0
-                        self.node.get_logger().warn(f"Transition triggered: {transition.get("trigger")}")
+                        self.node.get_logger().info(f"Transition triggered: {transition.get("trigger")}")
                         self.trigger(transition.get("trigger"))
             
             print(self.state)
@@ -246,7 +274,7 @@ class Phase1(GraphMachine):
                 print("tock -> ")
                 time.sleep(0.5) 
             else:
-                self.node.get_logger().warn("Not Tock")
+                self.node.get_logger().info("Not Tock")
 
 class FRTL(GraphMachine):
 ####################### States Declaration #######################   
@@ -286,7 +314,7 @@ class FRTL(GraphMachine):
         self.connectionState = 0 
         self.phase = 0
         self.connectionTrys = 0
-        self.targetHeight = 4
+        self.targetHeight = TARGET_HEIGHT
 
         self.trigger_start = False
 
@@ -331,34 +359,34 @@ class FRTL(GraphMachine):
 
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
-        self.node.get_logger().warn("on_enter_Connect")
+        self.node.get_logger().info("on_enter_Connect")
         self.uav = auxFuncs.connect_drone(self.connection_string)
         self.connectionState = auxFuncs.wait_for_heartbeat(self.uav)
 
     def on_enter_Wait(self):
-        self.node.get_logger().warn("on_enter_Wait")
+        self.node.get_logger().info("on_enter_Wait")
         auxFuncs.set_home_to_current_position(self.uav)
         self.home_pos = auxFuncs.get_home_position(self.uav)
         print("Waiting for start...\n")
 
     def on_enter_StartEngines(self):
-        self.node.get_logger().warn("on_enter_StartEngines")
+        self.node.get_logger().info("on_enter_StartEngines")
         auxFuncs.set_mode(self.uav, "GUIDED")
         auxFuncs.arm_drone(self.uav)
         time.sleep(1)
 
     def on_enter_TakeOff(self):
-        self.node.get_logger().warn("on_enter_TakeOff")
+        self.node.get_logger().info("on_enter_TakeOff")
         auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
 
     def on_enter_Phases(self):
-        self.node.get_logger().warn("on_enter_Phases")
+        self.node.get_logger().info("on_enter_Phases")
         if self.phase == 1:
-            mission = Phase1(self.node, self.uav)
+            mission = Phase1(self.node, self.uav, self.home_pos)
             mission.run()
 
     def on_enter_Final(self):
-        self.node.get_logger().warn("on_enter_Final")
+        self.node.get_logger().info("on_enter_Final")
         auxFuncs.close_connection(self.uav)
         self.finished = True
 
@@ -378,7 +406,7 @@ class FRTL(GraphMachine):
                 print("tock -> ")
                 time.sleep(0.5) 
             else:
-                self.node.get_logger().warn("Not Tock")
+                self.node.get_logger().info("Not Tock")
 
 class FrtlNode(Node):
     def __init__(self):
