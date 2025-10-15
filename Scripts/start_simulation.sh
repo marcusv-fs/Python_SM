@@ -5,7 +5,7 @@ echo "Iniciando simulação ArduCopter..."
 # 1. Gazebo
 gnome-terminal -- bash -i -c "
   export GZ_SIM_RESOURCE_PATH=\$HOME/gz_ws/src/ardupilot_gazebo/models:\$HOME/gz_ws/src/ardupilot_gazebo/worlds:\${GZ_SIM_RESOURCE_PATH};
-  gz sim -v4 -r iris_runway.sdf; exit
+  gz sim -v4 -r FRTL/FRTL_World.sdf; exit
 "
 
 # 2. ArduCopter SITL
