@@ -2,31 +2,19 @@
 <sdf version="1.8">
   <world name="FRTL_World">
 
-        <physics name="1ms" type="ignore">
+    <physics name="1ms" type="ignore">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
 
-    <plugin filename="gz-sim-physics-system"
-      name="gz::sim::systems::Physics">
-    </plugin>
-    <plugin
-      filename="gz-sim-sensors-system"
-      name="gz::sim::systems::Sensors">
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
       <render_engine>ogre2</render_engine>
     </plugin>
-    <plugin filename="gz-sim-user-commands-system"
-      name="gz::sim::systems::UserCommands">
-    </plugin>
-    <plugin filename="gz-sim-scene-broadcaster-system"
-      name="gz::sim::systems::SceneBroadcaster">
-    </plugin>
-    <plugin filename="gz-sim-imu-system"
-      name="gz::sim::systems::Imu">
-    </plugin>
-    <plugin filename="gz-sim-navsat-system"
-      name="gz::sim::systems::NavSat">
-    </plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"></plugin>
+    <plugin filename="gz-sim-navsat-system" name="gz::sim::systems::NavSat"></plugin>
 
     <scene>
       <ambient>1.0 1.0 1.0</ambient>
@@ -111,123 +99,12 @@
       </link>
     </model>
 
-    <model name="Arena">
-      <static>true</static> 
-      <link name="testlink">
-        <visual name="Cubo">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BG001.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <visual name="Cubo.001">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.001</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BP001.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <visual name="Cubo.002">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.002</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BP002.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <visual name="Cubo.003">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.003</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BP002.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <visual name="Cubo.004">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.004</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BP002.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <visual name="Cubo.005">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.005</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/BP002.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
+    <!-- Modelos individuais para cada elemento -->
+
+    <!-- Chao -->
+    <model name="chao">
+      <static>true</static>
+      <link name="link">
         <visual name="Plano">
           <geometry>
             <mesh>
@@ -247,6 +124,23 @@
             </pbr>
           </material>
         </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Plano</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Parede 1 -->
+    <model name="parede_1">
+      <static>true</static>
+      <link name="link">
         <visual name="Plano.001">
           <geometry>
             <mesh>
@@ -266,6 +160,23 @@
             </pbr>
           </material>
         </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Plano.001</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Parede 2 -->
+    <model name="parede_2">
+      <static>true</static>
+      <link name="link">
         <visual name="Plano.002">
           <geometry>
             <mesh>
@@ -285,18 +196,234 @@
             </pbr>
           </material>
         </visual>
-        
-        <!-- COLLISION CORRIGIDO -->
         <collision name="collision">
           <geometry>
             <mesh>
               <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Plano.002</name>
+              </submesh>
             </mesh>
           </geometry>
         </collision>
       </link>
     </model>
 
+    <!-- Cubo 1 -->
+    <model name="cubo_1">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BG001.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Cubo 2 -->
+    <model name="cubo_2">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo.001">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.001</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BP001.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.001</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Cubo 3 -->
+    <model name="cubo_3">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo.002">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.002</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BP002.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.002</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Cubo 4 -->
+    <model name="cubo_4">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo.003">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.003</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BP002.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.003</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Cubo 5 -->
+    <model name="cubo_5">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo.004">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.004</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BP002.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.004</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
+
+    <!-- Cubo 6 -->
+    <model name="cubo_6">
+      <static>true</static>
+      <link name="link">
+        <visual name="Cubo.005">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.005</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/BP002.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Cubo.005</name>
+              </submesh>
+            </mesh>
+          </geometry>
+        </collision>
+      </link>
+    </model>
 
     <include>
       <uri>model://iris_with_gimbal</uri>
