@@ -366,10 +366,10 @@ def takeoff_relative(vehicle, tg_altitude=10, home_altitude = 0):
                 if(cont > 20):
                     print("ERRORRRRR")
                     cont = 0
-                    move_to_relative(vehicle, time.time(), 0, 0, tg_altitude + 0.5, 0)
-                    time.sleep(2)
+                    move_to_relative(vehicle, time.time(), 0, 0, tg_altitude + 0.1, 0)
+                    cont = 0
 
-                time.sleep(1)
+                time.sleep(0.2)
                 cont += 1
             except:
                 #print("Error while getting Height")
@@ -643,7 +643,7 @@ def land_and_disarm(vehicle):
             0           # Altitude = atual
         )
         # #print("Comando de pouso enviado. Aguardando pouso...")
-        timeout = 120 
+        timeout = 15 
         start_time = time.time()
         landed = False
         

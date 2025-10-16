@@ -6,7 +6,7 @@ import auxFuncs
 from dataclasses import dataclass
 
 global TARGET_HEIGHT
-TARGET_HEIGHT = 4
+TARGET_HEIGHT = 3
 
 @dataclass
 class Position:
@@ -94,11 +94,11 @@ class Phase1(GraphMachine):
     def SearchForBases(self):
         if self.visitedBases < 1:
             Targets = [
-                Target(id=1, pos=Position((4.0 + self.dronePos.X), (4.0 + self.dronePos.Y), 0.0)),
-                Target(id=2, pos=Position((-2.5 + self.dronePos.X), (3.90 + self.dronePos.Y), 0.0)),
-                Target(id=3, pos=Position((4.0 + self.dronePos.X), (-3 + self.dronePos.Y), 0.0)),
-                Target(id=4, pos=Position((-2.5 + self.dronePos.X), (-2.5 + self.dronePos.Y), 0.0)),
-                Target(id=5, pos=Position((2.0 + self.dronePos.X), (2.0 + self.dronePos.Y), 0.0)),
+                Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
+                Target(id=2, pos=Position((4.5 + self.dronePos.X), (-3.0 + self.dronePos.Y), 0.0)),
+                Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0)),
+                Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
+                Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
             ]
             for base in Targets:
                 self.bases.append(base)
@@ -108,7 +108,7 @@ class Phase1(GraphMachine):
         Y = self.bases[self.visitedBases].pos.Y - self.dronePos.Y
         Z = self.bases[self.visitedBases].pos.Z
 
-        basePosError = Position(X , Y, Z)
+        basePosError = Position(0 , 0, 0)
 
         print(f"dronePos: {self.dronePos}")
         print(f"basePos: {self.basePos}")
