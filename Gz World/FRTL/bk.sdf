@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <world name="FRTL_World">
-    <physics name="1ms" type="ignore">
+
+        <physics name="1ms" type="ignore">
       <max_step_size>0.001</max_step_size>
       <real_time_factor>1.0</real_time_factor>
     </physics>
@@ -110,118 +111,9 @@
       </link>
     </model>
 
-    <!-- Chao -->
-    <model name="chao">
-      <static>true</static>
-      <link name="link">
-        <visual name="Plano">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/Chao.png</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Parede 1 -->
-    <model name="parede_1">
-      <static>true</static>
-      <link name="link">
-        <visual name="Plano.001">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano.001</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/Parede.jpeg</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano.001</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Parede 2 -->
-    <model name="parede_2">
-      <static>true</static>
-      <link name="link">
-        <visual name="Plano.002">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano.002</name>
-              </submesh>
-            </mesh>
-          </geometry>
-          <material>
-            <diffuse>1.0 1.0 1.0 1.0</diffuse>
-            <specular>0.0 0.0 0.0 1.0</specular>
-            <pbr>
-              <metal>
-                <albedo_map>meshes/Parede.jpeg</albedo_map>
-              </metal>
-            </pbr>
-          </material>
-        </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Plano.002</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 1 -->
-    <model name="cubo_1">
-      <static>true</static>
-      <link name="link">
+    <model name="Arena">
+      <static>true</static> 
+      <link name="testlink">
         <visual name="Cubo">
           <geometry>
             <mesh>
@@ -241,23 +133,6 @@
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 2 -->
-    <model name="cubo_2">
-      <static>true</static>
-      <link name="link">
         <visual name="Cubo.001">
           <geometry>
             <mesh>
@@ -277,23 +152,6 @@
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.001</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 3 -->
-    <model name="cubo_3">
-      <static>true</static>
-      <link name="link">
         <visual name="Cubo.002">
           <geometry>
             <mesh>
@@ -313,23 +171,6 @@
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.002</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 4 -->
-    <model name="cubo_4">
-      <static>true</static>
-      <link name="link">
         <visual name="Cubo.003">
           <geometry>
             <mesh>
@@ -344,28 +185,11 @@
             <specular>0.0 0.0 0.0 1.0</specular>
             <pbr>
               <metal>
-                <albedo_map>meshes/BP003.png</albedo_map>
+                <albedo_map>meshes/BP002.png</albedo_map>
               </metal>
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.003</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 5 -->
-    <model name="cubo_5">
-      <static>true</static>
-      <link name="link">
         <visual name="Cubo.004">
           <geometry>
             <mesh>
@@ -380,28 +204,11 @@
             <specular>0.0 0.0 0.0 1.0</specular>
             <pbr>
               <metal>
-                <albedo_map>meshes/BP004.png</albedo_map>
+                <albedo_map>meshes/BP002.png</albedo_map>
               </metal>
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
-          <geometry>
-            <mesh>
-              <uri>FRTL_World.dae</uri>
-              <submesh>
-                <name>Cubo.004</name>
-              </submesh>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-
-    <!-- Cubo 6 -->
-    <model name="cubo_6">
-      <static>true</static>
-      <link name="link">
         <visual name="Cubo.005">
           <geometry>
             <mesh>
@@ -416,27 +223,84 @@
             <specular>0.0 0.0 0.0 1.0</specular>
             <pbr>
               <metal>
-                <albedo_map>meshes/BP005.png</albedo_map>
+                <albedo_map>meshes/BP002.png</albedo_map>
               </metal>
             </pbr>
           </material>
         </visual>
-        <collision name="collision">
+        <visual name="Plano">
           <geometry>
             <mesh>
               <uri>FRTL_World.dae</uri>
               <submesh>
-                <name>Cubo.005</name>
+                <name>Plano</name>
               </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/Chao.png</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name="Plano.001">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Plano.001</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/Parede.jpeg</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        <visual name="Plano.002">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
+              <submesh>
+                <name>Plano.002</name>
+              </submesh>
+            </mesh>
+          </geometry>
+          <material>
+            <diffuse>1.0 1.0 1.0 1.0</diffuse>
+            <specular>0.0 0.0 0.0 1.0</specular>
+            <pbr>
+              <metal>
+                <albedo_map>meshes/Parede.jpeg</albedo_map>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+        
+        <!-- COLLISION CORRIGIDO -->
+        <collision name="collision">
+          <geometry>
+            <mesh>
+              <uri>FRTL_World.dae</uri>
             </mesh>
           </geometry>
         </collision>
       </link>
     </model>
 
+
     <include>
       <uri>model://iris_with_gimbal</uri>
-      <pose degrees="true"> 5 4 0.91 0 0 90</pose>
+      <pose degrees="true"> 5 4 0.81 0 0 90</pose>
     </include>
 
   </world>
