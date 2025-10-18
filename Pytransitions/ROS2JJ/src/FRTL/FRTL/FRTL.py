@@ -235,7 +235,7 @@ class Phase1(GraphMachine):
         self.node.get_logger().info("on_enter_LandAndScore")
         print("Landing...")
         auxFuncs.land_and_disarm(self.uav)
-        time.sleep(1)
+        time.sleep(5)
         print("Update DronePos and markVisitedBases...")
         self.updateDronePos()
         self.markVisitedBases(self.dronePos)
@@ -267,14 +267,9 @@ class Phase1(GraphMachine):
                         self.tock = 0
                         self.node.get_logger().info(f"Transition triggered: {transition.get("trigger")}")
                         self.trigger(transition.get("trigger"))
-            
-            print(self.state)
-            
             if self.tock == 1:
                 print("tock -> ")
                 time.sleep(0.5) 
-            else:
-                self.node.get_logger().info("Not Tock")
 
 class FRTL(GraphMachine):
 ####################### States Declaration #######################   

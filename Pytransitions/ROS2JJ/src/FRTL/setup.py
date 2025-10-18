@@ -20,7 +20,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'PMSMROS = Drone.PMSMROS:main'
         ],
     },
 )
