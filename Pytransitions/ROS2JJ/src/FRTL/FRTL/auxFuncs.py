@@ -2,6 +2,10 @@ import math
 import time
 from pymavlink import mavutil  # type: ignore
 
+uav[]
+
+drone[drone]
+
 def connect_drone(connection_string, baudrate=115200, timeout=30):
     """
     Conecta a um drone usando pymavlink.
@@ -643,7 +647,7 @@ def land_and_disarm(vehicle):
             0           # Altitude = atual
         )
         # #print("Comando de pouso enviado. Aguardando pouso...")
-        timeout = 15 
+        timeout = 50 
         start_time = time.time()
         landed = False
         
