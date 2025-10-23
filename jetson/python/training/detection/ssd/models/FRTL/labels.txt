@@ -1,4 +1,0 @@
-BACKGROUND
-bases
-small_base
-large_base
