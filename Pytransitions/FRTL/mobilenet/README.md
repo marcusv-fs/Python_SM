@@ -7,3 +7,13 @@ This repo implements [SSD (Single Shot MultiBox Detector)](https://arxiv.org/abs
 
 Thanks to @qfgaohao for the upstream implementation from:  [https://github.com/qfgaohao/pytorch-ssd](https://github.com/qfgaohao/pytorch-ssd)
 
+
+Como treinar
+python3 train_ssd.py --dataset-type=voc --data=data/FRTL --model-dir=models/FRTL --epochs 120 --pretrained-ssd="models/mobilenet-v1-ssd-mp-0_675_1.pth"
+
+Para avaliar
+python eval_ssd.py --net mb1-ssd --model models/FRTL/[REDE] --dataset data/FRTL
+
+Após, exporte para onnx
+python onnx_export.py   --net mb1-ssd   --model-dir models/FRTL   --labels models/FRTL/labels.txt   --width 300   --height 300
+
