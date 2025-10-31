@@ -1,0 +1,188 @@
+interface IPlatOps {
+	startEngines ( )
+	takeOff ( )
+tryToConnect ( )
+backHome ( )
+move ( pos : Position )
+land ( )
+}
+
+interface IEvents {
+	event start : int
+event connection_res : int
+event takePicture : Image
+}
+
+interface IPhases {
+	Phase1 ( )
+	Phase2 ( )
+	Phase3 ( )
+	Phase4 ( )
+}
+
+interface Vision {
+	SearchBases (img: Image)
+	SearchNearestBase (img: Image)
+}
+
+interface MapBases {
+	isBaseVisited (pos: Position )
+	markVisitedBase ( pos : Position)
+updateDronePos ( )
+updateBasePos (base : Target)
+}
+
+robotic platform UAV {
+	uses IEvents provides IPlatOps }
+
+datatype Position {   X : real Y : real Z : real } datatype Target { pos : Position id : int visited : boolean } datatype Image { RGB : string } 
+
+stm FRTL {
+	uses IEvents requires IPlatOps var connectionState : int = 0
+	var phase : int
+	initial i0
+	final f0
+	state Connect {
+	entry tryToConnect ( ) ; wait ( 1 )
+	}
+	state Wait {
+	}
+	state StartEngines {
+	entry startEngines ( ) ; wait ( 1 )
+	}
+	state TakeOff {
+	entry takeOff ( ) ; wait ( 1 )
+	}
+	state Phases {
+	entry if phase == 1 then Phase1 ( ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( ) else if phase == 4 then Phase4 ( ) end end end end
+	}
+	transition t0 {
+		from i0
+		to Connect
+	}
+	transition t1 {
+		from Connect
+		to Wait
+	trigger connection_res ? connectionState
+		condition connectionState == 1
+	}
+	transition t2 {
+		from Wait
+		to StartEngines
+	trigger 
+	start ? phase
+	}
+	transition t3 {
+		from StartEngines
+		to TakeOff
+	}
+	transition t4 {
+		from TakeOff
+		to Phases
+	}
+	transition t5 {
+		from Phases
+		to f0
+	action backHome ( )
+	}
+requires IPhases var connectionTrys : int = 0
+	const targetHeight : int = 4
+	transition t6 {
+		from Connect
+		to f0
+		trigger connection_res ? connectionState
+		condition connectionTrys >= 3 /\ not connectionState == 1
+	}
+	transition t7 {
+		from Connect
+		to Connect
+		trigger connection_res ? connectionState
+		condition not connectionState == 1 /\ connectionTrys < 3
+		action connectionTrys = connectionTrys + 1
+	}
+}
+
+operation Phase1 ( ) {
+requires Vision requires MapBases requires IPlatOps const MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
+	initial i0
+uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
+	state Explore {
+	}
+	state SearchForBases {
+		entry SearchBases (img)
+	}
+	transition t0 {
+		from i0
+		to Explore
+		action count = 1 ; visitedBases = 0
+	}
+	transition t1 {
+		from Explore
+		to SearchForBases
+		trigger takePicture ? img
+		condition count <= MAX_ATTEMPT
+	}
+	transition t2 {
+		from SearchForBases
+		to Explore
+	condition isEmpty ( bases )
+		action 
+	move ( defPos [ count ] ) ; wait ( 1 ) ; count = count + 1
+	}
+	state GoToBase {
+		entry basePos = bases [ visitedBases ] . pos ; move ( basePos ) ; wait ( 1 )
+	}
+	transition t3 {
+		from SearchForBases
+		to GoToBase
+		condition not isEmpty ( bases )
+		action count = 1
+	}
+state ApproachToBase {
+		entry takePicture ? img ; updateDronePos ( ) ; SearchNearestBase ( img ) ; distToTarget = calcDist ( basePos , dronePos )
+	}
+state LandAndScore {
+		entry land ( ) ; wait ( 1 ) ; updateDronePos ( ) ; markVisitedBase ( dronePos ) ; visitedBases = visitedBases + 1
+	}
+	final f0
+	transition t4 {
+		from GoToBase
+		to ApproachToBase
+	}
+	transition t5 {
+		from ApproachToBase
+		to ApproachToBase
+		condition distToTarget >= SAFE_DISTANCE
+		action 
+	move ( basePos ) ; wait ( 1 )
+	}
+	transition t6 {
+		from ApproachToBase
+		to LandAndScore
+		condition distToTarget < SAFE_DISTANCE
+	}
+	transition t7 {
+		from LandAndScore
+		to TakeOFf
+		}
+	transition t8 {
+		from TakeOFf
+		to f0
+		condition visitedBases >= 5
+	}
+	transition t9 {
+		from Explore
+		to f0
+		condition count > MAX_ATTEMPT
+	}
+state TakeOFf {
+		entry takeOff ( ) ; wait ( 1 )
+	}
+	transition t10 {
+		from TakeOFf
+		to Explore
+		condition visitedBases < 5
+	}
+}
+
+function isEmpty ( bases : vector ( Target , 6 ) ) : boolean { }  function calcDist( dronePos : Position , basePos : Position ) : real { }

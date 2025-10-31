@@ -1,0 +1,7 @@
+[0.009s] Invoking command in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/build/ROS2_FRTL': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/marcusv-fs/Programacao/ros2_manga/install/prototype_controller:/home/marcusv-fs/Programacao/ros2_manga/install/opencv_tests:/home/marcusv-fs/Programacao/ros2_ws/install/prototype_controller:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/cmake /home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL -DCMAKE_INSTALL_PREFIX=/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL
+[0.015s] -- Configuring incomplete, errors occurred!
+[0.016s] [31mCMake Error at CMakeLists.txt:26:
+[0.017s]   Parse error.  Expected a command name, got unquoted argument with text ".".
+[0.017s] 
+[0.017s] [0m
+[0.018s] Invoked command in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/build/ROS2_FRTL' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/marcusv-fs/Programacao/ros2_manga/install/prototype_controller:/home/marcusv-fs/Programacao/ros2_manga/install/opencv_tests:/home/marcusv-fs/Programacao/ros2_ws/install/prototype_controller:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/cmake /home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL -DCMAKE_INSTALL_PREFIX=/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL

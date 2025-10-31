@@ -151,7 +151,7 @@ class SSDNode(Node):
         super().__init__('ssd_detector')
         self.bridge = CvBridge()
 
-        model_path = "/home/marcusv-fs/Programacao/Python_SM/jetson/python/training/detection/ssd/models/FRTL/mb1-ssd.onnx"
+        model_path = "Pytransitions/FRTL/mobilenet/models/FRTL/mb1-ssd.onnx"
         if not os.path.exists(model_path):
             self.get_logger().error(f"Modelo não encontrado: {model_path}")
             sys.exit(1)

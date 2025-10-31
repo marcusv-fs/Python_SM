@@ -1,0 +1,1363 @@
+[0.109s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build']
+[0.109s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=12, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=None, packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, mixin_files=None, mixin=None, verb_parser=<colcon_mixin.mixin.mixin_argument.MixinArgumentDecorator object at 0x7cc9ceeb2570>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x7cc9ceeb2300>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x7cc9ceeb2300>>, mixin_verb=('build',))
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.145s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.145s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions'
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.145s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['ignore', 'ignore_ament_install']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'ignore'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'ignore_ament_install'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['colcon_pkg']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'colcon_pkg'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['colcon_meta']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'colcon_meta'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['ros']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'ros'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['cmake', 'python']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'cmake'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'python'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extensions ['python_setup_py']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone) by extension 'python_setup_py'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['ignore', 'ignore_ament_install']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'ignore'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'ignore_ament_install'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['colcon_pkg']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'colcon_pkg'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['colcon_meta']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'colcon_meta'
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['ros']
+[0.161s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'ros'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['cmake', 'python']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'cmake'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'python'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extensions ['python_setup_py']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM) by extension 'python_setup_py'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'ignore'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'ignore_ament_install'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['colcon_pkg']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'colcon_pkg'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['colcon_meta']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'colcon_meta'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['ros']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'ros'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['cmake', 'python']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'cmake'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'python'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extensions ['python_setup_py']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/DroneSM/Data) by extension 'python_setup_py'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['ignore', 'ignore_ament_install']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'ignore'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'ignore_ament_install'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['colcon_pkg']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'colcon_pkg'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['colcon_meta']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'colcon_meta'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['ros']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'ros'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['cmake', 'python']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'cmake'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'python'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extensions ['python_setup_py']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM) by extension 'python_setup_py'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'ignore'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'ignore_ament_install'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['colcon_pkg']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'colcon_pkg'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['colcon_meta']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'colcon_meta'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['ros']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'ros'
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['cmake', 'python']
+[0.162s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'cmake'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'python'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extensions ['python_setup_py']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/Data) by extension 'python_setup_py'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'ignore'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'ignore_ament_install'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['colcon_pkg']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'colcon_pkg'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['colcon_meta']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'colcon_meta'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['ros']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'ros'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['cmake', 'python']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'cmake'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'python'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extensions ['python_setup_py']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(Drone/PMSM/__pycache__) by extension 'python_setup_py'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'ignore'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'ignore_ament_install'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['colcon_pkg']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'colcon_pkg'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['colcon_meta']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'colcon_meta'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['ros']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'ros'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['cmake', 'python']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'cmake'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'python'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extensions ['python_setup_py']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL) by extension 'python_setup_py'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'ignore'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'ignore_ament_install'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['colcon_pkg']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'colcon_pkg'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['colcon_meta']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'colcon_meta'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['ros']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'ros'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['cmake', 'python']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'cmake'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'python'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extensions ['python_setup_py']
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Data) by extension 'python_setup_py'
+[0.163s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['ignore', 'ignore_ament_install']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'ignore'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'ignore_ament_install'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['colcon_pkg']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'colcon_pkg'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['colcon_meta']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'colcon_meta'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['ros']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'ros'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['cmake', 'python']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'cmake'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'python'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extensions ['python_setup_py']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World) by extension 'python_setup_py'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'ignore'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'ignore_ament_install'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['colcon_pkg']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'colcon_pkg'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['colcon_meta']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'colcon_meta'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['ros']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'ros'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['cmake', 'python']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'cmake'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'python'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extensions ['python_setup_py']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL) by extension 'python_setup_py'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['ignore', 'ignore_ament_install']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'ignore'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'ignore_ament_install'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['colcon_pkg']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'colcon_pkg'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['colcon_meta']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'colcon_meta'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['ros']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'ros'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['cmake', 'python']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'cmake'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'python'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extensions ['python_setup_py']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/FRTL/meshes) by extension 'python_setup_py'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['ignore', 'ignore_ament_install']
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'ignore'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'ignore_ament_install'
+[0.164s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['colcon_pkg']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'colcon_pkg'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['colcon_meta']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'colcon_meta'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['ros']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'ros'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['cmake', 'python']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'cmake'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'python'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extensions ['python_setup_py']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d) by extension 'python_setup_py'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['ignore', 'ignore_ament_install']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'ignore'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'ignore_ament_install'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['colcon_pkg']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'colcon_pkg'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['colcon_meta']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'colcon_meta'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['ros']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'ros'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['cmake', 'python']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'cmake'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'python'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extensions ['python_setup_py']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Gz World/gimbal_small_3d/meshes) by extension 'python_setup_py'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['ignore', 'ignore_ament_install']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'ignore'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'ignore_ament_install'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['colcon_pkg']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'colcon_pkg'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['colcon_meta']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'colcon_meta'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['ros']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'ros'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['cmake', 'python']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'cmake'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'python'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extensions ['python_setup_py']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart) by extension 'python_setup_py'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'ignore'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'ignore_ament_install'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['colcon_pkg']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'colcon_pkg'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['colcon_meta']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'colcon_meta'
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['ros']
+[0.165s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'ros'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['cmake', 'python']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'cmake'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'python'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extensions ['python_setup_py']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL) by extension 'python_setup_py'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['ignore', 'ignore_ament_install']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'ignore'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'ignore_ament_install'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['colcon_pkg']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'colcon_pkg'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['colcon_meta']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'colcon_meta'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['ros']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'ros'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['cmake', 'python']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'cmake'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'python'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extensions ['python_setup_py']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen) by extension 'python_setup_py'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['ignore', 'ignore_ament_install']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'ignore'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'ignore_ament_install'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['colcon_pkg']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'colcon_pkg'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['colcon_meta']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'colcon_meta'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['ros']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'ros'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['cmake', 'python']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'cmake'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'python'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extensions ['python_setup_py']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/defs) by extension 'python_setup_py'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['ignore', 'ignore_ament_install']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'ignore'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'ignore_ament_install'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['colcon_pkg']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'colcon_pkg'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['colcon_meta']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'colcon_meta'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['ros']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'ros'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['cmake', 'python']
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'cmake'
+[0.166s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'python'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extensions ['python_setup_py']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed) by extension 'python_setup_py'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['ignore', 'ignore_ament_install']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'ignore'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'ignore_ament_install'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['colcon_pkg']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'colcon_pkg'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['colcon_meta']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'colcon_meta'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['ros']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'ros'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['cmake', 'python']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'cmake'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'python'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extensions ['python_setup_py']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Robochart/FRTL/csp-gen/timed/defs) by extension 'python_setup_py'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['ignore', 'ignore_ament_install']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'ignore'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'ignore_ament_install'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['colcon_pkg']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'colcon_pkg'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['colcon_meta']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'colcon_meta'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['ros']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'ros'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['cmake', 'python']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'cmake'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'python'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extensions ['python_setup_py']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/Scripts) by extension 'python_setup_py'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'ignore'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'ignore_ament_install'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['colcon_pkg']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'colcon_pkg'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['colcon_meta']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'colcon_meta'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['ros']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'ros'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['cmake', 'python']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'cmake'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'python'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extensions ['python_setup_py']
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/__pycache__) by extension 'python_setup_py'
+[0.167s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['ignore', 'ignore_ament_install']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'ignore'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'ignore_ament_install'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['colcon_pkg']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'colcon_pkg'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['colcon_meta']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'colcon_meta'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['ros']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'ros'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['cmake', 'python']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'cmake'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'python'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extensions ['python_setup_py']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet) by extension 'python_setup_py'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'ignore'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'ignore_ament_install'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['colcon_pkg']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'colcon_pkg'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['colcon_meta']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'colcon_meta'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['ros']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'ros'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['cmake', 'python']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'cmake'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'python'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extensions ['python_setup_py']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/__pycache__) by extension 'python_setup_py'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['ignore', 'ignore_ament_install']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'ignore'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'ignore_ament_install'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['colcon_pkg']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'colcon_pkg'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['colcon_meta']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'colcon_meta'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['ros']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'ros'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['cmake', 'python']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'cmake'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'python'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extensions ['python_setup_py']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data) by extension 'python_setup_py'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'ignore'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'ignore_ament_install'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['colcon_pkg']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'colcon_pkg'
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['colcon_meta']
+[0.168s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'colcon_meta'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['ros']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'ros'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['cmake', 'python']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'cmake'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'python'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extensions ['python_setup_py']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL) by extension 'python_setup_py'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['ignore', 'ignore_ament_install']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'ignore'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'ignore_ament_install'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['colcon_pkg']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'colcon_pkg'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['colcon_meta']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'colcon_meta'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['ros']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'ros'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['cmake', 'python']
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'cmake'
+[0.169s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'python'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extensions ['python_setup_py']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/Annotations) by extension 'python_setup_py'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['ignore', 'ignore_ament_install']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'ignore'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'ignore_ament_install'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['colcon_pkg']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'colcon_pkg'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['colcon_meta']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'colcon_meta'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['ros']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'ros'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['cmake', 'python']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'cmake'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'python'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extensions ['python_setup_py']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets) by extension 'python_setup_py'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['ignore', 'ignore_ament_install']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'ignore'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'ignore_ament_install'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['colcon_pkg']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'colcon_pkg'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['colcon_meta']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'colcon_meta'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['ros']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'ros'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['cmake', 'python']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'cmake'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'python'
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extensions ['python_setup_py']
+[0.170s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/ImageSets/Main) by extension 'python_setup_py'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['ignore', 'ignore_ament_install']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'ignore'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'ignore_ament_install'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['colcon_pkg']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'colcon_pkg'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['colcon_meta']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'colcon_meta'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['ros']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'ros'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['cmake', 'python']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'cmake'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'python'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extensions ['python_setup_py']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/data/FRTL/JPEGImages) by extension 'python_setup_py'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['ignore', 'ignore_ament_install']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'ignore'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'ignore_ament_install'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['colcon_pkg']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'colcon_pkg'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['colcon_meta']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'colcon_meta'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['ros']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'ros'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['cmake', 'python']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'cmake'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'python'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extensions ['python_setup_py']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models) by extension 'python_setup_py'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'ignore'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'ignore_ament_install'
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['colcon_pkg']
+[0.171s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'colcon_pkg'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['colcon_meta']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'colcon_meta'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['ros']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'ros'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['cmake', 'python']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'cmake'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'python'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extensions ['python_setup_py']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL) by extension 'python_setup_py'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['ignore', 'ignore_ament_install']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'ignore'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'ignore_ament_install'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['colcon_pkg']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'colcon_pkg'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['colcon_meta']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'colcon_meta'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['ros']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'ros'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['cmake', 'python']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'cmake'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'python'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extensions ['python_setup_py']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard) by extension 'python_setup_py'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['ignore', 'ignore_ament_install']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'ignore'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'ignore_ament_install'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['colcon_pkg']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'colcon_pkg'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['colcon_meta']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'colcon_meta'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['ros']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'ros'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['cmake', 'python']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'cmake'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'python'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extensions ['python_setup_py']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103149) by extension 'python_setup_py'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['ignore', 'ignore_ament_install']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'ignore'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'ignore_ament_install'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['colcon_pkg']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'colcon_pkg'
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['colcon_meta']
+[0.172s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'colcon_meta'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['ros']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'ros'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['cmake', 'python']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'cmake'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'python'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extensions ['python_setup_py']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103350) by extension 'python_setup_py'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['ignore', 'ignore_ament_install']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'ignore'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'ignore_ament_install'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['colcon_pkg']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'colcon_pkg'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['colcon_meta']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'colcon_meta'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['ros']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'ros'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['cmake', 'python']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'cmake'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'python'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extensions ['python_setup_py']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103626) by extension 'python_setup_py'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['ignore', 'ignore_ament_install']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'ignore'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'ignore_ament_install'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['colcon_pkg']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'colcon_pkg'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['colcon_meta']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'colcon_meta'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['ros']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'ros'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['cmake', 'python']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'cmake'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'python'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extensions ['python_setup_py']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103722) by extension 'python_setup_py'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['ignore', 'ignore_ament_install']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'ignore'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'ignore_ament_install'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['colcon_pkg']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'colcon_pkg'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['colcon_meta']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'colcon_meta'
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['ros']
+[0.173s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'ros'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['cmake', 'python']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'cmake'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'python'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extensions ['python_setup_py']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_103900) by extension 'python_setup_py'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['ignore', 'ignore_ament_install']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'ignore'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'ignore_ament_install'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['colcon_pkg']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'colcon_pkg'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['colcon_meta']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'colcon_meta'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['ros']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'ros'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['cmake', 'python']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'cmake'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'python'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extensions ['python_setup_py']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104023) by extension 'python_setup_py'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['ignore', 'ignore_ament_install']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'ignore'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'ignore_ament_install'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['colcon_pkg']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'colcon_pkg'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['colcon_meta']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'colcon_meta'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['ros']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'ros'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['cmake', 'python']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'cmake'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'python'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extensions ['python_setup_py']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104727) by extension 'python_setup_py'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['ignore', 'ignore_ament_install']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'ignore'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'ignore_ament_install'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['colcon_pkg']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'colcon_pkg'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['colcon_meta']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'colcon_meta'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['ros']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'ros'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['cmake', 'python']
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'cmake'
+[0.174s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'python'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extensions ['python_setup_py']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_104853) by extension 'python_setup_py'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['ignore', 'ignore_ament_install']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'ignore'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'ignore_ament_install'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['colcon_pkg']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'colcon_pkg'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['colcon_meta']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'colcon_meta'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['ros']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'ros'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['cmake', 'python']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'cmake'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'python'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extensions ['python_setup_py']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251020_115804) by extension 'python_setup_py'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['ignore', 'ignore_ament_install']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'ignore'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'ignore_ament_install'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['colcon_pkg']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'colcon_pkg'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['colcon_meta']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'colcon_meta'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['ros']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'ros'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['cmake', 'python']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'cmake'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'python'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extensions ['python_setup_py']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191314) by extension 'python_setup_py'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['ignore', 'ignore_ament_install']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'ignore'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'ignore_ament_install'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['colcon_pkg']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'colcon_pkg'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['colcon_meta']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'colcon_meta'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['ros']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'ros'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['cmake', 'python']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'cmake'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'python'
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extensions ['python_setup_py']
+[0.175s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_191330) by extension 'python_setup_py'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['ignore', 'ignore_ament_install']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'ignore'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'ignore_ament_install'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['colcon_pkg']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'colcon_pkg'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['colcon_meta']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'colcon_meta'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['ros']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'ros'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['cmake', 'python']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'cmake'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'python'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extensions ['python_setup_py']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203528) by extension 'python_setup_py'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['ignore', 'ignore_ament_install']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'ignore'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'ignore_ament_install'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['colcon_pkg']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'colcon_pkg'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['colcon_meta']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'colcon_meta'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['ros']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'ros'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['cmake', 'python']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'cmake'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'python'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extensions ['python_setup_py']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_203617) by extension 'python_setup_py'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['ignore', 'ignore_ament_install']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'ignore'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'ignore_ament_install'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['colcon_pkg']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'colcon_pkg'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['colcon_meta']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'colcon_meta'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['ros']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'ros'
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['cmake', 'python']
+[0.176s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'cmake'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'python'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extensions ['python_setup_py']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223412) by extension 'python_setup_py'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['ignore', 'ignore_ament_install']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'ignore'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'ignore_ament_install'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['colcon_pkg']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'colcon_pkg'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['colcon_meta']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'colcon_meta'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['ros']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'ros'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['cmake', 'python']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'cmake'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'python'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extensions ['python_setup_py']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223447) by extension 'python_setup_py'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['ignore', 'ignore_ament_install']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'ignore'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'ignore_ament_install'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['colcon_pkg']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'colcon_pkg'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['colcon_meta']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'colcon_meta'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['ros']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'ros'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['cmake', 'python']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'cmake'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'python'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extensions ['python_setup_py']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223626) by extension 'python_setup_py'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['ignore', 'ignore_ament_install']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'ignore'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'ignore_ament_install'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['colcon_pkg']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'colcon_pkg'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['colcon_meta']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'colcon_meta'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['ros']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'ros'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['cmake', 'python']
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'cmake'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'python'
+[0.177s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extensions ['python_setup_py']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251022_223739) by extension 'python_setup_py'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['ignore', 'ignore_ament_install']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'ignore'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'ignore_ament_install'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['colcon_pkg']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'colcon_pkg'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['colcon_meta']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'colcon_meta'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['ros']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'ros'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['cmake', 'python']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'cmake'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'python'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extensions ['python_setup_py']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_105820) by extension 'python_setup_py'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['ignore', 'ignore_ament_install']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'ignore'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'ignore_ament_install'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['colcon_pkg']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'colcon_pkg'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['colcon_meta']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'colcon_meta'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['ros']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'ros'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['cmake', 'python']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'cmake'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'python'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extensions ['python_setup_py']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/FRTL/tensorboard/20251023_110234) by extension 'python_setup_py'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['ignore', 'ignore_ament_install']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'ignore'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'ignore_ament_install'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['colcon_pkg']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'colcon_pkg'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['colcon_meta']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'colcon_meta'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['ros']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'ros'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['cmake', 'python']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'cmake'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'python'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extensions ['python_setup_py']
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/models/eval_results) by extension 'python_setup_py'
+[0.178s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['ignore', 'ignore_ament_install']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'ignore'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'ignore_ament_install'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['colcon_pkg']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'colcon_pkg'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['colcon_meta']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'colcon_meta'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['ros']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'ros'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['cmake', 'python']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'cmake'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'python'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extensions ['python_setup_py']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision) by extension 'python_setup_py'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'ignore'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'ignore_ament_install'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['colcon_pkg']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'colcon_pkg'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['colcon_meta']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'colcon_meta'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['ros']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'ros'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['cmake', 'python']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'cmake'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'python'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extensions ['python_setup_py']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/__pycache__) by extension 'python_setup_py'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['ignore', 'ignore_ament_install']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'ignore'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'ignore_ament_install'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['colcon_pkg']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'colcon_pkg'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['colcon_meta']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'colcon_meta'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['ros']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'ros'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['cmake', 'python']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'cmake'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'python'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extensions ['python_setup_py']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets) by extension 'python_setup_py'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'ignore'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'ignore_ament_install'
+[0.179s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['colcon_pkg']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'colcon_pkg'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['colcon_meta']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'colcon_meta'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['ros']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'ros'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['cmake', 'python']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'cmake'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'python'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extensions ['python_setup_py']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/datasets/__pycache__) by extension 'python_setup_py'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'ignore_ament_install'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['colcon_pkg']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'colcon_pkg'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['colcon_meta']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'colcon_meta'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['ros']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'ros'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['cmake', 'python']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'cmake'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'python'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extensions ['python_setup_py']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn) by extension 'python_setup_py'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'ignore_ament_install'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['colcon_pkg']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'colcon_pkg'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['colcon_meta']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'colcon_meta'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['ros']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'ros'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['cmake', 'python']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'cmake'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'python'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extensions ['python_setup_py']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/nn/__pycache__) by extension 'python_setup_py'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['ignore', 'ignore_ament_install']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'ignore'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'ignore_ament_install'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['colcon_pkg']
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'colcon_pkg'
+[0.180s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['colcon_meta']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'colcon_meta'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['ros']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'ros'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['cmake', 'python']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'cmake'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'python'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extensions ['python_setup_py']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/prunning) by extension 'python_setup_py'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['ignore', 'ignore_ament_install']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'ignore'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'ignore_ament_install'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['colcon_pkg']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'colcon_pkg'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['colcon_meta']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'colcon_meta'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['ros']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'ros'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['cmake', 'python']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'cmake'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'python'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extensions ['python_setup_py']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd) by extension 'python_setup_py'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'ignore'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'ignore_ament_install'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['colcon_pkg']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'colcon_pkg'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['colcon_meta']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'colcon_meta'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['ros']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'ros'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['cmake', 'python']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'cmake'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'python'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extensions ['python_setup_py']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/__pycache__) by extension 'python_setup_py'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['ignore', 'ignore_ament_install']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'ignore'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'ignore_ament_install'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['colcon_pkg']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'colcon_pkg'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['colcon_meta']
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'colcon_meta'
+[0.181s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'ros'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['cmake', 'python']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'cmake'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'python'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extensions ['python_setup_py']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config) by extension 'python_setup_py'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'ignore_ament_install'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['colcon_pkg']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'colcon_pkg'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['colcon_meta']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'colcon_meta'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'ros'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['cmake', 'python']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'cmake'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'python'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extensions ['python_setup_py']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/ssd/config/__pycache__) by extension 'python_setup_py'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'ignore_ament_install'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['colcon_pkg']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'colcon_pkg'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['colcon_meta']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'colcon_meta'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'ros'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['cmake', 'python']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'cmake'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'python'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extensions ['python_setup_py']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test) by extension 'python_setup_py'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['ignore', 'ignore_ament_install']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'ignore'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'ignore_ament_install'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['colcon_pkg']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'colcon_pkg'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['colcon_meta']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'colcon_meta'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['ros']
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'ros'
+[0.182s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['cmake', 'python']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'cmake'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'python'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extensions ['python_setup_py']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/test/assets) by extension 'python_setup_py'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'ros'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['cmake', 'python']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'cmake'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'python'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extensions ['python_setup_py']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms) by extension 'python_setup_py'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'ros'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['cmake', 'python']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'cmake'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'python'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extensions ['python_setup_py']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/transforms/__pycache__) by extension 'python_setup_py'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['ignore', 'ignore_ament_install']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'ignore'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'ignore_ament_install'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['colcon_pkg']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'colcon_pkg'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['colcon_meta']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'colcon_meta'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['ros']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'ros'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['cmake', 'python']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'cmake'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'python'
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extensions ['python_setup_py']
+[0.183s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils) by extension 'python_setup_py'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'ignore'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'ignore_ament_install'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['colcon_pkg']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'colcon_pkg'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['colcon_meta']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'colcon_meta'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['ros']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'ros'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['cmake', 'python']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'cmake'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'python'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extensions ['python_setup_py']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(FRTL/mobilenet/vision/utils/__pycache__) by extension 'python_setup_py'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['ignore', 'ignore_ament_install']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'ignore'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'ignore_ament_install'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['colcon_pkg']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'colcon_pkg'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['colcon_meta']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'colcon_meta'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['ros']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'ros'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['cmake', 'python']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'cmake'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'python'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extensions ['python_setup_py']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines) by extension 'python_setup_py'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['ignore', 'ignore_ament_install']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'ignore'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'ignore_ament_install'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['colcon_pkg']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'colcon_pkg'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['colcon_meta']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'colcon_meta'
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['ros']
+[0.184s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'ros'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['cmake', 'python']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'cmake'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'python'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extensions ['python_setup_py']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm) by extension 'python_setup_py'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['ignore', 'ignore_ament_install']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'ignore'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'ignore_ament_install'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['colcon_pkg']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'colcon_pkg'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['colcon_meta']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'colcon_meta'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['ros']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'ros'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['cmake', 'python']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'cmake'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'python'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extensions ['python_setup_py']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic) by extension 'python_setup_py'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'ignore'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'ignore_ament_install'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['colcon_pkg']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'colcon_pkg'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['colcon_meta']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'colcon_meta'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['ros']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'ros'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['cmake', 'python']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'cmake'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'python'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extensions ['python_setup_py']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Data) by extension 'python_setup_py'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['ignore', 'ignore_ament_install']
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'ignore'
+[0.185s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'colcon_pkg'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['colcon_meta']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'colcon_meta'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['ros']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'ros'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['cmake', 'python']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'cmake'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'python'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extensions ['python_setup_py']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance) by extension 'python_setup_py'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'ignore'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'colcon_pkg'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['colcon_meta']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'colcon_meta'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['ros']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'ros'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['cmake', 'python']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'cmake'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'python'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extensions ['python_setup_py']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/Data) by extension 'python_setup_py'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'ignore'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'colcon_pkg'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['colcon_meta']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'colcon_meta'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['ros']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'ros'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['cmake', 'python']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'cmake'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'python'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extensions ['python_setup_py']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/MovementAndAvoidance/__pycache__) by extension 'python_setup_py'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['ignore', 'ignore_ament_install']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'ignore'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'ignore_ament_install'
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['colcon_pkg']
+[0.186s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'colcon_pkg'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['colcon_meta']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'colcon_meta'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['ros']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'ros'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['cmake', 'python']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'cmake'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'python'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extensions ['python_setup_py']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning) by extension 'python_setup_py'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'ignore'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'ignore_ament_install'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['colcon_pkg']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'colcon_pkg'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['colcon_meta']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'colcon_meta'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['ros']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'ros'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['cmake', 'python']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'cmake'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'python'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extensions ['python_setup_py']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/Data) by extension 'python_setup_py'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['ignore', 'ignore_ament_install']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'ignore'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'ignore_ament_install'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['colcon_pkg']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'colcon_pkg'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['colcon_meta']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'colcon_meta'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['ros']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'ros'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['cmake', 'python']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'cmake'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'python'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extensions ['python_setup_py']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Classic/Turning/__pycache__) by extension 'python_setup_py'
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.187s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['colcon_pkg']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'colcon_pkg'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['colcon_meta']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'colcon_meta'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['ros']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'ros'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['cmake', 'python']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'cmake'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'python'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extensions ['python_setup_py']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data) by extension 'python_setup_py'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['ignore', 'ignore_ament_install']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['colcon_pkg']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'colcon_pkg'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['colcon_meta']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'colcon_meta'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['ros']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'ros'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['cmake', 'python']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'cmake'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'python'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extensions ['python_setup_py']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/AlphaAlgorithm) by extension 'python_setup_py'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['ignore', 'ignore_ament_install']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['colcon_pkg']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'colcon_pkg'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['colcon_meta']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'colcon_meta'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['ros']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'ros'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['cmake', 'python']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'cmake'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'python'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extensions ['python_setup_py']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/MovementAndAvoidance) by extension 'python_setup_py'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['ignore', 'ignore_ament_install']
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'ignore'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'ignore_ament_install'
+[0.188s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['colcon_pkg']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'colcon_pkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['colcon_meta']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'colcon_meta'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['ros']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'ros'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['cmake', 'python']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'cmake'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'python'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extensions ['python_setup_py']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/AlphaAlgorithm/Data/Turning) by extension 'python_setup_py'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'ignore'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'ignore_ament_install'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['colcon_pkg']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'colcon_pkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['colcon_meta']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'colcon_meta'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['ros']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'ros'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['cmake', 'python']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'cmake'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'python'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extensions ['python_setup_py']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Data) by extension 'python_setup_py'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['ignore', 'ignore_ament_install']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'ignore'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'ignore_ament_install'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['colcon_pkg']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'colcon_pkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['colcon_meta']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'colcon_meta'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['ros']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'ros'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['cmake', 'python']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'cmake'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'python'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extensions ['python_setup_py']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement) by extension 'python_setup_py'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'ignore'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'ignore_ament_install'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['colcon_pkg']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'colcon_pkg'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['colcon_meta']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'colcon_meta'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['ros']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'ros'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['cmake', 'python']
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'cmake'
+[0.189s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'python'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extensions ['python_setup_py']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/SMovement/Data) by extension 'python_setup_py'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['ignore', 'ignore_ament_install']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'ignore'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'ignore_ament_install'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['colcon_pkg']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'colcon_pkg'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['colcon_meta']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'colcon_meta'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['ros']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'ros'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['cmake', 'python']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'cmake'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'python'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extensions ['python_setup_py']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore) by extension 'python_setup_py'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'ignore'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'ignore_ament_install'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['colcon_pkg']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'colcon_pkg'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['colcon_meta']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'colcon_meta'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['ros']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'ros'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['cmake', 'python']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'cmake'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'python'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extensions ['python_setup_py']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Semaphore/Data) by extension 'python_setup_py'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['ignore', 'ignore_ament_install']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'ignore'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'ignore_ament_install'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['colcon_pkg']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'colcon_pkg'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['colcon_meta']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'colcon_meta'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['ros']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'ros'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['cmake', 'python']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'cmake'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'python'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extensions ['python_setup_py']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning) by extension 'python_setup_py'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['ignore', 'ignore_ament_install']
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'ignore'
+[0.190s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'ignore_ament_install'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['colcon_pkg']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'colcon_pkg'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['colcon_meta']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'colcon_meta'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['ros']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'ros'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['cmake', 'python']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'cmake'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'python'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extensions ['python_setup_py']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(Other_Machines/Turning/Data) by extension 'python_setup_py'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extensions ['ignore', 'ignore_ament_install']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extension 'ignore'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extension 'ignore_ament_install'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extensions ['colcon_pkg']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extension 'colcon_pkg'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extensions ['colcon_meta']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extension 'colcon_meta'
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extensions ['ros']
+[0.191s] Level 1:colcon.colcon_core.package_identification:_identify(ROS2_FRTL) by extension 'ros'
+[0.197s] DEBUG:colcon.colcon_core.package_identification:Package 'ROS2_FRTL' with type 'ros.ament_cmake' and name 'ROS2_FRTL'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.197s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.198s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.198s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.230s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.230s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.236s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 6 installed packages in /home/marcusv-fs/Programacao/ros2_manga/install
+[0.236s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 1 installed packages in /home/marcusv-fs/Programacao/ros2_ws/install
+[0.238s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 336 installed packages in /opt/ros/jazzy
+[0.239s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_args' from command line to 'None'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_target' from command line to 'None'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_clean_cache' from command line to 'False'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_clean_first' from command line to 'False'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'cmake_force_configure' from command line to 'False'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'ament_cmake_args' from command line to 'None'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'catkin_cmake_args' from command line to 'None'
+[0.271s] Level 5:colcon.colcon_core.verb:set package 'ROS2_FRTL' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.271s] DEBUG:colcon.colcon_core.verb:Building package 'ROS2_FRTL' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/build/ROS2_FRTL', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL', 'merge_install': False, 'path': '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL', 'symlink_install': False, 'test_result_base': None}
+[0.271s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.271s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.271s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL' with build type 'ament_cmake'
+[0.271s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL'
+[0.275s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.275s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.275s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.282s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/build/ROS2_FRTL': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/marcusv-fs/Programacao/ros2_manga/install/prototype_controller:/home/marcusv-fs/Programacao/ros2_manga/install/opencv_tests:/home/marcusv-fs/Programacao/ros2_ws/install/prototype_controller:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/cmake /home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL -DCMAKE_INSTALL_PREFIX=/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL
+[0.359s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/build/ROS2_FRTL' returned '1': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/marcusv-fs/Programacao/ros2_manga/install/prototype_controller:/home/marcusv-fs/Programacao/ros2_manga/install/opencv_tests:/home/marcusv-fs/Programacao/ros2_ws/install/prototype_controller:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com VIRTUAL_ENV_PROMPT=(.venv) /usr/bin/cmake /home/marcusv-fs/Programacao/Python_SM/Pytransitions/ROS2_FRTL -DCMAKE_INSTALL_PREFIX=/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL
+[0.366s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(ROS2_FRTL)
+[0.373s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL' for CMake module files
+[0.374s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL' for CMake config files
+[0.374s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/bin'
+[0.374s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/lib/pkgconfig/ROS2_FRTL.pc'
+[0.374s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/lib/python3.12/site-packages'
+[0.375s] Level 1:colcon.colcon_core.environment:checking '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/bin'
+[0.375s] INFO:colcon.colcon_core.shell:Creating package script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/ROS2_FRTL/package.ps1'
+[0.376s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/ROS2_FRTL/package.dsv'
+[0.376s] INFO:colcon.colcon_core.shell:Creating package script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/ROS2_FRTL/package.sh'
+[0.377s] INFO:colcon.colcon_core.shell:Creating package script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/ROS2_FRTL/package.bash'
+[0.377s] INFO:colcon.colcon_core.shell:Creating package script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/ROS2_FRTL/package.zsh'
+[0.378s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/ROS2_FRTL/share/colcon-core/packages/ROS2_FRTL)
+[0.379s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[0.379s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[0.379s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '1'
+[0.379s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[0.389s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[0.389s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[0.389s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[0.412s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[0.412s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/local_setup.ps1'
+[0.413s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/_local_setup_util_ps1.py'
+[0.414s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/setup.ps1'
+[0.416s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/local_setup.sh'
+[0.417s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/_local_setup_util_sh.py'
+[0.418s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/setup.sh'
+[0.419s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/local_setup.bash'
+[0.420s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/setup.bash'
+[0.421s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/local_setup.zsh'
+[0.422s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/marcusv-fs/Programacao/Python_SM/Pytransitions/install/setup.zsh'

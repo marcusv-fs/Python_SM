@@ -1,13 +1,13 @@
 import os, time, rclpy, threading, math
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
-from std_msgs.msg import UInt8
-import auxFuncs
+from std_msgs.msg import UInt8, String
+import Platform
 from dataclasses import dataclass
 
-
-global TARGET_HEIGHT
 TARGET_HEIGHT = 3
+resp = ['']
+msg = String()
 
 @dataclass
 class Position:
@@ -90,9 +90,12 @@ class Phase1(GraphMachine):
 ####################### Mission Functions ####################### 
     def move(self, pos: Position):
         print("Moving to new Position...")
-        auxFuncs.move_to_relative(self.uav, self.start_time, pos.X, pos.Y, pos.Z, 0)
+        Platform.relMove(self.uav, pos.X, pos.Y, pos.Z, 0)
+        msg.data = f"relMove;{pos.X};{pos.Y};{pos.Z}"
+        self.node.request_pub.publish(msg)
+        
 
-    def SearchForBases(self):
+    def searchForBases(self):
         if self.visitedBases < 1:
             Targets = [
                 Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
@@ -104,7 +107,7 @@ class Phase1(GraphMachine):
             for base in Targets:
                 self.bases.append(base)
     
-    def SearchNearestBase(self):
+    def searchNearestBase(self):
         X = self.bases[self.visitedBases].pos.X - self.dronePos.X
         Y = self.bases[self.visitedBases].pos.Y - self.dronePos.Y
         Z = self.bases[self.visitedBases].pos.Z
@@ -119,14 +122,18 @@ class Phase1(GraphMachine):
     
     def updateDronePos(self):
         try:
-            pos = auxFuncs.get_local_position(self.uav, 5)
+            pos = Platform.getLocalPos(self.uav, 5)
+            msg.data = f"getLocalPos"
+            self.node.request_pub.publish(msg)
             if pos is not None:
                 self.dronePos.X, self.dronePos.Y, self.dronePos.Z = pos
             else:
                 raise ValueError("get_local_position returned None")
         except Exception as e:
             print(f"Erro ao atualizar a posição do drone: {e}")
-            auxFuncs.set_mode(self.machine.uav, "EMERGENCY")
+            Platform.setMode(self.machine.uav, "EMERGENCY")
+            msg.data = f"setMode;EMERGENCY"
+            self.node.request_pub.publish(msg)
             exit(1)
 
     def calcDist(self, basePos: Position, dronePos: Position):
@@ -217,7 +224,7 @@ class Phase1(GraphMachine):
 
     def on_enter_SearchForBases(self):
         self.node.get_logger().info("on_enter_SearchForBases")
-        self.SearchForBases()
+        self.searchForBases()
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
@@ -228,14 +235,16 @@ class Phase1(GraphMachine):
     def on_enter_ApproachToBase(self):
         self.node.get_logger().info("on_enter_ApproachToBase")
         self.updateDronePos()
-        self.SearchNearestBase()
+        self.searchNearestBase()
         self.distToTarget = self.calcDist(self.basePos, self.dronePos)
         print({self.distToTarget})
 
     def on_enter_LandAndScore(self):
         self.node.get_logger().info("on_enter_LandAndScore")
         print("Landing...")
-        auxFuncs.land_and_disarm(self.uav)
+        Platform.landAndDisarm(self.uav)
+        msg.data = f"landAndDisarm"
+        self.node.request_pub.publish(msg)
         time.sleep(5)
         print("Update DronePos and markVisitedBases...")
         self.updateDronePos()
@@ -245,13 +254,21 @@ class Phase1(GraphMachine):
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")
         print("Changing to Guided...")
-        auxFuncs.set_mode(self.uav, "GUIDED")
+        Platform.setMode(self.uav, "GUIDED")
+        msg.data = f"setMode;GUIDED"
+        self.node.request_pub.publish(msg)
+
         time.sleep(1)
         print("Arming...")
-        auxFuncs.arm_drone(self.uav)
+        Platform.armDrone(self.uav)
+        msg.data = f"armDrone"
+        self.node.request_pub.publish(msg)
+
         time.sleep(2)
         print("TakingOff...")
-        auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
+        Platform.relTakeOff(self.uav, self.targetHeight, self.home_pos['alt'])
+        msg.data = f"relTakeOff;{self.targetHeight};{self.home_pos['alt']}"
+        self.node.request_pub.publish(msg)
 
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Phase1_Final")
@@ -316,7 +333,7 @@ class FRTL(GraphMachine):
 
         ####################### Draw State Machine ######################
         try:
-            out_dir = 'Pytransitions/FRTL/Data/'
+            out_dir = 'Pytransitions/FRTL/Data'
             os.makedirs(out_dir, exist_ok=True)
             
             self.get_graph().draw(os.path.join(out_dir, 'FRTL.canon'), prog='dot')
@@ -350,30 +367,54 @@ class FRTL(GraphMachine):
 
     def before_Phases_Final(self):
         print("Returning to Launch")
-        auxFuncs.move_to_gps_absolute(self.uav, self.start_time, self.home_pos['lat'], self.home_pos['lon'], 4, 0)
-        auxFuncs.land_and_disarm(self.uav)
+        Platform.gpsMove(self.uav, self.home_pos['lat'], self.home_pos['lon'], self.targetHeight, 0)
+        msg.data = f"gpsMove;{self.home_pos['lat']};{self.home_pos['lon']};{self.targetHeight}"
+        self.node.request_pub.publish(msg)
+        Platform.landAndDisarm(self.uav)
+        msg.data = f"landAndDisarm"
+        self.node.request_pub.publish(msg)
 
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
         self.node.get_logger().info("on_enter_Connect")
-        self.uav = auxFuncs.connect_drone(self.connection_string)
-        self.connectionState = auxFuncs.wait_for_heartbeat(self.uav)
+        self.uav = Platform.tryToConnect(self.connection_string)
+        msg.data = f"tryToConnect;{self.connection_string}"
+        self.node.request_pub.publish(msg)
+
+        self.connectionState = Platform.checkConnection(self.uav)
+        msg.data = f"checkConnection"
+        self.node.request_pub.publish(msg)
 
     def on_enter_Wait(self):
         self.node.get_logger().info("on_enter_Wait")
-        auxFuncs.set_home_to_current_position(self.uav)
-        self.home_pos = auxFuncs.get_home_position(self.uav)
+        Platform.setHomeHere(self.uav)
+        msg.data = f"setHomeHere"
+        self.node.request_pub.publish(msg)
+
+        self.home_pos = Platform.getHome(self.uav)
+        msg.data = f"getHome"
+        self.node.request_pub.publish(msg)
+
         print("Waiting for start...\n")
 
     def on_enter_StartEngines(self):
         self.node.get_logger().info("on_enter_StartEngines")
-        auxFuncs.set_mode(self.uav, "GUIDED")
-        auxFuncs.arm_drone(self.uav)
+        Platform.setMode(self.uav, "GUIDED")
+        msg.data = f"setMode;GUIDED"
+        self.node.request_pub.publish(msg)
+
+        Platform.armDrone(self.uav)
+        msg.data = f"armDrone"
+        self.node.request_pub.publish(msg)
+
         time.sleep(1)
 
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")
-        auxFuncs.takeoff_relative(self.uav, self.targetHeight, self.home_pos['alt'])
+        Platform.relTakeOff(self.uav, self.targetHeight, self.home_pos['alt'])
+        self.node.get_logger().warn("finished")
+        msg.data = f"relTakeOff;{self.home_pos['alt']}"
+        self.node.request_pub.publish(msg)
 
     def on_enter_Phases(self):
         self.node.get_logger().info("on_enter_Phases")
@@ -383,7 +424,9 @@ class FRTL(GraphMachine):
 
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Final")
-        auxFuncs.close_connection(self.uav)
+        Platform.closeConnection(self.uav)
+        msg.data = f"closeConnection"
+        self.node.request_pub.publish(msg)
         self.finished = True
 
 ####################### run #######################   
@@ -412,14 +455,29 @@ class FrtlNode(Node):
 
         # subscriber para receber triggers
         self.create_subscription(UInt8, '/trigger_start', self.start_callback, 10)
+        
+        # subscriber para receber comandos
+        self.create_subscription(UInt8, '/response', self.response_callback, 10)
+
+        # publisher para requisitar ações da plataforma
+        # publisher para requisitar ações da plataforma
+        self.request_pub = self.create_publisher(String, '/request', 10)
+
 
     def start_callback(self, msg: UInt8):
         self.machine.trigger_start = True
         self.machine.phase = msg.data
         self.get_logger().info(f"\n Command received: {self.machine.trigger_start}, in: {time.time()} ###")
         if(msg.data == 2):
-            auxFuncs.set_mode(self.machine.uav, "EMERGENCY")
+            Platform.setMode(self.machine.uav, "EMERGENCY")
+            msg.data = f"setMode;EMERGENCY"
+            self.request_pub.publish(msg)
             exit(1)
+
+    def response_callback(self, msg: String):
+        resp = msg.data.split(';')
+        self.get_logger().error(resp)
+
 
 ######################## MAIN ########################
 def ros_spin_thread(node):
