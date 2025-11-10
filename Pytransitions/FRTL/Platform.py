@@ -4,6 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 START_TIME = time.time()
+global uav
 
 
 def tryToConnect(connection_string, baudrate=115200, timeout=30):
@@ -18,15 +19,17 @@ def tryToConnect(connection_string, baudrate=115200, timeout=30):
     Returns:
         mavutil.mavlink_connection: Objeto de conexão com o drone, ou None em caso de falha.
     """
+    global uav
     try:
         drone = mavutil.mavlink_connection(connection_string, baud=baudrate)
         drone.wait_heartbeat(timeout=timeout)
-        return drone
+        uav = drone
+        return "tryToConnect;True"
     except Exception as e:
         print(f"Falha na conexão: {e}")
-        return None
+        return f"tryToConnect;Error;{e}"
 
-def armDrone(vehicle):
+def armUAV(vehicle):
     """
     Envia comando para armar o drone (COMPONENT_ARM_DISARM).
 
@@ -75,12 +78,13 @@ def is_armed(vehicle, timeout=10):
         hb = vehicle.recv_match(type='HEARTBEAT', blocking=True, timeout=timeout)
         if hb is None:
             #print("Heartbeat não recebido no tempo limite.")
-            return False
-        return (hb.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+            return "is_armed;False;Timeout"
+        #return (hb.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+        return "is_armed;True"
     except Exception as e:
         print(f"Erro ao verificar estado armado: {e}")
         exit(1)
-        return False
+        return f"is_armed;Error;{e}"
 
 def wait_for_arming(vehicle, timeout=10):
     """
@@ -99,14 +103,13 @@ def wait_for_arming(vehicle, timeout=10):
         while not vehicle.motors_armed():
             if time.time()- start_time > timeout:
                 #print("Timeout ao esperar armar.")
-                return False
+                return "wait_for_arming;False;Timeout"
             time.sleep(0.2)  # evita busy waiting
         #print("Drone armado.")
-        return True
+        return "wait_for_arming;True"
     except Exception as e:
         print(f"Erro ao verificar estado de armado: {e}")
-        exit(1)
-        return False
+        return f"wait_for_arming;Error;{e}"
     
 def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
     """
@@ -128,7 +131,7 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
             0, 0, 0,             # Aceleração (ignorado)
             math.radians(yaw_deg), 0  # Yaw e yaw_rate
         )
-        print(f"Movendo para GPS: lat={lat:.6f}, lon={lon:.6f}, alt={alt}m")
+        #print(f"Movendo para GPS: lat={lat:.6f}, lon={lon:.6f}, alt={alt}m")
         
         # Parâmetros de tolerância e timeout
         tolerance = 0.2  # 5 metros de tolerância (GPS é menos preciso)
@@ -139,7 +142,7 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
             # Verifica timeout
             if time.time() - start_wait > timeout:
                 #print("Timeout: Drone não chegou à posição GPS desejada a tempo")
-                break
+                return "gpsMove;Error:Timeout"
             
             # Obtém posição GPS atual
             gps_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
@@ -161,16 +164,11 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
             
             # Calcula distância vertical
             vertical_dist = abs(alt - relative_alt)
-            
-            # Distância 3D total (priorizando horizontal)
-            total_dist = math.sqrt(horizontal_dist**2 + vertical_dist**2)
-            
-            #print(f"Distância ao alvo: Horizontal={horizontal_dist:.1f}m, Vertical={vertical_dist:.1f}m, Total={total_dist:.1f}m")
-            
+        
             # Verifica se chegou perto o suficiente do alvo
             if horizontal_dist <= tolerance and vertical_dist <= tolerance:
                 print(f"Posição GPS alcançada! Erro horizontal: {horizontal_dist:.1f}m")
-                break
+                return "gpsMove;True"
             
             # Pequena pausa para não sobrecarregar
             time.sleep(0.1)
@@ -241,7 +239,8 @@ def homeAbsMove(vehicle, x, y, z, yaw_deg):
         print(f"Erro ao mover para posição absoluta: {e}")
         exit(1)
 
-def relMove(vehicle, dx, dy, dz, yaw_deg):
+
+def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
     """
     Move o drone para uma posição relativa à atual (em metros, sistema NED).
 
@@ -289,14 +288,15 @@ def relMove(vehicle, dx, dy, dz, yaw_deg):
         
         # Parâmetros de tolerância e timeout
         tolerance = 0.1  # 1 metro de tolerância
-        timeout = 10     # 30 segundos máximo
+        timeout = 90     # 30 segundos máximo
         start_wait = time.time()
         
         while True:
-            # Verifica timeout
+            #Verifica timeout
             if time.time() - start_wait > timeout:
                 #print("Timeout: Drone não chegou à posição desejada a tempo")
-                break
+                print("----------- RelMove Error, Timeout")
+                return "relMove;Error;Timeout"
             
             # Obtém posição atual
             pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
@@ -311,14 +311,14 @@ def relMove(vehicle, dx, dy, dz, yaw_deg):
             # Verifica se chegou perto o suficiente do alvo
             if dist <= tolerance:
                 print(f"Posição alcançada! Erro: {dist:.2f} metros")
-                break
-            
-            # Pequena pausa para não sobrecarregar
+                return "relMove;True"
+
             time.sleep(0.1)
+        
         
     except Exception as e:
         print(f"Erro ao mover para posição relativa: {e}")
-        exit(1)
+        return f"relMove;Error;{e}"
 
 def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
     """
@@ -339,33 +339,46 @@ def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
             0, 0,       # Latitude, Longitude = atual
             tg_altitude    # Altitude relativa
         )
-        pos = get_global_position(vehicle)
+        gps_resp = get_global_position(vehicle).split(";")
         cont = 0
-        altitude = (abs(pos['alt']) - abs(home_altitude))
+        pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
+        altitude = (abs(pos[2]) - abs(home_altitude))
         while ((altitude < abs(tg_altitude * 0.95)) and (altitude < (abs(tg_altitude) - 0.5))):
             try:
-                pos = get_global_position(vehicle)
-                altitude = (abs(pos['alt']) - abs(home_altitude))
-                #print(f"Altitude: {altitude} - tg_Altitude: {tg_altitude}")
+                gps_resp = get_global_position(vehicle).split(";")
+                pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
+                altitude = (abs(pos[2]) - abs(home_altitude))
 
-                if(cont > 20):
-                    print("ERRORRRRR")
+                if(cont > 30):
                     cont = 0
-                    relMove(vehicle,  0, 0, tg_altitude + 0.1, 0)
-                    cont = 0
+                    resp = relMove(vehicle,  0, 0,  (tg_altitude - altitude)).split(";")
+
+                    if resp[1] == "Error":
+                        if resp[2] == "Timeout":
+                            vehicle.mav.command_long_send(
+                            vehicle.target_system,
+                            vehicle.target_component,
+                            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+                            0,      # Confirmation
+                            0, 0, 0, 0,  # Param1–4: ignorados
+                            0, 0,       # Latitude, Longitude = atual
+                            tg_altitude    # Altitude relativa
+                    )
 
                 time.sleep(0.5)
                 cont += 1
             except Exception as e:
                 print("Error while getting Height")
-                exit(1)   
+                return f"relTakeOff;Error;{e}"
         
         print(f"Altitude alcançada: {altitude}. Erro: {tg_altitude - altitude}")
+        return "relTakeOff;True"
         
         
     except Exception as e:
         print(f"Erro ao enviar decolagem relativa: {e}")
-        exit(1)
+        return f"relTakeOff;Error;{e}"
+
 
 def setMode(vehicle, mode):
     """
@@ -387,11 +400,11 @@ def setMode(vehicle, mode):
         emergency = False
         if mode == "EMERGENCY":
             emergency = True
-            mode = "RTL"
+            mode = "SMART_RTL"
         mode_mapping = vehicle.mode_mapping()
         if mode not in mode_mapping:
             print(f"Modo '{mode}' não é suportado pelo firmware.")
-            return False
+            return f"gpsMove;Error;Mode Not Suported"
 
         mode_id = mode_mapping[mode]
         vehicle.set_mode(mode_id)
@@ -399,13 +412,12 @@ def setMode(vehicle, mode):
         if emergency:
             closeConnection(vehicle)
 
-        return True
+        return "gpsMove;True"
     except Exception as e:
         print(f"Erro ao mudar modo de voo: {e}")
-        exit(1)
-        return False
+        return f"gpsMove;Error;{e}"
 
-def checkConnection(vehicle, timeout=5):
+def checkConnection(vehicle, timeout=15):
     """
     Aguarda o recebimento de um heartbeat do drone.
 
@@ -418,13 +430,12 @@ def checkConnection(vehicle, timeout=5):
     """
     try:
         vehicle.wait_heartbeat(timeout=timeout)
-        return 1
+        return "checkConnection;True"
     except Exception as e:
         print(f"Falha ao receber heartbeat: {e}")
-        exit(1)
-        return 2
+        return f"checkConnection;Error;{e}"
     
-def getLocalPos(vehicle, timeout=5):
+def getLocalPos(vehicle, timeout=15):
     """
     Aguarda e retorna a posição loca (X, Y, Z).
 
@@ -439,14 +450,13 @@ def getLocalPos(vehicle, timeout=5):
         pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
         if pos_msg is None:
             #print("Timeout ao receber GLOBAL_POSITION_INT.")
-            return None
-        return pos_msg.x, pos_msg.y, pos_msg.z
+            return "getLocalPos;False;Timeout"
+        return f"getLocalPos;True;{pos_msg.x};{pos_msg.y};{pos_msg.z}"
     except Exception as e:
         print(f"Erro ao obter posição global: {e}")
-        exit(1)
-        return None
+        return f"getLocalPos;Error;{e}"
 
-def get_global_position(vehicle, timeout=5):
+def get_global_position(vehicle, timeout=15):
     """
     Aguarda e retorna a posição global (latitude, longitude, altitude).
 
@@ -461,18 +471,17 @@ def get_global_position(vehicle, timeout=5):
         msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=timeout)
         if msg is None:
             #print("Timeout ao receber GLOBAL_POSITION_INT.")
-            return None
+            return "get_global_position;False;Timeout"
+        
+        msg.lat = msg.lat / 1e7
+        msg.lon = msg.lon / 1e7
+        msg.alt = msg.alt / 1000.0  # Altitude acima do nível do mar, em metros
 
-        # Conversão de coordenadas: lat/lon em 1E7, alt em mm
-        return {
-            'lat': msg.lat / 1e7,
-            'lon': msg.lon / 1e7,
-            'alt': msg.alt / 1000.0  # Altitude acima do nível do mar, em metros
-        }
+        return f"get_global_pos;True;{msg.lat};{msg.lon};{msg.alt}"
+
     except Exception as e:
         print(f"Erro ao obter posição global: {e}")
-        exit(1)
-        return None
+        return f"get_global_position;Error;{e}"
 
 def closeConnection(vehicle):
     """
@@ -483,9 +492,11 @@ def closeConnection(vehicle):
     """
     try:
         vehicle.close()
+        return "closeConnection;True"
         #print("Conexão com o drone encerrada.")
     except Exception as e:
         print(f"Erro ao fechar conexão: {e}")
+        return f"closeConnection;Error;{e}"
         exit(1)
 
 def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
@@ -501,19 +512,16 @@ def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
     """
     try:
         #print("Esperando posição atual...")
-        msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=5)
+        msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=15)
         if not msg:
             #print("Falha ao obter posição atual.")
-            return False
+            return "setHomeHere;False;Failed to get position"
 
         lat = msg.lat / 1e7
         lon = msg.lon / 1e7
         alt = msg.alt / 1000.0  # altitude AMSL em metros
 
         #print(f"Definindo HOME para: lat={lat}, lon={lon}, alt={alt}m")
-
-        # altitude_type: 0 = absolute, 1 = relative
-        alt_type_flag = 0 if altitude_type == 'ABSOLUTE' else 1
 
         vehicle.mav.command_long_send(
             vehicle.target_system,
@@ -528,12 +536,11 @@ def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
         )
 
         #print("Comando de definição de HOME enviado.")
-        return True
+        return f"setHomeHere;True;{lat};{lon};{alt}"
 
     except Exception as e:
         print(f"Erro ao definir HOME: {e}")
-        exit(1)
-        return False
+        return f"setHomeHere;Error;{e}"
 
 def haversine(lat1, lon1, lat2, lon2):
         R = 6371000  # raio da Terra em metros
@@ -561,7 +568,7 @@ def has_reached_position(vehicle, target_lat, target_lon, target_alt, threshold=
     try:
         msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=False)
         if msg is None:
-            return False
+            return f"has_reached_position;Error;Error while getting global position"
 
         curr_lat = msg.lat / 1e7
         curr_lon = msg.lon / 1e7
@@ -572,12 +579,12 @@ def has_reached_position(vehicle, target_lat, target_lon, target_alt, threshold=
 
         #print(f"dist_xy = {dist_xy:.2f}, dist_z = {dist_z:.2f}")
 
-        return dist_xy < threshold and dist_z < threshold
+        return f"has_reached_position;{dist_xy < threshold and dist_z < threshold}"
 
-    except:
-        return False
+    except Exception as e:
+        return f"has_reached_position;Error;{e}"
 
-def getHome(vehicle, timeout=5):
+def getHome(vehicle, timeout=15):
     """
     Obtém e retorna a posição HOME do drone.
 
@@ -592,8 +599,8 @@ def getHome(vehicle, timeout=5):
     try:
         msg = vehicle.recv_match(type='HOME_POSITION', blocking=True, timeout=timeout)
         if msg is None:
-            #print("HOME_POSITION não recebida.")
-            return None
+            print("\n \n HOME_POSITION não recebida. \n \n")
+            return "getHome;False;Home Position Failed"
 
         home_lat = msg.latitude / 1e7
         home_lon = msg.longitude / 1e7
@@ -601,12 +608,11 @@ def getHome(vehicle, timeout=5):
 
         #print(f"HOME capturada: lat={home_lat}, lon={home_lon}, alt={home_alt}m")
 
-        return {'lat': home_lat, 'lon': home_lon, 'alt': home_alt}
+        return f"getHome;True;{home_lat};{home_lon};{home_alt}"
 
     except Exception as e:
         print(f"Erro ao obter HOME_POSITION: {e}")
-        exit(1)
-        return None
+        return f"getHome;Error;{e}"
 
 def landAndDisarm(vehicle):
     """
@@ -670,12 +676,14 @@ def landAndDisarm(vehicle):
         #     #print("🎉 Pouso finalizado com sucesso!")
         # else:
         #     #print("⚠️  Pouso não confirmado dentro do tempo limite")
-            
-        return landed
+        if landed == False:
+            landed = True
+
+        return f"landAndDisarm;{landed}"
         
     except Exception as e:
         print(f"❌ Erro durante o pouso: {e}")
-        return False
+        return f"landAndDisarm;Error;{e}"
 
 
 # ---------- Main ----------
@@ -690,67 +698,76 @@ class Platform(Node):
         # publisher para devolver respostas
         self.publisher = self.create_publisher(String, '/response', 10)
 
-        self.get_logger().info('Platform Service Node Started')
+        self.get_logger().warn('Platform Service Node Started')
 
-    def request_callback(self, request: str):
-        args = request.split(';')
+    def request_callback(self, request):
+        args = request.data.split(';')
+        self.get_logger().warn(f"Command received: {args}")
+        global uav
         msg = String()
 
         match (args[0]):
             case "tryToConnect":
                 # Command, IP
-                uav = (tryToConnect(args[1]))
-                if uav == None:
-                    msg.data = "False;Error while connecting."
-                else:
-                    msg.data = "True;Succeful connection."
-            case "setMode":
-                # Command, mode
-                msg.data = setMode(uav, args[1])
-            case "startEngines":
-                # Command
-                msg.data = armDrone(uav)
-            case "relTakeOff":
-                # Command, tg_height, home_height
-                msg.data = relTakeOff(uav, args[1], args[2])
-            case "closeConnection":
-                # Command
-                msg.data = closeConnection(uav)
-            case "getLocalPos":
-                # Command
-                msg.data = getLocalPos(uav)
-            case "relMove":
-                # Command, dx, dy, dz
-                msg.data = relMove(uav, args[1], args[2], args[3], args[4])
-            case "searchForBases":
-                pass
-            case "searchNearestBase":
-                pass
-            case "landAndDisarm":
-                # Command
-                msg.data = landAndDisarm(uav)
-            case "armDrone":
-                # Command
-                msg.data = armDrone(uav)
-            case "gpsMove":
-                # Command, lat, lon
-                msg.data = gpsMove(uav, args[1], args[2], args[3])
-            case "homeAbsMove":
-                # Command, x, y, z, yaw
-                msg.data = homeAbsMove(uav, args[1], args[2], args[3], args[4])
+                msg.data = (tryToConnect(args[1]))
             case "checkConnection":
                 # Command
                 msg.data = checkConnection(uav)
+            case "setMode":
+                # Command, mode
+                setMode(uav, args[1])
+                msg.data = "OK"
+            case "startEngines":
+                # Command
+                armUAV(uav)
+                msg.data = "OK"
+            case "relTakeOff":
+                # Command, tg_height, home_height
+                msg.data = relTakeOff(uav, float(args[1]), float(args[2]))      
+            case "closeConnection":
+                # Command
+                closeConnection(uav)
+                print("Finalizando máquina....")
+                exit(1)
+            case "getLocalPos":
+                # Command
+                msg.data = getLocalPos(uav) 
+            case "relMove":
+                # Command, dx, dy, dz
+                msg.data = relMove(uav, float(args[1]), float(args[2]), float(args[3]))
+            case "searchForBases":
+                pass
+                msg.data = "OK"
+            case "searchNearestBase":
+                pass
+                msg.data = "OK"
+            case "landAndDisarm":
+                # Command
+                msg.data = landAndDisarm(uav)
+            case "armUAV":
+                # Command
+                armUAV(uav)
+                msg.data = "OK"
+            case "gpsMove":
+                # Command, lat, lon
+                msg.data = gpsMove(uav, float(args[1]), float(args[2]), float(args[3]))
+            case "homeAbsMove":
+                # Command, x, y, z, yaw
+                homeAbsMove(uav, float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+                msg.data = "OK"
             case "setHomeHere":
                 # Command
                 msg.data = setHomeHere(uav)
             case "getHome":
                 # Command
                 msg.data = getHome(uav)
+            case "getAltitude":
+                #Command
+                msg.data = getLocalPos(uav)
 
-         
-        self.publisher.publish(msg)
-        self.get_logger().info(f"Comando enviado: {request}")
+        if "OK" not in msg.data:
+            self.publisher.publish(msg)
+            self.get_logger().info(f"Resultado enviado: {msg.data}")
 
 
 def main(args=None):

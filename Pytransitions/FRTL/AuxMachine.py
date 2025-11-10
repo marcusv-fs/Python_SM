@@ -4,7 +4,7 @@ sys.path.append('/usr/lib/python3/dist-packages')
 import threading
 import rclpy, time
 from rclpy.node import Node
-from std_msgs.msg import UInt8
+from std_msgs.msg import UInt8, String
 from sensor_msgs.msg import Image as RosImage
 import numpy as np
 import gz.transport13 as gz
