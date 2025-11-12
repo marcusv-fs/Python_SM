@@ -22,6 +22,15 @@ def tryToConnect(connection_string, baudrate=115200, timeout=30):
     global uav
     try:
         drone = mavutil.mavlink_connection(connection_string, baud=baudrate)
+        
+
+        drone.mav.param_set_send(
+            drone.target_system,
+            drone.target_component,
+            b'PLND_ENABLED',
+            0,      # Confirmation
+            mavutil.mavlink.MAV_PARAM_TYPE_INT8
+        )
         drone.wait_heartbeat(timeout=timeout)
         uav = drone
         return "tryToConnect;True"
@@ -253,7 +262,7 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
         # Obtém posição atual estimada
         msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
         if msg is None:
-            #print("Não foi possível obter a posição atual.")
+            print("Não foi possível obter a posição atual.")
             return
         
         # Posição atual no frame NED
@@ -261,14 +270,10 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
         y0 = msg.y
         z0 = msg.z
 
-        #print("Pos atual NED: x: ", x0, " , y: ", y0, " z: ", z0)
-
         # Nova posição desejada
         x = x0 + dx
         y = y0 + dy
         z = z0 - dz  
-
-        #print("Pos desejada NED: x: ", x, " , y: ", y, " z: ", z)
 
         yaw_rad = math.radians(yaw_deg)
         timestamp = int((time.time() - START_TIME) * 1000) 
@@ -288,32 +293,56 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
         
         # Parâmetros de tolerância e timeout
         tolerance = 0.1  # 1 metro de tolerância
-        timeout = 90     # 30 segundos máximo
-        start_wait = time.time()
+        timeout = 30     # 30 segundos máximo
+        start_time = time.time()
+        last_move_time = time.time()
         
+        # Posição anterior para detectar movimento
+        prev_x, prev_y, prev_z = x0, y0, z0
+
         while True:
-            #Verifica timeout
-            if time.time() - start_wait > timeout:
-                #print("Timeout: Drone não chegou à posição desejada a tempo")
-                print("----------- RelMove Error, Timeout")
+            # Timeout geral
+            if time.time() - start_time > timeout:
+                print("[ERROR] Timeout: Drone não chegou à posição desejada.")
                 return "relMove;Error;Timeout"
-            
-            # Obtém posição atual
-            pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
-            if pos_msg is None:
+
+            # Lê posição atual
+            msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
+            if msg is None:
                 continue
-            
-            # Calcula distância até o alvo
-            dist = math.sqrt((pos_msg.x - x)**2 + 
-                           (pos_msg.y - y)**2 + 
-                           (pos_msg.z - z)**2)
-            
-            # Verifica se chegou perto o suficiente do alvo
+
+            # Calcula distância ao alvo
+            dist = math.sqrt((msg.x - x)**2 + (msg.y - y)**2 + (msg.z - z)**2)
+
+            # Verifica se chegou
             if dist <= tolerance:
-                print(f"Posição alcançada! Erro: {dist:.2f} metros")
+                print(f"Posição alcançada! Erro: {dist:.2f} m")
                 return "relMove;True"
 
-            time.sleep(0.1)
+            # Verifica movimento
+            move_dist = math.sqrt((msg.x - prev_x)**2 + (msg.y - prev_y)**2 + (msg.z - prev_z)**2)
+            if move_dist > 0.05:  # se moveu mais de 5 cm
+                last_move_time = time.time()
+                prev_x, prev_y, prev_z = msg.x, msg.y, msg.z
+
+            # Se não se moveu por 5 s → reenviar comando
+            if time.time() - last_move_time > 5:
+                print("[WARN] Drone parado há 5s. Reenviando comando de movimento...")
+                timestamp = int((time.time() - START_TIME) * 1000)
+                vehicle.mav.set_position_target_local_ned_send(
+                    timestamp,
+                    vehicle.target_system,
+                    vehicle.target_component,
+                    mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                    0b0000111111111000,
+                    x, y, z,
+                    0, 0, 0,
+                    0, 0, 0,
+                    yaw_rad, 0
+                )
+                last_move_time = time.time()
+
+            time.sleep(0.2)
         
         
     except Exception as e:
@@ -340,9 +369,10 @@ def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
             tg_altitude    # Altitude relativa
         )
         gps_resp = get_global_position(vehicle).split(";")
-        cont = 0
         pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
         altitude = (abs(pos[2]) - abs(home_altitude))
+        cont = 0
+
         while ((altitude < abs(tg_altitude * 0.95)) and (altitude < (abs(tg_altitude) - 0.5))):
             try:
                 gps_resp = get_global_position(vehicle).split(";")
@@ -499,7 +529,7 @@ def closeConnection(vehicle):
         return f"closeConnection;Error;{e}"
         exit(1)
 
-def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
+def setHome(vehicle, altitude_type='ABSOLUTE'):
     """
     Define o ponto de home para a posição atual do drone.
 
@@ -515,7 +545,7 @@ def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
         msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=15)
         if not msg:
             #print("Falha ao obter posição atual.")
-            return "setHomeHere;False;Failed to get position"
+            return "setHome;False;Failed to get position"
 
         lat = msg.lat / 1e7
         lon = msg.lon / 1e7
@@ -536,11 +566,11 @@ def setHomeHere(vehicle, altitude_type='ABSOLUTE'):
         )
 
         #print("Comando de definição de HOME enviado.")
-        return f"setHomeHere;True;{lat};{lon};{alt}"
+        return f"setHome;True;{lat};{lon};{alt}"
 
     except Exception as e:
         print(f"Erro ao definir HOME: {e}")
-        return f"setHomeHere;Error;{e}"
+        return f"setHome;Error;{e}"
 
 def haversine(lat1, lon1, lat2, lon2):
         R = 6371000  # raio da Terra em metros
@@ -633,7 +663,7 @@ def landAndDisarm(vehicle):
             0           # Altitude = atual
         )
         # #print("Comando de pouso enviado. Aguardando pouso...")
-        timeout = 50 
+        timeout = 30 
         start_time = time.time()
         landed = False
         
@@ -649,17 +679,14 @@ def landAndDisarm(vehicle):
             # Verifica o system status para ver se está no solo
             extended_sys_state = vehicle.recv_match(type='EXTENDED_SYS_STATE', blocking=True, timeout=1)
             if extended_sys_state:
-                # MAV_LANDED_STATE: 0=undef, 1=on ground, 2=in air, 3=takeoff, 4=landing
                 if extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_ON_GROUND:
-                    # #print("✅ouso completado! Drone está no solo.")
                     landed = True
                     break
                 elif extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_LANDING:
                     alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
                     if alt_msg:
-                        relative_alt = alt_msg.relative_alt / 1000.0  # mm para metros
-                        # #print(f"Pousando... Altitude relativa: {relative_alt:.1f}m")
-            
+                        relative_alt = alt_msg.relative_alt / 1000.0 
+
             # Alternativa: verifica altitude relativa como fallback
             alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
             if alt_msg:
@@ -755,9 +782,9 @@ class Platform(Node):
                 # Command, x, y, z, yaw
                 homeAbsMove(uav, float(args[1]), float(args[2]), float(args[3]), float(args[4]))
                 msg.data = "OK"
-            case "setHomeHere":
+            case "setHome":
                 # Command
-                msg.data = setHomeHere(uav)
+                msg.data = setHome(uav)
             case "getHome":
                 # Command
                 msg.data = getHome(uav)

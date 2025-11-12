@@ -12,8 +12,8 @@ relTakeOff ( tgHeight : real , homePos : real )
 
 interface IEvents {
 	event start : int
-event connection_res : int
-event takePicture : Image
+
+	event takePicture : Image
 }
 
 interface IPhases {
@@ -37,7 +37,8 @@ updateBasePos (base : Target)
 
 interface IGlobalVars {
 	const TARGET_HEIGHT : int = 4
-	var homePos : vector ( real , 3 ) , altitude : real = 0
+	var  homePos : Position , 
+altitude : real = 0
 }
 
 robotic platform UAV {
@@ -55,13 +56,13 @@ stm FRTL {
 		entry isConnected = tryToConnect ( ) ; connectionTrys = connectionTrys + 1 ; wait ( 1 )
 	}
 	state Wait {
-		entry skip ; wait ( 1 )
+		entry homePos = setHome ( ) ; wait ( 1 )
 	}
 	state StartEngines {
-		entry setMode ( "GUIDED" ) ; armUAV ( ) ; wait ( 1 )
+		entry setMode ( "GUIDED" ) ; armUAV ( )
 	}
 	state TakeOff {
-		entry relTakeOff ( TARGET_HEIGHT , homePos [ 2 ] ) ; wait ( 1 ) ; skip ; wait ( 1 )
+		entry relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
 	}
 	state Phases {
 	entry if phase == 1 then Phase1 ( ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( ) else if phase == 4 then Phase4 ( ) end end end end
@@ -79,6 +80,7 @@ stm FRTL {
 		from Wait
 		to StartEngines
 	trigger 
+	
 	
 	
 	
@@ -120,7 +122,7 @@ uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases 
 	state Explore {
 	}
 	state SearchForBases {
-		entry SearchBases ( img )
+		entry SearchBases ( )
 	}
 	transition t0 {
 		from i0
@@ -131,6 +133,7 @@ uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases 
 		from Explore
 		to SearchForBases
 		trigger 
+		
 		
 		takePicture ? img
 		condition count <= MAX_ATTEMPT
@@ -189,7 +192,7 @@ state LandAndScore {
 		condition count > MAX_ATTEMPT
 	}
 state TakeOff {
-		entry relTakeOff ( TARGET_HEIGHT , homePos [ 2 ] ) ; wait ( 1 )
+		entry setMode ( "GUIDED" ) ; armUAV ( ) ; relTakeOff ( TARGET_HEIGHT , homePos [ 2 ] ) ; wait ( 1 )
 	}
 	transition t10 {
 		from TakeOff

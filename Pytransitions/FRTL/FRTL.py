@@ -8,8 +8,8 @@ from dataclasses import dataclass
 TARGET_HEIGHT = 3
 resp = ['']
 msg = String()
-global wait
-wait = False
+global Wait_flag
+Wait_flag = False
 
 @dataclass
 class Position:
@@ -22,7 +22,19 @@ class Target:
     id: int
     pos: Position
     visited: bool = False
-    
+
+def Wait():
+    global Wait_flag
+    Wait_flag = False
+    while Wait_flag == False:
+        time.sleep(1)
+    Wait_flag = False
+
+def Request(node: Node, command : str):
+    msg.data = command
+    node.request_pub.publish(msg)
+
+
 class Phase1(GraphMachine):
     ####################### States Declaration #######################   
     states = ['Initial', 'Explore', 'SearchForBases', 'GoToBase', 'ApproachToBase', 'LandAndScore', 'TakeOff', 'Final']
@@ -48,7 +60,7 @@ class Phase1(GraphMachine):
         {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final', 'conditions': 'cond_TakeOff_Final'},
     ]
 
-    def __init__(self, node: Node, uav, homePos):    
+    def __init__(self, node: Node, homePos):    
         super().__init__(
             model=self,
             name="Phase1",
@@ -60,7 +72,6 @@ class Phase1(GraphMachine):
             show_state_attributes=True
         )
 
-        self.uav = uav
         self.targetHeight = TARGET_HEIGHT
         self.homePos = homePos
         self.finished = False
@@ -116,23 +127,13 @@ class Phase1(GraphMachine):
         self.basePos = basePosError
     
     def updateDronePos(self):
-        global wait
-
         try:
-            msg.data = f"getLocalPos"
-            self.node.request_pub.publish(msg)
-            wait = False
-
-            while wait == False:
-                time.sleep(1)
-            
-            wait = False
+            Request(self.node, f"getLocalPos")
+            Wait()
 
         except Exception as e:
             print(f"Erro ao atualizar a posição do drone: {e}")
-            msg.data = f"setMode;EMERGENCY"
-            self.node.request_pub.publish(msg)
-            wait = False
+            Request(self.node, f"setMode;EMERGENCY")
             exit(1)
 
     def calcDist(self, basePos: Position, dronePos: Position):
@@ -215,13 +216,8 @@ class Phase1(GraphMachine):
 
     def before_ApproachToBase_ApproachToBase(self):
         print("Moving to new Position...")
-
-        msg.data = f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}"
-        self.node.request_pub.publish(msg)
-
-        global wait
-        while wait == False:
-            time.sleep(1)
+        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}")
+        Wait()
 
     ####################### On_enter States #######################         
     def on_enter_Explore(self):
@@ -234,14 +230,8 @@ class Phase1(GraphMachine):
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
         self.basePos = self.bases[self.visitedBases].pos
-
-        msg.data = f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}"
-        self.node.request_pub.publish(msg)
-
-        global wait
-        while wait == False:
-            time.sleep(1)
-
+        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}")
+        Wait()
 
     def on_enter_ApproachToBase(self):
         self.node.get_logger().info("on_enter_ApproachToBase")
@@ -251,14 +241,10 @@ class Phase1(GraphMachine):
         print({self.distToTarget})
 
     def on_enter_LandAndScore(self):
-        global wait
         self.node.get_logger().info("on_enter_LandAndScore")
         print("Landing...")
-        msg.data = f"landAndDisarm"
-        self.node.request_pub.publish(msg)
-        wait = False
-        while wait == False:
-            time.sleep(1)
+        Request(self.node, f"landAndDisarm")
+        Wait()
 
         print("Update DronePos and markVisitedBases...")
         self.updateDronePos()
@@ -266,28 +252,20 @@ class Phase1(GraphMachine):
         self.visitedBases += 1
 
     def on_enter_TakeOff(self):
-        global wait
         self.node.get_logger().info("on_enter_TakeOff")
         print("Changing to Guided...")
-        msg.data = f"setMode;GUIDED"
-        self.node.request_pub.publish(msg)
+        Request(self.node, f"setMode;GUIDED")
 
-        time.sleep(1)
         print("Arming...")
-        msg.data = f"armUAV"
-        self.node.request_pub.publish(msg)
+        Request(self.node, f"armUAV")
 
         print("TakingOff...")
-        msg.data = f"relTakeOff;{self.targetHeight};{self.homePos.Z}"
-        self.node.request_pub.publish(msg)
-        wait = False
-        while wait == False:
-            time.sleep(1)
+        Request(self.node, f"relTakeOff;{self.targetHeight};{self.homePos.Z}")
+        Wait()
 
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Phase1_Final")
         self.finished = True
-    
 
     ####################### run #######################   
     def run(self):
@@ -312,7 +290,7 @@ class FRTL(GraphMachine):
     transitions = [
         {'trigger': 'Initial_to_Connect', 'source': 'Initial', 'dest': 'Connect'},
         {'trigger': 'Connect_to_Connect', 'source': 'Connect', 'dest': 'Connect', 'conditions': 'cond_Connect_Connect', 'before': 'before_Connect_Connect'},
-        {'trigger': 'Connect_to_Wait', 'source': 'Connect', 'dest': 'Wait', 'conditions': 'cond_Connect_Wait', 'before': 'reset_trigger_start'},
+        {'trigger': 'Connect_to_Wait', 'source': 'Connect', 'dest': 'Wait', 'conditions': 'cond_Connect_Wait'},
         {'trigger': 'Wait_to_StartEngines', 'source': 'Wait', 'dest': 'StartEngines', 'conditions': 'cond_Wait_StartEngines', 'before': 'reset_trigger_start'},
         {'trigger': 'StartEngines_to_TakeOff', 'source': 'StartEngines', 'dest': 'TakeOff'},
         {'trigger': 'TakeOff_to_Phases', 'source': 'TakeOff', 'dest': 'Phases'},
@@ -333,7 +311,6 @@ class FRTL(GraphMachine):
 
         #connection_string = "tcp:127.0.0.1:5760"
         self.connection_string = "udp:127.0.0.1:14551"
-        self.uav = None
         self.finished = False
         self.node = node
         self.start_time = time.time()
@@ -353,7 +330,6 @@ class FRTL(GraphMachine):
         try:
             out_dir = 'Pytransitions/FRTL/Data'
             os.makedirs(out_dir, exist_ok=True)
-            
             self.get_graph().draw(os.path.join(out_dir, 'FRTL.canon'), prog='dot')
             self.get_graph().draw(os.path.join(out_dir, 'FRTL.png'), prog='dot')
 
@@ -361,8 +337,8 @@ class FRTL(GraphMachine):
             self.node.get_logger().error(f"Não foi possível gerar diagrama: {e}")
 
 ####################### Transition Conditions ####################### 
-    def cond_Connect_Connect(self):
-        if self.isConnected == False and self.connectionTrys < 3:
+    def cond_Connect_Connect(self) -> bool:
+        if ((not self.isConnected == True) and self.connectionTrys < 3):
             return True
         return False
     
@@ -384,95 +360,46 @@ class FRTL(GraphMachine):
         self.connectionTrys = self.connectionTrys + 1
 
     def before_Phases_Final(self):
-        global wait
         print("Returning to Launch")
-        wait = False
-        msg.data = f"gpsMove;{self.homePos.X};{self.homePos.Y};{self.targetHeight}"
-        self.node.request_pub.publish(msg)
-        while wait == False:
-            time.sleep(1)
-
-        wait = False
-        msg.data = f"landAndDisarm"
-        self.node.request_pub.publish(msg)
-        while wait == False:
-            time.sleep(1)
+        Request(self.node, f"gpsMove;{self.homePos.X};{self.homePos.Y};{self.targetHeight}")
+        Wait()
+        Request(self.node, f"landAndDisarm")
+        Wait()
         
-        
-
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
-        global wait
-
         self.node.get_logger().info("on_enter_Connect")
-
-        msg.data = f"tryToConnect;{self.connection_string}"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        msg.data = f"checkConnection"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        while wait == False:
-            time.sleep(1) 
-        
-        wait = True
+        Request(self.node, f"tryToConnect;{self.connection_string}")
+        Wait()
 
     def on_enter_Wait(self):
-        global wait
         self.node.get_logger().info("on_enter_Wait")
-        msg.data = f"setHomeHere"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        while wait == False:
-            time.sleep(1) 
-        
-        wait = True
-
-
         print("Waiting for start...\n")
+        Request(self.node, f"setHome")
+        Wait()
+        
 
     def on_enter_StartEngines(self):
-        global wait
         self.node.get_logger().info("on_enter_StartEngines")
-        msg.data = f"setMode;GUIDED"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        msg.data = f"armUAV"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        time.sleep(5)
-
-    def on_enter_TakeOff(self):
-        global wait
-        self.node.get_logger().info("on_enter_TakeOff")
-
-        msg.data = f"relTakeOff;{self.targetHeight};{self.homePos.Z}"
-        self.node.request_pub.publish(msg)
-        wait = False
-
-        while wait == False:
-            time.sleep(1)
-
+        Request(self.node, f"setMode;GUIDED")
+        Request(self.node, f"armUAV")
         
 
+    def on_enter_TakeOff(self):
+        self.node.get_logger().info("on_enter_TakeOff")
+        Request(self.node, f"relTakeOff;{self.targetHeight};{self.homePos.Z}")
+        Wait()        
+
     def on_enter_Phases(self):
-        global wait
         self.node.get_logger().info("on_enter_Phases")
         if self.phase == 1:
-            self.mission = Phase1(self.node, self.uav, self.homePos)
+            self.mission = Phase1(self.node, self.homePos)
             self.mission.run()
 
     def on_enter_Final(self):
-        global wait
         self.node.get_logger().info("on_enter_Final")
-        wait = False
-        msg.data = f"closeConnection"
-        self.node.request_pub.publish(msg)
+        Request(self.node, f"closeConnection")
+        
         time.sleep(5)
         self.finished = True
 
@@ -499,17 +426,12 @@ class FrtlNode(Node):
         super().__init__('machine1_node')
         self.get_logger().info("Node iniciado, criando máquina de estados...")
         self.machine = FRTL(self)
-
         # subscriber para receber triggers
         self.create_subscription(UInt8, '/trigger_start', self.start_callback, 10)
-        
         # subscriber para receber comandos
         self.create_subscription(String, '/response', self.response_callback, 10)
-
-        # publisher para requisitar ações da plataforma
         # publisher para requisitar ações da plataforma
         self.request_pub = self.create_publisher(String, '/request', 10)
-
 
     def start_callback(self, msg: UInt8):
         self.machine.trigger_start = True
@@ -522,7 +444,7 @@ class FrtlNode(Node):
             exit(1)
 
     def response_callback(self, msg: String):
-        global wait
+        global Wait_flag
         resp = msg.data.split(';')
         self.get_logger().warn(str(resp))
         error = False
@@ -533,48 +455,50 @@ class FrtlNode(Node):
                     self.machine.mission.dronePos.X = float(resp[2])
                     self.machine.mission.dronePos.Y = float(resp[3])
                     self.machine.mission.dronePos.Z = float(resp[4])
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
-            case "setHomeHere":
+            case "setHome":
                 if resp[1] == "True":
                     self.machine.homePos.X = float(resp[2])
                     self.machine.homePos.Y = float(resp[3])
                     self.machine.homePos.Z = float(resp[4])
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
-            case "checkConnection":
+            case "tryToConnect":
                 if resp[1] == "True":
                     self.machine.isConnected = True
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
             case "relTakeOff":
                 if resp[1] == "True":
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
             case "relMove":
                 if resp[1] == "True":
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
             case "landAndDisarm":
                 if resp[1] == "True":
-                    wait = True
+                    Wait_flag = True
                 else:
                     error = True
             case "gpsMove":
                 if resp[1] == "True":
-                    wait = True
+                    Wait_flag = True
+                else:
+                    error = True
+            case "setHome":
+                if resp[1] == "True":
+                    Wait_flag = True
                 else:
                     error = True
         if error:
             self.get_logger().error("; ".join(resp))
-
-
-
 
 ######################## MAIN ########################
 def ros_spin_thread(node):
