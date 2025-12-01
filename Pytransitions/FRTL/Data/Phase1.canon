@@ -19,7 +19,7 @@ digraph "State Machine" {
 		fillcolor=darksalmon,
 		label="Initial\l",
 		peripheries=2];
-	Explore	[label="Explore\l- enter:\l  + on_enter_Explore\l"];
+	Explore	[label="Explore\l"];
 	Initial -> Explore	[label=Initial_to_Explore];
 	SearchForBases	[label="SearchForBases\l- enter:\l  + on_enter_SearchForBases\l"];
 	Explore -> SearchForBases	[label="Explore_to_SearchForBases [cond_Explore_SearchForBases]"];

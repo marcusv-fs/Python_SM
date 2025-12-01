@@ -1,9 +1,10 @@
 import os, time, rclpy, threading, math
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
-from std_msgs.msg import UInt8, String
-import Platform
+from std_msgs.msg import UInt8, String  # type: ignore
 from dataclasses import dataclass
+from sensor_msgs.msg import Image
+from cv_bridge import CvBridge
 
 TARGET_HEIGHT = 3
 resp = ['']
@@ -34,7 +35,6 @@ def Request(node: Node, command : str):
     msg.data = command
     node.request_pub.publish(msg)
 
-
 class Phase1(GraphMachine):
     ####################### States Declaration #######################   
     states = ['Initial', 'Explore', 'SearchForBases', 'GoToBase', 'ApproachToBase', 'LandAndScore', 'TakeOff', 'Final']
@@ -43,7 +43,7 @@ class Phase1(GraphMachine):
     transitions = [
         {'trigger': 'Initial_to_Explore', 'source': 'Initial', 'dest': 'Explore', 'before': 'before_Initial_Explore'},
 
-        {'trigger': 'Explore_to_SearchForBases', 'source': 'Explore', 'dest': 'SearchForBases', 'conditions': 'cond_Explore_SearchForBases'},
+        {'trigger': 'Explore_to_SearchForBases', 'source': 'Explore', 'dest': 'SearchForBases', 'conditions': 'cond_Explore_SearchForBases', 'before': 'reset_trigger_image'},
         {'trigger': 'Explore_to_Final', 'source': 'Explore', 'dest': 'Final', 'conditions': 'cond_Explore_Final'},
 
         {'trigger': 'SearchForBases_to_Explore', 'source': 'SearchForBases', 'dest': 'Explore', 'conditions': 'cond_SearchForBases_Explore', 'before': 'before_SearchForBases_Explore'},
@@ -60,7 +60,7 @@ class Phase1(GraphMachine):
         {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final', 'conditions': 'cond_TakeOff_Final'},
     ]
 
-    def __init__(self, node: Node, homePos):    
+    def __init__(self, node: Node, homePos: Position, TARGET_HEIGHT: float):    
         super().__init__(
             model=self,
             name="Phase1",
@@ -78,10 +78,14 @@ class Phase1(GraphMachine):
         self.node = node
         self.start_time = time.time()
 
+        self.img = None
+        self.trigger_image = False
         self.count = 0
         self.visitedBases = 0
         self.bases: list[Target] = []
-        self.defPos = [Position(1,1,4), Position(2,2,4), Position(3,3,4)]
+        self.defPos = [ Position(1 + self.homePos.X,1 + self.homePos.Y,self.targetHeight), 
+                        Position(2 + self.homePos.X,2 + self.homePos.Y,self.targetHeight),
+                        Position(3 + self.homePos.X,3 + self.homePos.Y,self.targetHeight)]
         self.basePos = Position(0,0,0)
         self.dronePos = Position(0,0,0)
         self.distToTarget = 0.0
@@ -101,7 +105,7 @@ class Phase1(GraphMachine):
             self.node.get_logger().error(f"Não foi possível gerar diagrama: {e}")
 
 ####################### Mission Functions #######################     
-    def searchForBases(self):
+    def searchBases(self, img):
         if self.visitedBases < 1:
             Targets = [
                 Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
@@ -113,7 +117,7 @@ class Phase1(GraphMachine):
             for base in Targets:
                 self.bases.append(base)
     
-    def searchNearestBase(self):
+    def searchNearestBase(self, img):
         X = self.bases[self.visitedBases].pos.X - self.dronePos.X
         Y = self.bases[self.visitedBases].pos.Y - self.dronePos.Y
         Z = self.bases[self.visitedBases].pos.Z
@@ -163,53 +167,41 @@ class Phase1(GraphMachine):
 
 ####################### Transition Conditions ####################### 
     def cond_Explore_SearchForBases(self):
-        if self.count <= self.MAX_ATTEMPT:
-            return True
-        return False
+        return self.count <= self.MAX_ATTEMPT
     
     def cond_Explore_Final(self):
-        if self.count > self.MAX_ATTEMPT:
-            return True
-        return False
+        return self.count > self.MAX_ATTEMPT
 
     def cond_SearchForBases_Explore(self):
-        if len(self.bases) == 0:
-            return True
-        return False
+        return len(self.bases) == 0
             
     def cond_SearchForBases_GoToBase(self):
-        if len(self.bases) != 0:
-            return True
-        return False
+        return len(self.bases) != 0
     
     def cond_ApproachToBase_ApproachToBase(self):
-        if (self.distToTarget >= self.SAFE_DISTANCE):
-            return True
-        return False
+        return (self.distToTarget >= self.SAFE_DISTANCE)
     
     def cond_ApproachToBase_LandAndScore(self):
-        if (self.distToTarget < self.SAFE_DISTANCE):
-            return True
-        return False
+        return (self.distToTarget < self.SAFE_DISTANCE)
     
     def cond_TakeOff_Explore(self):
-        if (self.visitedBases < 5):
-            return True
-        return False
+        return (self.visitedBases < 5)
     
     def cond_TakeOff_Final(self):
-        if (self.visitedBases >= 5):
-            return True
-        return False
+        return (self.visitedBases >= 5)
     
     ####################### Before Transitions ####################### 
     def before_Initial_Explore(self):
         self.count = 1
         self.visitedBases = 0
 
+    def reset_trigger_image(self):
+        self.trigger_image = False
+
     def before_SearchForBases_Explore(self):
+        Request(self.node, f"relMove;{self.defPos[self.count].X};{self.defPos[self.count].Y};{self.defPos[self.count].Z}")
+        Wait()
         self.count += 1
-        time.sleep(1)
 
     def before_SearchForBases_GoToBase(self):
         self.count = 1
@@ -220,12 +212,10 @@ class Phase1(GraphMachine):
         Wait()
 
     ####################### On_enter States #######################         
-    def on_enter_Explore(self):
-        pass
 
     def on_enter_SearchForBases(self):
         self.node.get_logger().info("on_enter_SearchForBases")
-        self.searchForBases()
+        self.searchBases(self.img)
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
@@ -235,21 +225,26 @@ class Phase1(GraphMachine):
 
     def on_enter_ApproachToBase(self):
         self.node.get_logger().info("on_enter_ApproachToBase")
+
+        while(self.trigger_image == False):
+            time.sleep(0.1)
+        self.trigger_image = False
+
         self.updateDronePos()
-        self.searchNearestBase()
+        self.searchNearestBase(self.img)
         self.distToTarget = self.calcDist(self.basePos, self.dronePos)
         print({self.distToTarget})
 
     def on_enter_LandAndScore(self):
         self.node.get_logger().info("on_enter_LandAndScore")
         print("Landing...")
-        Request(self.node, f"landAndDisarm")
+        Request(self.node, f"land")
         Wait()
 
         print("Update DronePos and markVisitedBases...")
         self.updateDronePos()
         self.markVisitedBases(self.dronePos)
-        self.visitedBases += 1
+        self.visitedBases = self.visitedBases + 1
 
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")
@@ -289,12 +284,20 @@ class FRTL(GraphMachine):
 ####################### Transitions Statement  #######################  
     transitions = [
         {'trigger': 'Initial_to_Connect', 'source': 'Initial', 'dest': 'Connect'},
+
         {'trigger': 'Connect_to_Connect', 'source': 'Connect', 'dest': 'Connect', 'conditions': 'cond_Connect_Connect', 'before': 'before_Connect_Connect'},
         {'trigger': 'Connect_to_Wait', 'source': 'Connect', 'dest': 'Wait', 'conditions': 'cond_Connect_Wait'},
+        {'trigger': 'Connect_to_Final', 'source': 'Connect', 'dest': 'Final', 'conditions': 'cond_Connect_Final'},
+
         {'trigger': 'Wait_to_StartEngines', 'source': 'Wait', 'dest': 'StartEngines', 'conditions': 'cond_Wait_StartEngines', 'before': 'reset_trigger_start'},
+
         {'trigger': 'StartEngines_to_TakeOff', 'source': 'StartEngines', 'dest': 'TakeOff'},
+
         {'trigger': 'TakeOff_to_Phases', 'source': 'TakeOff', 'dest': 'Phases'},
+
         {'trigger': 'Phases_to_Final', 'source': 'Phases', 'dest': 'Final', 'before': 'before_Phases_Final'}
+
+        #{'trigger': 'Phases_to_Final', 'source': 'Phases', 'dest': 'Final', 'before': ['before_Phases_Final', 'reset_trigger']} -> Multiplas ações antes da transição
         ]
     
     def __init__(self, node: Node):    
@@ -320,7 +323,6 @@ class FRTL(GraphMachine):
         self.phase = 0
         self.connectionTrys = 0
         self.homePos = Position(0,0,0)
-        self.altitude = 0
         self.targetHeight = TARGET_HEIGHT
         self.mission = None
 
@@ -338,19 +340,16 @@ class FRTL(GraphMachine):
 
 ####################### Transition Conditions ####################### 
     def cond_Connect_Connect(self) -> bool:
-        if ((not self.isConnected == True) and self.connectionTrys < 3):
-            return True
-        return False
+        return ((not self.isConnected) and self.connectionTrys < 3)
     
     def cond_Connect_Wait(self):
-        if self.isConnected == True:
-            return True
-        return False
+        return self.isConnected
+    
+    def cond_Connect_Final(self):
+        return not (self.isConnected and self.connectionTrys >= 3)
     
     def cond_Wait_StartEngines(self):
-        if self.trigger_start:
-            return True
-        return False
+        return self.trigger_start
 
 ####################### Before Transitions ####################### 
     def reset_trigger_start(self):
@@ -361,22 +360,29 @@ class FRTL(GraphMachine):
 
     def before_Phases_Final(self):
         print("Returning to Launch")
-        Request(self.node, f"gpsMove;{self.homePos.X};{self.homePos.Y};{self.targetHeight}")
+        Request(self.node, f"backHome")
+
+###################### Mission Functions #######################
+    def setHome(self):
+        Request(self.node, f"setHome")
         Wait()
-        Request(self.node, f"landAndDisarm")
+        return self.homePos
+
+    def tryToConnect(self):
+        Request(self.node, f"tryToConnect;{self.connection_string}")
         Wait()
-        
+        return self.isConnected
+
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
         self.node.get_logger().info("on_enter_Connect")
-        Request(self.node, f"tryToConnect;{self.connection_string}")
-        Wait()
+        self.isConnected = self.tryToConnect()
+        self.connectionTrys = self.connectionTrys + 1
 
     def on_enter_Wait(self):
         self.node.get_logger().info("on_enter_Wait")
         print("Waiting for start...\n")
-        Request(self.node, f"setHome")
-        Wait()
+        self.homePos = self.setHome()
         
 
     def on_enter_StartEngines(self):
@@ -393,14 +399,12 @@ class FRTL(GraphMachine):
     def on_enter_Phases(self):
         self.node.get_logger().info("on_enter_Phases")
         if self.phase == 1:
-            self.mission = Phase1(self.node, self.homePos)
+            self.mission = Phase1(self.node, self.homePos, TARGET_HEIGHT)
             self.mission.run()
 
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Final")
         Request(self.node, f"closeConnection")
-        
-        time.sleep(5)
         self.finished = True
 
 ####################### run #######################   
@@ -426,10 +430,14 @@ class FrtlNode(Node):
         super().__init__('machine1_node')
         self.get_logger().info("Node iniciado, criando máquina de estados...")
         self.machine = FRTL(self)
+        self.bridge = CvBridge()
+        self.frame = None
         # subscriber para receber triggers
         self.create_subscription(UInt8, '/trigger_start', self.start_callback, 10)
         # subscriber para receber comandos
         self.create_subscription(String, '/response', self.response_callback, 10)
+        # subscriber para receber imagens da câmera
+        self.subscription = self.create_subscription(Image, '/camera/image_raw', self.image_callback, 10)
         # publisher para requisitar ações da plataforma
         self.request_pub = self.create_publisher(String, '/request', 10)
 
@@ -442,6 +450,15 @@ class FrtlNode(Node):
             msg.data = f"setMode;EMERGENCY"
             self.request_pub.publish(msg)
             exit(1)
+
+    def image_callback(self, msg):
+        self.frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+
+        try:
+            self.machine.mission.img = self.frame
+            self.machine.mission.trigger_image = True
+        except:
+            pass
 
     def response_callback(self, msg: String):
         global Wait_flag
@@ -482,7 +499,7 @@ class FrtlNode(Node):
                     Wait_flag = True
                 else:
                     error = True
-            case "landAndDisarm":
+            case "land":
                 if resp[1] == "True":
                     Wait_flag = True
                 else:
@@ -520,6 +537,7 @@ def main(args=None):
     # Inicia as threads
     ros_thread.start()
     fsm_thread.start()
+    time.sleep(5)
 
     # Aguarda a FSM terminar
     fsm_thread.join()

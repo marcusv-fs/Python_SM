@@ -4,6 +4,7 @@ from rclpy.node import Node
 from std_msgs.msg import String
 
 START_TIME = time.time()
+HOME = [0, 0, 0]
 global uav
 
 
@@ -248,7 +249,6 @@ def homeAbsMove(vehicle, x, y, z, yaw_deg):
         print(f"Erro ao mover para posição absoluta: {e}")
         exit(1)
 
-
 def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
     """
     Move o drone para uma posição relativa à atual (em metros, sistema NED).
@@ -329,6 +329,18 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
             if time.time() - last_move_time > 5:
                 print("[WARN] Drone parado há 5s. Reenviando comando de movimento...")
                 timestamp = int((time.time() - START_TIME) * 1000)
+                armUAV(uav)
+
+                vehicle.mav.command_long_send(
+                    vehicle.target_system,
+                    vehicle.target_component,
+                    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
+                    0,      
+                    0, 0, 0, 0,  
+                    0, 0,       
+                    z  
+                )
+
                 vehicle.mav.set_position_target_local_ned_send(
                     timestamp,
                     vehicle.target_system,
@@ -340,7 +352,9 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
                     0, 0, 0,
                     yaw_rad, 0
                 )
+                
                 last_move_time = time.time()
+                time.sleep(5)
 
             time.sleep(0.2)
         
@@ -372,6 +386,7 @@ def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
         pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
         altitude = (abs(pos[2]) - abs(home_altitude))
         cont = 0
+        HOME[2] = tg_altitude
 
         while ((altitude < abs(tg_altitude * 0.95)) and (altitude < (abs(tg_altitude) - 0.5))):
             try:
@@ -408,7 +423,6 @@ def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
     except Exception as e:
         print(f"Erro ao enviar decolagem relativa: {e}")
         return f"relTakeOff;Error;{e}"
-
 
 def setMode(vehicle, mode):
     """
@@ -477,7 +491,7 @@ def getLocalPos(vehicle, timeout=15):
         dict ou None: dicionário com 'X', 'Y', 'Z' em graus/metros, ou None se timeout.
     """
     try:
-        pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
+        pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=timeout)
         if pos_msg is None:
             #print("Timeout ao receber GLOBAL_POSITION_INT.")
             return "getLocalPos;False;Timeout"
@@ -565,6 +579,9 @@ def setHome(vehicle, altitude_type='ABSOLUTE'):
             alt
         )
 
+        global HOME
+        HOME = [lat, lon, alt]
+
         #print("Comando de definição de HOME enviado.")
         return f"setHome;True;{lat};{lon};{alt}"
 
@@ -644,7 +661,7 @@ def getHome(vehicle, timeout=15):
         print(f"Erro ao obter HOME_POSITION: {e}")
         return f"getHome;Error;{e}"
 
-def landAndDisarm(vehicle):
+def land(vehicle):
     """
     Envia comando de pouso (LAND) para o drone e aguarda até o pouso ser completado.
 
@@ -706,12 +723,11 @@ def landAndDisarm(vehicle):
         if landed == False:
             landed = True
 
-        return f"landAndDisarm;{landed}"
+        return f"land;{landed}"
         
     except Exception as e:
         print(f"❌ Erro durante o pouso: {e}")
-        return f"landAndDisarm;Error;{e}"
-
+        return f"land;Error;{e}"
 
 # ---------- Main ----------
 uav = ""
@@ -768,9 +784,9 @@ class Platform(Node):
             case "searchNearestBase":
                 pass
                 msg.data = "OK"
-            case "landAndDisarm":
+            case "land":
                 # Command
-                msg.data = landAndDisarm(uav)
+                msg.data = land(uav)
             case "armUAV":
                 # Command
                 armUAV(uav)
@@ -791,10 +807,19 @@ class Platform(Node):
             case "getAltitude":
                 #Command
                 msg.data = getLocalPos(uav)
+            case "backHome":
+                # Command
+                gpsMove(uav, HOME[0], HOME[1], 4)
+                land(uav)
+                msg.data = "OK"
+            case _:
+                msg.data = "ERROR: Unknown Command"
 
         if "OK" not in msg.data:
             self.publisher.publish(msg)
             self.get_logger().info(f"Resultado enviado: {msg.data}")
+        if "ERROR" in msg.data:
+            self.get_logger().error(f"Erro no comando: {msg.data}")
 
 
 def main(args=None):

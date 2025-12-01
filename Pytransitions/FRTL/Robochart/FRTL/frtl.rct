@@ -17,7 +17,7 @@ interface IEvents {
 }
 
 interface IPhases {
-	Phase1 ( )
+	Phase1 ( homePos: Position, TARGET_HEIGHT: real )
 	Phase2 ( )
 	Phase3 ( )
 	Phase4 ( )
@@ -35,12 +35,6 @@ updateDronePos ( )
 updateBasePos (base : Target)
 }
 
-interface IGlobalVars {
-	const TARGET_HEIGHT : int = 4
-	var  homePos : Position , 
-altitude : real = 0
-}
-
 robotic platform UAV {
 	uses IEvents provides IPlatOps }
 
@@ -49,7 +43,8 @@ datatype Position {   X : real Y : real Z : real } datatype Target { pos : Posit
 stm FRTL {
 	uses IEvents requires IPlatOps 
 	
-	var isConnected : boolean = false , phase : int , connectionTrys : int = 0
+	
+	var isConnected : boolean = false , phase : int , connectionTrys : int = 0 , homePos : Position
 	requires IPhases initial i0
 	final f0
 	state Connect {
@@ -65,7 +60,7 @@ stm FRTL {
 		entry relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
 	}
 	state Phases {
-	entry if phase == 1 then Phase1 ( ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( ) else if phase == 4 then Phase4 ( ) end end end end
+	entry if phase == 1 then Phase1 ( homePos , TARGET_HEIGHT ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( ) else if phase == 4 then Phase4 ( ) end end end end
 	}
 	transition t0 {
 		from i0
@@ -79,12 +74,7 @@ stm FRTL {
 	transition t2 {
 		from Wait
 		to StartEngines
-	trigger 
-	
-	
-	
-	
-	
+	trigger 	
 	
 	start ? phase
 	}
@@ -97,8 +87,8 @@ stm FRTL {
 		to f0
 	action backHome ( )
 	}
-requires IGlobalVars
-	transition t6 {
+const TARGET_HEIGHT : real = 4
+transition t6 {
 		from Connect
 		to f0
 		condition connectionTrys >= 3 /\ not isConnected == true
@@ -115,14 +105,14 @@ requires IGlobalVars
 	}
 }
 
-operation Phase1 ( ) {
+operation Phase1 ( homePos: Position, TARGET_HEIGHT: real) {
 requires Vision requires MapBases requires IPlatOps const MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
 	initial i0
 uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
 	state Explore {
 	}
 	state SearchForBases {
-		entry SearchBases ( )
+		entry SearchBases ( img )
 	}
 	transition t0 {
 		from i0
@@ -135,14 +125,17 @@ uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases 
 		trigger 
 		
 		
+		
+		
 		takePicture ? img
 		condition count <= MAX_ATTEMPT
 	}
 	transition t2 {
 		from SearchForBases
 		to Explore
-	condition isEmpty ( bases )
+	condition len ( bases ) == 0
 		action 
+	
 	relMove ( defPos [ count ] ) ; wait ( 1 ) ; count = count + 1
 	}
 	state GoToBase {
@@ -151,7 +144,7 @@ uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases 
 	transition t3 {
 		from SearchForBases
 		to GoToBase
-		condition not isEmpty ( bases )
+		condition len ( bases ) != 0
 		action count = 1
 	}
 state ApproachToBase {
@@ -192,13 +185,13 @@ state LandAndScore {
 		condition count > MAX_ATTEMPT
 	}
 state TakeOff {
-		entry setMode ( "GUIDED" ) ; armUAV ( ) ; relTakeOff ( TARGET_HEIGHT , homePos [ 2 ] ) ; wait ( 1 )
+		entry setMode ( "GUIDED" ) ; armUAV ( ) ; relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
 	}
 	transition t10 {
 		from TakeOff
 		to Explore
 		condition visitedBases < 5
 	}
-requires IGlobalVars }
+}
 
-function isEmpty ( bases : vector ( Target , 6 ) ) : boolean { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : vector ( real , 3 ) { } function getAltitude ( ) : real { }
+function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { }
