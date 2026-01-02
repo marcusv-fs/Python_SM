@@ -94,7 +94,7 @@ transition t6 {
 }
 
 operation Phase1 ( homePos: Position, TARGET_HEIGHT: real) {
-requires IPlatOps uses IEventsconst MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
+requires IPlatOps uses IEvents const MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
 	initial i0
 var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
 	state Explore {

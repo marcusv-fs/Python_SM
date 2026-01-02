@@ -9,7 +9,7 @@
     <semanticResources>platform:/plugin/circus.robocalc.robochart.textual/lib/robochart/function_toolkit.rct</semanticResources>
     <ownedViews xmi:type="viewpoint:DView" uid="_VqTzgKKwEfCp65691kXgJg">
       <viewpoint xmi:type="description:Viewpoint" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']"/>
-      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_Vwod8KKwEfCp65691kXgJg" name="frtl" repPath="#_Vwc3wKKwEfCp65691kXgJg" changeId="71c475c8-41d6-4fdc-a154-ea7c59c53c35">
+      <ownedRepresentationDescriptors xmi:type="viewpoint:DRepresentationDescriptor" uid="_Vwod8KKwEfCp65691kXgJg" name="frtl" repPath="#_Vwc3wKKwEfCp65691kXgJg" changeId="de9b3a56-dfcf-4e35-af6f-5ef8507ca032">
         <description xmi:type="description_1:DiagramDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']"/>
         <target xmi:type="robochart:RCPackage" href="frtl.rct#/"/>
       </ownedRepresentationDescriptors>
@@ -25,7 +25,7 @@
             <styles xmi:type="notation:FilteringStyle" xmi:id="_Vx8FgqKwEfCp65691kXgJg"/>
           </children>
           <styles xmi:type="notation:ShapeStyle" xmi:id="_Vx4bIaKwEfCp65691kXgJg" fontName="Ubuntu Sans" fontHeight="10" bold="true"/>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Vx4bIqKwEfCp65691kXgJg"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Vx4bIqKwEfCp65691kXgJg" x="-220" y="-140"/>
         </children>
         <children xmi:type="notation:Node" xmi:id="_WPp8QKKwEfCp65691kXgJg" type="2002" element="_WPhZYKKwEfCp65691kXgJg">
           <children xmi:type="notation:Node" xmi:id="_LnsCkKKxEfCp65691kXgJg" type="3012" element="_Lnkt1aKxEfCp65691kXgJg">
@@ -405,7 +405,7 @@
             <styles xmi:type="notation:FilteringStyle" xmi:id="_78x-A6KyEfC2e7Q5yHe_hw"/>
           </children>
           <styles xmi:type="notation:ShapeStyle" xmi:id="_78xW8aKyEfC2e7Q5yHe_hw" fontName="Ubuntu Sans" fontHeight="10"/>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_78xW8qKyEfC2e7Q5yHe_hw" x="646" y="35"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_78xW8qKyEfC2e7Q5yHe_hw" x="625" y="47"/>
         </children>
         <children xmi:type="notation:Node" xmi:id="_Q8GbIKK0EfC5YsujStHiaw" type="2002" element="_Q8BioKK0EfC5YsujStHiaw">
           <children xmi:type="notation:Node" xmi:id="_4JJCUKXpEfCU0dh9wtjCJg" type="3012" element="_4I6_5KXpEfCU0dh9wtjCJg">
@@ -760,7 +760,7 @@
           <styles xmi:type="notation:TextStyle" xmi:id="_ms-DM6XlEfC3jpgt_4uCSA" textAlignment="Center"/>
           <styles xmi:type="notation:LineTypeStyle" xmi:id="_ms-DNKXlEfC3jpgt_4uCSA"/>
           <element xsi:nil="true"/>
-          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ms-DNaXlEfC3jpgt_4uCSA" x="2379" y="970"/>
+          <layoutConstraint xmi:type="notation:Bounds" xmi:id="_ms-DNaXlEfC3jpgt_4uCSA" x="2345" y="965"/>
         </children>
         <children xmi:type="notation:Node" xmi:id="_TzS_wKXrEfCU0dh9wtjCJg" type="2003" element="_TzOuXqXrEfCU0dh9wtjCJg">
           <children xmi:type="notation:Node" xmi:id="_TzS_w6XrEfCU0dh9wtjCJg" type="5007"/>
@@ -1160,6 +1160,9 @@
     <ownedDiagramElements xmi:type="diagram:DNodeList" uid="_VxpxoKKwEfCp65691kXgJg" name="imports" width="20" height="10">
       <target xmi:type="robochart:RCPackage" href="frtl.rct#/"/>
       <semanticElements xmi:type="robochart:RCPackage" href="frtl.rct#/"/>
+      <arrangeConstraints>KEEP_LOCATION</arrangeConstraints>
+      <arrangeConstraints>KEEP_SIZE</arrangeConstraints>
+      <arrangeConstraints>KEEP_RATIO</arrangeConstraints>
       <ownedStyle xmi:type="diagram:FlatContainerStyle" uid="_VxsN4KKwEfCp65691kXgJg" labelSize="10" showIcon="false" borderSize="1" borderSizeComputationExpression="1" foregroundColor="255,255,255">
         <labelFormat>bold</labelFormat>
         <description xmi:type="style:FlatContainerStyleDescription" href="platform:/plugin/circus.robocalc.robochart.graphical/description/robochart.odesign#//@ownedViewpoints[name='RoboChartID']/@ownedRepresentations[name='SpecificationID']/@defaultLayer/@containerMappings[name='ImportsID']/@style"/>
