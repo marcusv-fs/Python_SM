@@ -23,18 +23,6 @@ interface IPhases {
 	Phase4 ( )
 }
 
-interface Vision {
-	SearchBases (img: Image)
-	SearchNearestBase (img: Image)
-}
-
-interface MapBases {
-	isBaseVisited (pos: Position )
-	markVisitedBase ( pos : Position)
-updateDronePos ( )
-updateBasePos (base : Target)
-}
-
 robotic platform UAV {
 	uses IEvents provides IPlatOps }
 
@@ -106,13 +94,13 @@ transition t6 {
 }
 
 operation Phase1 ( homePos: Position, TARGET_HEIGHT: real) {
-requires Vision requires MapBases requires IPlatOps const MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
+requires IPlatOps uses IEventsconst MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5
 	initial i0
-uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
+var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
 	state Explore {
 	}
 	state SearchForBases {
-		entry SearchBases ( img )
+		entry bases = SearchBases ( img )
 	}
 	transition t0 {
 		from i0
@@ -148,10 +136,10 @@ uses IEvents var count : int = 0 , img : Image , visitedBases : int = 0 , bases 
 		action count = 1
 	}
 state ApproachToBase {
-		entry takePicture ? img ; updateDronePos ( ) ; SearchNearestBase ( img ) ; distToTarget = calcDist ( basePos , dronePos )
+		entry takePicture ? img ; dronePos = updateDronePos ( ) ; basePos = SearchNearestBase ( img ) ; distToTarget = calcDist ( basePos , dronePos )
 	}
 state LandAndScore {
-		entry land ( ) ; wait ( 1 ) ; updateDronePos ( ) ; markVisitedBase ( dronePos ) ; visitedBases = visitedBases + 1
+		entry land ( ) ; wait ( 1 ) ; bases = markVisitedBase ( dronePos , bases ) ; visitedBases = visitedBases + 1
 	}
 	final f0
 	transition t4 {
@@ -194,4 +182,4 @@ state TakeOff {
 	}
 }
 
-function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { }
+function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { } function SearchNearestBase ( img : Image ) : Position { } function SearchBases ( img : Image ) : vector ( Target , 6 ) { } function updateDronePos ( ) : Position { } function markVisitedBase ( pos : Position , bases : vector ( Target , 6 ) ) : vector ( Target , 6 ) { }

@@ -1,7 +1,7 @@
 import os, time, rclpy, threading, math
 from transitions.extensions import GraphMachine
 from rclpy.node import Node
-from std_msgs.msg import UInt8, String  # type: ignore
+from std_msgs.msg import UInt8, String
 from dataclasses import dataclass
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
@@ -116,6 +116,7 @@ class Phase1(GraphMachine):
             ]
             for base in Targets:
                 self.bases.append(base)
+        return Targets
     
     def searchNearestBase(self, img):
         X = self.bases[self.visitedBases].pos.X - self.dronePos.X
@@ -201,7 +202,7 @@ class Phase1(GraphMachine):
     def before_SearchForBases_Explore(self):
         Request(self.node, f"relMove;{self.defPos[self.count].X};{self.defPos[self.count].Y};{self.defPos[self.count].Z}")
         Wait()
-        self.count += 1
+        self.count = self.count + 1
 
     def before_SearchForBases_GoToBase(self):
         self.count = 1
@@ -215,7 +216,7 @@ class Phase1(GraphMachine):
 
     def on_enter_SearchForBases(self):
         self.node.get_logger().info("on_enter_SearchForBases")
-        self.searchBases(self.img)
+        self.bases = self.searchBases(self.img)
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
@@ -230,8 +231,8 @@ class Phase1(GraphMachine):
             time.sleep(0.1)
         self.trigger_image = False
 
-        self.updateDronePos()
-        self.searchNearestBase(self.img)
+        self.dronePos = self.updateDronePos()
+        self.basePos = self.searchNearestBase(self.img)
         self.distToTarget = self.calcDist(self.basePos, self.dronePos)
         print({self.distToTarget})
 
@@ -285,12 +286,11 @@ class FRTL(GraphMachine):
     transitions = [
         {'trigger': 'Initial_to_Connect', 'source': 'Initial', 'dest': 'Connect'},
 
-        {'trigger': 'Connect_to_Connect', 'source': 'Connect', 'dest': 'Connect', 'conditions': 'cond_Connect_Connect', 'before': 'before_Connect_Connect'},
+        {'trigger': 'Connect_to_Connect', 'source': 'Connect', 'dest': 'Connect', 'conditions': 'cond_Connect_Connect', 'before': ['before_Connect_Connect']},
         {'trigger': 'Connect_to_Wait', 'source': 'Connect', 'dest': 'Wait', 'conditions': 'cond_Connect_Wait'},
         {'trigger': 'Connect_to_Final', 'source': 'Connect', 'dest': 'Final', 'conditions': 'cond_Connect_Final'},
 
-        {'trigger': 'Wait_to_StartEngines', 'source': 'Wait', 'dest': 'StartEngines', 'conditions': 'cond_Wait_StartEngines', 'before': 'reset_trigger_start'},
-
+        {'trigger': 'Wait_to_StartEngines', 'source': 'Wait', 'dest': 'StartEngines', 'conditions': 'cond_Wait_StartEngines', 'before': ['reset_trigger_start',]},
         {'trigger': 'StartEngines_to_TakeOff', 'source': 'StartEngines', 'dest': 'TakeOff'},
 
         {'trigger': 'TakeOff_to_Phases', 'source': 'TakeOff', 'dest': 'Phases'},
@@ -453,7 +453,6 @@ class FrtlNode(Node):
 
     def image_callback(self, msg):
         self.frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-
         try:
             self.machine.mission.img = self.frame
             self.machine.mission.trigger_image = True
