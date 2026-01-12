@@ -116,7 +116,7 @@ class Phase1(GraphMachine):
             ]
             for base in Targets:
                 self.bases.append(base)
-        return Targets
+        return self.bases
     
     def searchNearestBase(self, img):
         X = self.bases[self.visitedBases].pos.X - self.dronePos.X
@@ -129,12 +129,13 @@ class Phase1(GraphMachine):
         print(f"basePos: {self.basePos}")
         print(f"basePosError: {basePosError}")
 
-        self.basePos = basePosError
+        return basePosError
     
     def updateDronePos(self):
         try:
             Request(self.node, f"getLocalPos")
             Wait()
+            return self.dronePos
 
         except Exception as e:
             print(f"Erro ao atualizar a posição do drone: {e}")
@@ -147,17 +148,11 @@ class Phase1(GraphMachine):
         (basePos.Y) ** 2
     )
 
-    def calcDist2(self, basePos: Position, dronePos: Position):
-        return math.sqrt(
-        (basePos.X - dronePos.X) ** 2 +
-        (basePos.Y - dronePos.Y) ** 2
-    )
-
     def markVisitedBases(self, current_position: Position):
         closestBaseID = 0
-        dist = 9999999
+        dist = 9999999.9
         for base in self.bases:
-            auxDist = self.calcDist2(base.pos, current_position)
+            auxDist = math.sqrt((base.pos.X - current_position.X) ** 2 +(base.pos.Y - current_position.Y) ** 2)
             if dist > auxDist:
                 dist = auxDist
                 closestBaseID = base.id
