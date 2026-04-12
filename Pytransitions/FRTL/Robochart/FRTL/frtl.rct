@@ -19,8 +19,12 @@ interface IEvents {
 interface IPhases {
 	Phase1 ( homePos: Position, TARGET_HEIGHT: real )
 	Phase2 ( )
-	Phase3 ( )
-	Phase4 ( )
+	Phase3 ( homePos : Position , TARGET_HEIGHT : real )
+	Phase4 ( homePos : Position , TARGET_HEIGHT : real )
+}
+
+interface IFrontCamera {
+	event takeFrontPic : Image
 }
 
 robotic platform UAV {
@@ -85,7 +89,6 @@ transition t6 {
 		from Connect
 		to Connect
 		condition not isConnected == true /\ connectionTrys < 3
-		action connectionTrys = connectionTrys + 1
 	}
 	transition t4 {
 		from TakeOff
@@ -103,7 +106,7 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 		entry bases = SearchBases ( img )
 	}
 	transition t0 {
-		from i0
+		from i0 
 		to Explore
 		action count = 1 ; visitedBases = 0
 	}
@@ -111,6 +114,7 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 		from Explore
 		to SearchForBases
 		trigger 
+		
 		
 		
 		
@@ -182,4 +186,116 @@ state TakeOff {
 	}
 }
 
-function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { } function SearchNearestBase ( img : Image ) : Position { } function SearchBases ( img : Image ) : vector ( Target , 6 ) { } function updateDronePos ( ) : Position { } function markVisitedBase ( pos : Position , bases : vector ( Target , 6 ) ) : vector ( Target , 6 ) { }
+operation Phase4 ( homePos : Position
+, TARGET_HEIGHT : real
+) {
+	uses IEvents requires IPlatOps const MAX_ATTEMPT : int = 3
+	var img : Image , targetPos : Position , dronePos : Position , distToTarget : real , SAFE_DISTANCE : real = 1
+	initial i0
+	state GoToCenter {
+		entry takePicture ? img ; targetPos = SearchNearestBase ( img )
+	}
+	state StartLanding {
+		entry relMove ( targetPos ) ; wait ( 1 ) ; SAFE_DISTANCE = 0.3 ; takePicture ? img ; targetPos = SearchNearestBase ( img )
+	}
+	state AbortLanding {
+		entry targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1 ; SAFE_DISTANCE = 1
+	}
+	state FinishLanding {
+		entry land ( ) ; wait ( 1 ) ; setMode ( "GUIDED" )
+	}
+	final f0
+	state TakeOff {
+		entry armUAV ( ) ; relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
+	}
+	transition t0 {
+		from i0
+		to GoToCenter
+		action targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1 ; relMove ( targetPos )
+	}
+	transition t1 {
+		from GoToCenter
+		to StartLanding
+		condition targetPos . X < SAFE_DISTANCE /\ targetPos . Y < SAFE_DISTANCE
+	}
+	transition t2 {
+		from StartLanding
+		to AbortLanding
+		condition targetPos . X > SAFE_DISTANCE \/ targetPos . Y > SAFE_DISTANCE
+	}
+	transition t3 {
+		from AbortLanding
+		to GoToCenter
+		action relMove ( targetPos ) ; wait ( 1 )
+	}
+	transition t4 {
+		from StartLanding
+		to FinishLanding
+		condition targetPos . X < SAFE_DISTANCE /\ targetPos . Y < SAFE_DISTANCE
+	}
+	transition t5 {
+		from FinishLanding
+		to TakeOff
+	}
+	transition t6 {
+		from TakeOff
+		to f0
+	}
+}
+
+operation Phase3 ( homePos : Position
+, TARGET_HEIGHT : real
+) {
+	requires IPlatOps const MAX_ATTEMPT : int = 3 , SAFE_DISTANCE : real = 0.5 , SHELF_POS : Position
+	var Score : int , checkpoints : vector ( Position , 8 ) , count : int = 0 , reading : boolean = false
+	initial i0
+	state GoToShelf {
+		entry relMove ( checkpoints [ count ] )
+	}
+	state StartFrontReader {
+		entry reading = BarCodeReaderStart ( )
+	}
+	state MoveToCheckpoints {
+		entry relMove ( checkpoints [ count ] )
+	}
+	state Abort {
+	}
+	final f0
+	transition t0 {
+		from i0
+		to GoToShelf
+	}
+	transition t1 {
+		from GoToShelf
+		to StartFrontReader
+	}
+	transition t2 {
+		from StartFrontReader
+		to MoveToCheckpoints
+		condition reading
+		action count = 1
+	}
+	transition t3 {
+		from StartFrontReader
+		to Abort
+		condition not reading
+	}
+	transition t4 {
+		from Abort
+		to f0
+	}
+	transition t5 {
+		from MoveToCheckpoints
+		to MoveToCheckpoints
+		condition count < 8
+		action count = count + 1
+	}
+	transition t6 {
+		from MoveToCheckpoints
+		to f0
+		condition count >= 8
+		action reading = BarCodeReaderStop ( )
+	}
+}
+
+function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { } function SearchNearestBase ( img : Image ) : Position { } function SearchBases ( img : Image ) : vector ( Target , 6 ) { } function updateDronePos ( ) : Position { } function markVisitedBase ( pos : Position , bases : vector ( Target , 6 ) ) : vector ( Target , 6 ) { } function BarCodeReaderStart ( ) : boolean { } function BarCodeReaderStop ( ) : boolean { }

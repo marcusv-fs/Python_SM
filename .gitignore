@@ -8,3 +8,10 @@
 /.vs
 /Pytransitions/FRTL/mobilenet/data/FRTL/Annotations/*.xml
 /Pytransitions/FRTL/mobilenet/data/FRTL/JPEGImages/*.jpg
+.vscode
+.mypy_cache
+.venv
+__pycache__
+Pytransitions/FRTL/mobilenet/data/JPEGImages
+Pytransitions/FRTL/mobilenet/data/Annotations
+Pytransitions/FRTL/Gz World
