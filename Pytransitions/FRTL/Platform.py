@@ -326,8 +326,8 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
                 prev_x, prev_y, prev_z = msg.x, msg.y, msg.z
 
             # Se não se moveu por 5 s → reenviar comando
-            if time.time() - last_move_time > 5:
-                print("[WARN] Drone parado há 5s. Reenviando comando de movimento...")
+            if time.time() - last_move_time > 2:
+                print("[WARN] Drone parado há 2s. Reenviando comando de movimento...")
                 timestamp = int((time.time() - START_TIME) * 1000)
                 armUAV(uav)
 

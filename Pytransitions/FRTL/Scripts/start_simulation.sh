@@ -14,7 +14,7 @@ gnome-terminal -- bash -i -c "
 "
 
 # 3. MAVProxy
-sleep 4
+sleep 5
 gnome-terminal -- bash -i -c "
   mavproxy.py --master tcp:127.0.0.1:5760 --out 127.0.0.1:14550 --out 127.0.0.1:14551; exit
 "
@@ -22,6 +22,11 @@ gnome-terminal -- bash -i -c "
 # 4. QGroundControl
 gnome-terminal -- bash -i -c "
   ~/Área\ de\ trabalho/QGroundControl-x86_64.AppImage; exit
+"
+
+# 5. Image View
+gnome-terminal -- bash -i -c "
+  ros2 run rqt_image_view rqt_image_view; exit
 "
 
 echo "Simulação iniciada!"

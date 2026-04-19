@@ -115,23 +115,38 @@ def predict(session, image, width, height, threshold=0.7):
             class_name = CLASS_NAMES[class_id] if class_id < len(CLASS_NAMES) else str(class_id)
             score = float(box[-1])
 
-            # Calcula o centro da bounding box
+            # 1. Calcula o centro da bounding box (Objeto)
             cx = int((box_int[0] + box_int[2]) / 2)
             cy = int((box_int[1] + box_int[3]) / 2)
+
+            # 2. Calcula o centro da imagem (Referência)
+            img_center_x = width // 2
+            img_center_y = height // 2
+
+            # 3. Calcula o vetor de força (Erro relativo ao centro)
+            # Normalizado entre -1.0 e 1.0
+            force_x = (cx - img_center_x) / img_center_x
+            force_y = (cy - img_center_y) / img_center_y
 
             # Adiciona ao JSON de saída
             detections.append({
                 "label": class_name,
                 "box": box_int,
                 "score": score,
-                "center": {"x": cx, "y": cy}
+                "center": {"x": cx, "y": cy},
+                "force_vector": {"x": round(force_x, 3), "y": round(force_y, 3)}
             })
 
-            # Desenha bounding box
-            cv2.rectangle(img, (box_int[0], box_int[1]), (box_int[2], box_int[3]), (255, 255, 0), 3)
+            # --- Visualização do Vetor de Força ---
+            # Desenha bounding box e centro do objeto
+            cv2.rectangle(img, (box_int[0], box_int[1]), (box_int[2], box_int[3]), (255, 255, 0), 2)
+            cv2.circle(img, (cx, cy), 5, (0, 0, 255), -1)
             
-            # Desenha o centro (um círculo)
-            cv2.circle(img, (cx, cy), radius=6, color=(0, 0, 255), thickness=-1)
+            # Desenha o centro da imagem (alvo)
+            cv2.drawMarker(img, (img_center_x, img_center_y), (0, 255, 0), cv2.MARKER_CROSS, 20, 2)
+
+            # Desenha a linha do vetor de força (do centro da imagem para o objeto)
+            cv2.line(img, (img_center_x, img_center_y), (cx, cy), (0, 255, 0), 2)
 
             # Mostra classe + confiança (%)
             label_text = f"{class_name} {score*100:.1f}%"
