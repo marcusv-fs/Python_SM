@@ -12,7 +12,7 @@ from cv_bridge import CvBridge
 
 from DetectNet import detect_single_frame
 
-TARGET_HEIGHT = 3
+TARGET_HEIGHT = 5
 resp = ['']
 msg = String()
 global Wait_flag
@@ -67,9 +67,8 @@ def searchBases(self, img):
             fy = det['force_vector']['y']
             
             # Estima posição global
-            est_x = self.dronePos.X + (fy * self.dronePos.Z)
-            est_y = self.dronePos.Y + (fx * self.dronePos.Z)
-
+            est_x = self.basePos.X - (fx * self.dronePos.Z)
+            est_y = self.basePos.Y + (fy * self.dronePos.Z) 
             est_z = 0.0 
 
             # Verifica duplicatas (raio de 1 metro)
@@ -90,78 +89,53 @@ def searchBases(self, img):
                 )
                 self.bases.append(new_target)
                 self.node.get_logger().info(f"Novo Target #{new_id} em: X={est_x:.2f}, Y={est_y:.2f}")
-            
-    # return self.bases
 
-    Targets = [
-            Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0)),
-            Target(id=2, pos=Position((4.5 + self.dronePos.X), (-3.0 + self.dronePos.Y), 0.0)),
-            Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0)),
-            Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
-            Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
-        ]
-
-    return Targets
+    return self.bases
 
 
 
 def searchNearestBase(self, img):
     """
-    Retorna a posição RELATIVA (DX, DY, DZ) da base mais próxima não visitada
-    em relação à posição atual do drone.
+    Retorna a posição global estimada (X, Y, Z) da base mais próxima não visitada.
     """
-    
-    # 1. Atualiza a posição atual para garantir que o cálculo relativo seja preciso
-    self.dronePos = updateDronePos(self)
 
     annotated_img, detections = detect_single_frame(img)
     
-    if annotated_img is not None:
+    if annotated_img is None:
         out_msg = self.node.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
         self.node.annotated_pub.publish(out_msg)
+        self.node.get_logger().warn("Imagem publicada em /ProcDroneImg")
 
-    if not detections:
+    if not detections or len(detections) == 0:
         return Position(0.0, 0.0, 0.0)
 
-    best_rel_pos = None
-    min_dist_sq = float('inf')
+    best_base = None
+    min_dist = float('inf')
 
     for det in detections:
         if isinstance(det, dict) and 'force_vector' in det:
-            # O force_vector (fx, fy) representa o desvio angular/normalizado na imagem.
-            # Multiplicando pela altitude (Z), obtemos o deslocamento em metros.
             fx = det['force_vector']['x']
             fy = det['force_vector']['y']
 
-            # CÁLCULO RELATIVO (Distância em metros do drone até a base):
-            # No sistema de câmera para NED:
-            # dx_rel (frente/trás) costuma ser influenciado pelo eixo Y da imagem (fy)
-            # dy_rel (esquerda/direita) costuma ser influenciado pelo eixo X da imagem (fx)
-            
-            dx_rel = -(fx * self.dronePos.Z) # Deslocamento em X (North)
-            dy_rel = (fy * self.dronePos.Z)  # Deslocamento em Y (East)
-            dz_rel = 0.0                     # Mantém mesma altitude
+            # Estima posição global (mesma lógica de searchBases)
+            est_x = self.basePos.X - (fx * self.dronePos.Z)
+            est_y = self.basePos.Y - (fy * self.dronePos.Z)  # Atenção ao sinal!
+            est_z = 0.0
 
-            # Para verificar se já foi visitada, ainda precisamos estimar a global temporariamente
-            est_x_global = self.dronePos.X + dx_rel
-            est_y_global = self.dronePos.Y + dy_rel
-
-            if is_base_already_visited(self, est_x_global, est_y_global):
+            # Verifica se já foi visitada (distância < 1.0 metro)
+            if is_base_already_visited(self, est_x, est_y):
                 continue
 
-            # Calcula a distância ao quadrado (mais rápido que sqrt) para encontrar a mais próxima
-            dist_sq = dx_rel**2 + dy_rel**2
-            
-            if dist_sq < min_dist_sq:
-                min_dist_sq = dist_sq
-                best_rel_pos = Position(dx_rel, dy_rel, dz_rel)
+            # Distância euclidiana até o drone
+            dist = math.sqrt((est_x - self.dronePos.X)**2 + (est_y - self.dronePos.Y)**2)
+            if dist < min_dist:
+                min_dist = dist
+                best_base = Position(est_x, est_y, est_z)
 
-    # Retorna o deslocamento relativo (DX, DY, DZ)
-    if best_rel_pos is not None:
-        self.node.get_logger().info(f"Base detectada! Deslocamento relativo: DX={best_rel_pos.X:.2f}, DY={best_rel_pos.Y:.2f}")
-        return best_rel_pos
-    
-    return Position(0.0, 0.0, 0.0)
+    if best_base is not None:
+        return best_base
+    else:
+        return Position(0.0, 0.0, 0.0)
 
 
 def updateDronePos(self):
@@ -175,10 +149,10 @@ def updateDronePos(self):
         Request(self.node, f"setMode;EMERGENCY")
         rclpy.shutdown()
 
-def calcDist(basePos: Position):
+def calcDist(self, basePos: Position, dronePos: Position):
     return math.sqrt(
-    (basePos.X) ** 2 +
-    (basePos.Y) ** 2
+    (basePos.X - dronePos.X) ** 2 +
+    (basePos.Y - dronePos.Y) ** 2
 )
 
 def markVisitedBases(self, current_position: Position):
@@ -390,7 +364,7 @@ class Phase1(GraphMachine):
 
         self.basePos = Position(0,0,0)
         self.dronePos = Position(0,0,0)
-        self.distToTarget = 99999999.0
+        self.distToTarget = 0.0
 
         self.MAX_ATTEMPT = 3
         self.SAFE_DISTANCE = 0.5
@@ -483,8 +457,18 @@ class Phase1(GraphMachine):
             time.sleep(0.1)
         self.trigger_image = False
 
-        self.basePos = searchNearestBase(self, self.img)     
-        self.distToTarget = calcDist(basePos=self.basePos)
+        self.dronePos = updateDronePos(self)                      # posição global atual
+        target_global = searchNearestBase(self, self.img)         # posição global do alvo
+
+        # Calcula o deslocamento necessário
+        self.basePos = Position(
+            target_global.X + self.dronePos.X,
+            target_global.Y + self.dronePos.Y,
+            0
+        )
+
+        self.distToTarget = calcDist(self, target_global, self.dronePos)
+        print(f"Distância até o alvo: {self.distToTarget}")
 
     def on_enter_LandAndScore(self):
         """Callback executado ao iniciar o pouso"""

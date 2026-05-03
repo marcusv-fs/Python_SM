@@ -3,6 +3,9 @@ from pymavlink import mavutil
 from rclpy.node import Node
 from std_msgs.msg import String
 
+import os
+os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] {message}"
+
 START_TIME = time.time()
 HOME = [0, 0, 0]
 global uav
@@ -121,7 +124,7 @@ def wait_for_arming(vehicle, timeout=10):
         print(f"Erro ao verificar estado de armado: {e}")
         return f"wait_for_arming;Error;{e}"
     
-def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
+def AbsMove(vehicle, lat, lon, alt, yaw_deg=0):
     """
     Move para posição GPS usando comandos globais (MAV_FRAME_GLOBAL_RELATIVE_ALT)
     """
@@ -152,7 +155,7 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
             # Verifica timeout
             if time.time() - start_wait > timeout:
                 #print("Timeout: Drone não chegou à posição GPS desejada a tempo")
-                return "gpsMove;Error:Timeout"
+                return "AbsMove;Error:Timeout"
             
             # Obtém posição GPS atual
             gps_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
@@ -178,7 +181,7 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
             # Verifica se chegou perto o suficiente do alvo
             if horizontal_dist <= tolerance and vertical_dist <= tolerance:
                 print(f"Posição GPS alcançada! Erro horizontal: {horizontal_dist:.1f}m")
-                return "gpsMove;True"
+                return "AbsMove;True"
             
             # Pequena pausa para não sobrecarregar
             time.sleep(0.1)
@@ -187,7 +190,7 @@ def gpsMove(vehicle, lat, lon, alt, yaw_deg=0):
         print(f"Erro ao mover para GPS: {e}")
         exit(1)
 
-def homeAbsMove(vehicle, x, y, z, yaw_deg):
+def homeAbsMove(vehicle, x, y, z, yaw_deg = 0):
     """
     Envia posição local (NED) para o drone e aguarda até que ela seja atingida.
 
@@ -341,6 +344,8 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
                     z  
                 )
 
+                time.sleep(5)
+
                 vehicle.mav.set_position_target_local_ned_send(
                     timestamp,
                     vehicle.target_system,
@@ -363,7 +368,7 @@ def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
         print(f"Erro ao mover para posição relativa: {e}")
         return f"relMove;Error;{e}"
 
-def relTakeOff(vehicle, tg_altitude=10, home_altitude = 0):
+def relTakeOff(vehicle, tg_altitude=10.0, home_altitude = 0.0):
     """
     Envia comando de decolagem relativa (NAV_TAKEOFF) para o drone.
 
@@ -448,18 +453,18 @@ def setMode(vehicle, mode):
         mode_mapping = vehicle.mode_mapping()
         if mode not in mode_mapping:
             print(f"Modo '{mode}' não é suportado pelo firmware.")
-            return f"gpsMove;Error;Mode Not Suported"
+            return f"AbsMove;Error;Mode Not Suported"
 
         mode_id = mode_mapping[mode]
         vehicle.set_mode(mode_id)
         
         if emergency:
-            closeConnection(vehicle)
+            return f"Emergency;True"
 
-        return "gpsMove;True"
+        return "AbsMove;True"
     except Exception as e:
         print(f"Erro ao mudar modo de voo: {e}")
-        return f"gpsMove;Error;{e}"
+        return f"AbsMove;Error;{e}"
 
 def checkConnection(vehicle, timeout=15):
     """
@@ -669,6 +674,11 @@ def land(vehicle):
         vehicle: objeto retornado por mavutil.mavlink_connection.
     """
     try:
+        msg = getLocalPos(uav)
+        msg = msg.split(';')
+
+        relMove(vehicle, 0, 0, float(msg[4]), yaw_deg = 0)
+
         # Envia comando de pouso
         vehicle.mav.command_long_send(
             vehicle.target_system,
@@ -778,12 +788,6 @@ class Platform(Node):
             case "relMove":
                 # Command, dx, dy, dz
                 msg.data = relMove(uav, float(args[1]), float(args[2]), float(args[3]))
-            case "searchForBases":
-                pass
-                msg.data = "OK"
-            case "searchNearestBase":
-                pass
-                msg.data = "OK"
             case "land":
                 # Command
                 msg.data = land(uav)
@@ -791,12 +795,12 @@ class Platform(Node):
                 # Command
                 armUAV(uav)
                 msg.data = "OK"
-            case "gpsMove":
+            case "AbsMove":
                 # Command, lat, lon
-                msg.data = gpsMove(uav, float(args[1]), float(args[2]), float(args[3]))
+                msg.data = AbsMove(uav, float(args[1]), float(args[2]), float(args[3]))
             case "homeAbsMove":
                 # Command, x, y, z, yaw
-                homeAbsMove(uav, float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+                homeAbsMove(uav, float(args[1]), float(args[2]), float(args[3]), int(args[4]))
                 msg.data = "OK"
             case "setHome":
                 # Command
@@ -809,7 +813,7 @@ class Platform(Node):
                 msg.data = getLocalPos(uav)
             case "backHome":
                 # Command
-                gpsMove(uav, HOME[0], HOME[1], 4)
+                AbsMove(uav, HOME[0], HOME[1], 4)
                 land(uav)
                 msg.data = "OK"
             case _:

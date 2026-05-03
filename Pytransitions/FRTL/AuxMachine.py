@@ -10,6 +10,9 @@ import numpy as np
 import gz.transport13 as gz
 from gz.msgs10.image_pb2 import Image as GzImage
 
+import os
+os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] {message}"
+
 # ---------- ROS2 publisher da câmera do Gazebo ----------
 class GazeboToROS2(Node):
     def __init__(self, gz_topic, ros_topic):
@@ -55,7 +58,7 @@ class GazeboToROS2(Node):
 class Machine2Node(Node):
     def __init__(self):
         super().__init__('machine2_node')
-        self.get_logger().info("[M2] Node iniciado, criando máquina de estados...")
+        self.get_logger().info("Node iniciado, criando máquina de estados...")
         self.publisher = self.create_publisher(UInt8, '/trigger_start', 10)
 
     def send_command(self, value: int):
