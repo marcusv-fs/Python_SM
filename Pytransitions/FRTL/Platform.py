@@ -1,836 +1,384 @@
-import math, time, rclpy
-from pymavlink import mavutil
+#!/usr/bin/env python3
+
+import math
+import time
+import os
+import threading
+
+import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 
-import os
+from pymavlink import mavutil
+
 os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = "[{severity}] {message}"
 
-START_TIME = time.time()
-HOME = [0, 0, 0]
-global uav
-
-
-def tryToConnect(connection_string, baudrate=115200, timeout=30):
-    """
-    Conecta a um drone usando pymavlink.
-    
-    Args:
-        connection_string (str): Endereço da conexão, ex: 'udp:127.0.0.1:14550' ou 'COM3'.
-        baudrate (int): Baudrate para conexão serial (ignorado para UDP/TCP).
-        timeout (int): Tempo máximo de espera para heartbeat (em segundos).
-    
-    Returns:
-        mavutil.mavlink_connection: Objeto de conexão com o drone, ou None em caso de falha.
-    """
-    global uav
-    try:
-        drone = mavutil.mavlink_connection(connection_string, baud=baudrate)
-        
-
-        drone.mav.param_set_send(
-            drone.target_system,
-            drone.target_component,
-            b'PLND_ENABLED',
-            0,      # Confirmation
-            mavutil.mavlink.MAV_PARAM_TYPE_INT8
-        )
-        drone.wait_heartbeat(timeout=timeout)
-        uav = drone
-        return "tryToConnect;True"
-    except Exception as e:
-        print(f"Falha na conexão: {e}")
-        return f"tryToConnect;Error;{e}"
-
-def armUAV(vehicle):
-    """
-    Envia comando para armar o drone (COMPONENT_ARM_DISARM).
-
-    Args:
-        vehicle: objeto retornado por mavutil.mavlink_connection.
-    """
-    try:
-        vehicle.mav.command_long_send(
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-            0,      # Confirmation
-            1,      # Param1: 1 = Armar, 0 = Desarmar
-            0, 0, 0, 0, 0, 0  # Demais parâmetros não utilizados
-        )
-        #print("Comando para armar enviado.")
-    except Exception as e:
-        print(f"Erro ao enviar comando de armar: {e}")
-        exit(1)
-
-def disarm_drone(vehicle):
-    try:
-        vehicle.mav.command_long_send(
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM,
-            0, 0, 0, 0, 0, 0, 0, 0
-        )
-        #print("Comando para desarmar enviado.")
-    except Exception as e:
-        print(f"Erro ao desarmar: {e}")
-        exit(1)
-
-def is_armed(vehicle, timeout=10):
-    """
-    Verifica se o veículo está armado com base no heartbeat.
-
-    Args:
-        vehicle (mavutil.mavlink_connection): Objeto de conexão retornado por mavutil.mavlink_connection().
-        timeout (int): Tempo de espera por um heartbeat (em segundos).
-
-    Returns:
-        bool: True se o drone estiver armado, False caso contrário ou em erro.
-    """
-    try:
-        hb = vehicle.recv_match(type='HEARTBEAT', blocking=True, timeout=timeout)
-        if hb is None:
-            #print("Heartbeat não recebido no tempo limite.")
-            return "is_armed;False;Timeout"
-        #return (hb.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
-        return "is_armed;True"
-    except Exception as e:
-        print(f"Erro ao verificar estado armado: {e}")
-        exit(1)
-        return f"is_armed;Error;{e}"
-
-def wait_for_arming(vehicle, timeout=10):
-    """
-    Espera até que o drone esteja armado.
-
-    Args:
-        vehicle: objeto pymavlink.
-        timeout (int): tempo máximo em segundos para esperar.
-
-    Returns:
-        bool: True se armado com sucesso, False se timeout.
-    """
-    try:
-        #print("Aguardando armar...")
-        start_time = time.time()
-        while not vehicle.motors_armed():
-            if time.time()- start_time > timeout:
-                #print("Timeout ao esperar armar.")
-                return "wait_for_arming;False;Timeout"
-            time.sleep(0.2)  # evita busy waiting
-        #print("Drone armado.")
-        return "wait_for_arming;True"
-    except Exception as e:
-        print(f"Erro ao verificar estado de armado: {e}")
-        return f"wait_for_arming;Error;{e}"
-    
-def AbsMove(vehicle, lat, lon, alt, yaw_deg=0):
-    """
-    Move para posição GPS usando comandos globais (MAV_FRAME_GLOBAL_RELATIVE_ALT)
-    """
-    try:
-        timestamp = int((time.time() - START_TIME) * 1000) 
-        
-        vehicle.mav.set_position_target_global_int_send(
-            timestamp,
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_FRAME_GLOBAL_RELATIVE_ALT_INT,
-            0b0000111111111000,  # Ativa apenas posição e yaw
-            int(lat * 1e7),      # Latitude em graus * 1e7
-            int(lon * 1e7),      # Longitude em graus * 1e7
-            alt,                 # Altitude em metros
-            0, 0, 0,             # Velocidade (ignorado)
-            0, 0, 0,             # Aceleração (ignorado)
-            math.radians(yaw_deg), 0  # Yaw e yaw_rate
-        )
-        #print(f"Movendo para GPS: lat={lat:.6f}, lon={lon:.6f}, alt={alt}m")
-        
-        # Parâmetros de tolerância e timeout
-        tolerance = 0.2  # 5 metros de tolerância (GPS é menos preciso)
-        timeout = 60     # 60 segundos máximo
-        start_wait = time.time()
-        
-        while True:
-            # Verifica timeout
-            if time.time() - start_wait > timeout:
-                #print("Timeout: Drone não chegou à posição GPS desejada a tempo")
-                return "AbsMove;Error:Timeout"
-            
-            # Obtém posição GPS atual
-            gps_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
-            if gps_msg is None:
-                continue
-            
-            # Converte mensagem GPS para valores utilizáveis
-            current_lat = gps_msg.lat / 1e7  # Latitude em graus
-            current_lon = gps_msg.lon / 1e7  # Longitude em graus
-            current_alt = gps_msg.alt / 1000 # Altitude em metros (MM->metros)
-            relative_alt = gps_msg.relative_alt / 1000 # Altitude relativa em metros
-            
-            # Calcula distância horizontal usando fórmula de Haversine
-            dlat = math.radians(lat - current_lat)
-            dlon = math.radians(lon - current_lon)
-            a = math.sin(dlat/2)**2 + math.cos(math.radians(current_lat)) * math.cos(math.radians(lat)) * math.sin(dlon/2)**2
-            c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-            horizontal_dist = 6371000 * c  # Raio da Terra em metros
-            
-            # Calcula distância vertical
-            vertical_dist = abs(alt - relative_alt)
-        
-            # Verifica se chegou perto o suficiente do alvo
-            if horizontal_dist <= tolerance and vertical_dist <= tolerance:
-                print(f"Posição GPS alcançada! Erro horizontal: {horizontal_dist:.1f}m")
-                return "AbsMove;True"
-            
-            # Pequena pausa para não sobrecarregar
-            time.sleep(0.1)
-        
-    except Exception as e:
-        print(f"Erro ao mover para GPS: {e}")
-        exit(1)
-
-def homeAbsMove(vehicle, x, y, z, yaw_deg = 0):
-    """
-    Envia posição local (NED) para o drone e aguarda até que ela seja atingida.
-
-    Args:
-        vehicle: objeto retornado por mavutil.mavlink_connection.
-        x, y, z: posição em metros no sistema NED (z é negativo para cima).
-        yaw_deg: orientação yaw em graus.
-    """
-    try:
-        yaw_rad = math.radians(yaw_deg)
-        timestamp = int((time.time() - START_TIME) * 1000) 
-
-        vehicle.mav.set_position_target_local_ned_send(
-            timestamp,
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_FRAME_LOCAL_NED,  # Frame absoluto em relação à origem EKF:cite[1]
-            0b0000111111111000,  # Ativa apenas posição e yaw:cite[1]
-            x, y, -z,            # Z negativo no NED (para cima)
-            0, 0, 0,             # Velocidade
-            0, 0, 0,             # Aceleração
-            yaw_rad, 0           # Yaw e yaw_rate
-        )
-        #print(f"Comando de movimento absoluto enviado para: x={x}, y={y}, z={z}, yaw={yaw_deg}°")
-
-        # Parâmetros de tolerância e timeout
-        tolerance = 0.1  # 1 metro de tolerância
-        timeout = 30     # 30 segundos máximo
-        start_wait = time.time()
-        
-        while True:
-            # Verifica timeout
-            if time.time() - start_wait > timeout:
-                #print("Timeout: Drone não chegou à posição desejada a tempo")
-                break
-            
-            # Obtém posição atual no frame NED:cite[6]
-            pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
-            if pos_msg is None:
-                continue
-            
-            # Calcula distância euclidiana até o alvo absoluto
-            current_x, current_y, current_z = pos_msg.x, pos_msg.y, pos_msg.z
-            dist = math.sqrt((current_x - x)**2 + 
-                           (current_y - y)**2 + 
-                           (current_z - (-z))**2)  # Nota: z de entrada é invertido para o frame NED
-            
-            #print(f"Posição atual: x={current_x:.2f}, y={current_y:.2f}, z={current_z:.2f} | Distância ao alvo: {dist:.2f}m")
-
-            # Verifica se chegou perto o suficiente do alvo
-            if dist <= tolerance:
-                print(f"Posição absoluta alcançada! Erro final: {dist:.2f} metros")
-                break
-            
-            # Pequena pausa para não sobrecarregar
-            time.sleep(0.1)
-        
-    except Exception as e:
-        print(f"Erro ao mover para posição absoluta: {e}")
-        exit(1)
-
-def relMove(vehicle, dx, dy, dz, yaw_deg = 0):
-    """
-    Move o drone para uma posição relativa à atual (em metros, sistema NED).
-
-    Args:
-        vehicle: objeto retornado por mavutil.mavlink_connection.
-        dx, dy, dz: deslocamento relativo em metros no sistema NED (z positivo para baixo).
-        yaw_deg: orientação yaw em graus.
-    """
-    try:
-        # Obtém posição atual estimada
-        msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
-        if msg is None:
-            print("Não foi possível obter a posição atual.")
-            return
-        
-        # Posição atual no frame NED
-        x0 = msg.x
-        y0 = msg.y
-        z0 = msg.z
-
-        # Nova posição desejada
-        x = x0 + dx
-        y = y0 + dy
-        z = z0 - dz  
-
-        yaw_rad = math.radians(yaw_deg)
-        timestamp = int((time.time() - START_TIME) * 1000) 
-
-        vehicle.mav.set_position_target_local_ned_send(
-            timestamp,
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-            0b0000111111111000,  # Ativa apenas posição e yaw
-            x, y, z,
-            0, 0, 0,             # Velocidade
-            0, 0, 0,             # Aceleração
-            yaw_rad, 0           # Yaw e yaw_rate
-        )
-        print(f"Movendo para posição relativa: dx={dx}, dy={dy}, dz={dz}, yaw={yaw_deg}°")
-        
-        # Parâmetros de tolerância e timeout
-        tolerance = 0.1  # 1 metro de tolerância
-        timeout = 30     # 30 segundos máximo
-        start_time = time.time()
-        last_move_time = time.time()
-        
-        # Posição anterior para detectar movimento
-        prev_x, prev_y, prev_z = x0, y0, z0
-
-        while True:
-            # Timeout geral
-            if time.time() - start_time > timeout:
-                print("[ERROR] Timeout: Drone não chegou à posição desejada.")
-                return "relMove;Error;Timeout"
-
-            # Lê posição atual
-            msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=1)
-            if msg is None:
-                continue
-
-            # Calcula distância ao alvo
-            dist = math.sqrt((msg.x - x)**2 + (msg.y - y)**2 + (msg.z - z)**2)
-
-            # Verifica se chegou
-            if dist <= tolerance:
-                print(f"Posição alcançada! Erro: {dist:.2f} m")
-                return "relMove;True"
-
-            # Verifica movimento
-            move_dist = math.sqrt((msg.x - prev_x)**2 + (msg.y - prev_y)**2 + (msg.z - prev_z)**2)
-            if move_dist > 0.05:  # se moveu mais de 5 cm
-                last_move_time = time.time()
-                prev_x, prev_y, prev_z = msg.x, msg.y, msg.z
-
-            # Se não se moveu por 5 s → reenviar comando
-            if time.time() - last_move_time > 2:
-                print("[WARN] Drone parado há 2s. Reenviando comando de movimento...")
-                timestamp = int((time.time() - START_TIME) * 1000)
-                armUAV(uav)
-
-                vehicle.mav.command_long_send(
-                    vehicle.target_system,
-                    vehicle.target_component,
-                    mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
-                    0,      
-                    0, 0, 0, 0,  
-                    0, 0,       
-                    z  
-                )
-
-                time.sleep(5)
-
-                vehicle.mav.set_position_target_local_ned_send(
-                    timestamp,
-                    vehicle.target_system,
-                    vehicle.target_component,
-                    mavutil.mavlink.MAV_FRAME_LOCAL_NED,
-                    0b0000111111111000,
-                    x, y, z,
-                    0, 0, 0,
-                    0, 0, 0,
-                    yaw_rad, 0
-                )
-                
-                last_move_time = time.time()
-                time.sleep(5)
-
-            time.sleep(0.2)
-        
-        
-    except Exception as e:
-        print(f"Erro ao mover para posição relativa: {e}")
-        return f"relMove;Error;{e}"
-
-def relTakeOff(vehicle, tg_altitude=10.0, home_altitude = 0.0):
-    """
-    Envia comando de decolagem relativa (NAV_TAKEOFF) para o drone.
-
-    Args:
-        vehicle: objeto retornado por mavutil.mavlink_connection.
-        altitude (float): Altitude de decolagem em metros (relativa ao local/home).
-    """
-    try:
-        #print(f"Comando de decolagem relativa enviado para {tg_altitude}m.")
-        vehicle.mav.command_long_send(
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
-            0,      # Confirmation
-            0, 0, 0, 0,  # Param1–4: ignorados
-            0, 0,       # Latitude, Longitude = atual
-            tg_altitude    # Altitude relativa
-        )
-        gps_resp = get_global_position(vehicle).split(";")
-        pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
-        altitude = (abs(pos[2]) - abs(home_altitude))
-        cont = 0
-        HOME[2] = tg_altitude
-
-        while ((altitude < abs(tg_altitude * 0.95)) and (altitude < (abs(tg_altitude) - 0.5))):
-            try:
-                gps_resp = get_global_position(vehicle).split(";")
-                pos = [float(gps_resp[2]), float(gps_resp[3]), float(gps_resp[4])]
-                altitude = (abs(pos[2]) - abs(home_altitude))
-
-                if(cont > 30):
-                    cont = 0
-                    resp = relMove(vehicle,  0, 0,  (tg_altitude - altitude)).split(";")
-
-                    if resp[1] == "Error":
-                        if resp[2] == "Timeout":
-                            vehicle.mav.command_long_send(
-                            vehicle.target_system,
-                            vehicle.target_component,
-                            mavutil.mavlink.MAV_CMD_NAV_TAKEOFF,
-                            0,      # Confirmation
-                            0, 0, 0, 0,  # Param1–4: ignorados
-                            0, 0,       # Latitude, Longitude = atual
-                            tg_altitude    # Altitude relativa
-                    )
-
-                time.sleep(0.5)
-                cont += 1
-            except Exception as e:
-                print("Error while getting Height")
-                return f"relTakeOff;Error;{e}"
-        
-        print(f"Altitude alcançada: {altitude}. Erro: {tg_altitude - altitude}")
-        return "relTakeOff;True"
-        
-        
-    except Exception as e:
-        print(f"Erro ao enviar decolagem relativa: {e}")
-        return f"relTakeOff;Error;{e}"
-
-def setMode(vehicle, mode):
-    """
-    Altera o modo de voo do drone.
-
-    Args:
-        vehicle: objeto pymavlink (mavutil.mavlink_connection).
-        mode (str): Nome do modo desejado. Modos comuns incluem:
-            "STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER",
-            "RTL", "CIRCLE", "LAND", "DRIFT", "SPORT", "FLIP", "AUTOTUNE",
-            "POSHOLD", "BRAKE", "THROW", "AVOID_ADSB", "GUIDED_NOGPS", "SMART_RTL",
-            "FLOWHOLD", "FOLLOW", "ZIGZAG", "SYSTEMID", "AUTOROTATE", "AUTO_RTL"
-
-    Returns:
-        bool: True se o modo foi definido com sucesso, False caso contrário.
-    """
-    try:
-        #print(f"Comando para mudar para o modo '{mode}' enviado.")
-        emergency = False
-        if mode == "EMERGENCY":
-            emergency = True
-            mode = "SMART_RTL"
-        mode_mapping = vehicle.mode_mapping()
-        if mode not in mode_mapping:
-            print(f"Modo '{mode}' não é suportado pelo firmware.")
-            return f"AbsMove;Error;Mode Not Suported"
-
-        mode_id = mode_mapping[mode]
-        vehicle.set_mode(mode_id)
-        
-        if emergency:
-            return f"Emergency;True"
-
-        return "AbsMove;True"
-    except Exception as e:
-        print(f"Erro ao mudar modo de voo: {e}")
-        return f"AbsMove;Error;{e}"
-
-def checkConnection(vehicle, timeout=15):
-    """
-    Aguarda o recebimento de um heartbeat do drone.
-
-    Args:
-        vehicle: objeto pymavlink (mavutil.mavlink_connection).
-        timeout (int): tempo máximo de espera em segundos.
-
-    Returns:
-        bool: True se o heartbeat foi recebido, False se timeout ou erro.
-    """
-    try:
-        vehicle.wait_heartbeat(timeout=timeout)
-        return "checkConnection;True"
-    except Exception as e:
-        print(f"Falha ao receber heartbeat: {e}")
-        return f"checkConnection;Error;{e}"
-    
-def getLocalPos(vehicle, timeout=15):
-    """
-    Aguarda e retorna a posição loca (X, Y, Z).
-
-    Args:
-        vehicle: objeto pymavlink (mavutil.mavlink_connection).
-        timeout (int): tempo máximo para aguardar a mensagem (em segundos).
-
-    Returns:
-        dict ou None: dicionário com 'X', 'Y', 'Z' em graus/metros, ou None se timeout.
-    """
-    try:
-        pos_msg = vehicle.recv_match(type='LOCAL_POSITION_NED', blocking=True, timeout=timeout)
-        if pos_msg is None:
-            #print("Timeout ao receber GLOBAL_POSITION_INT.")
-            return "getLocalPos;False;Timeout"
-        return f"getLocalPos;True;{pos_msg.x};{pos_msg.y};{pos_msg.z}"
-    except Exception as e:
-        print(f"Erro ao obter posição global: {e}")
-        return f"getLocalPos;Error;{e}"
-
-def get_global_position(vehicle, timeout=15):
-    """
-    Aguarda e retorna a posição global (latitude, longitude, altitude).
-
-    Args:
-        vehicle: objeto pymavlink (mavutil.mavlink_connection).
-        timeout (int): tempo máximo para aguardar a mensagem (em segundos).
-
-    Returns:
-        dict ou None: dicionário com 'lat', 'lon', 'alt' em graus/metros, ou None se timeout.
-    """
-    try:
-        msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=timeout)
-        if msg is None:
-            #print("Timeout ao receber GLOBAL_POSITION_INT.")
-            return "get_global_position;False;Timeout"
-        
-        msg.lat = msg.lat / 1e7
-        msg.lon = msg.lon / 1e7
-        msg.alt = msg.alt / 1000.0  # Altitude acima do nível do mar, em metros
-
-        return f"get_global_pos;True;{msg.lat};{msg.lon};{msg.alt}"
-
-    except Exception as e:
-        print(f"Erro ao obter posição global: {e}")
-        return f"get_global_position;Error;{e}"
-
-def closeConnection(vehicle):
-    """
-    Encerra a conexão com o drone.
-
-    Args:
-        vehicle: objeto pymavlink (mavutil.mavlink_connection).
-    """
-    try:
-        vehicle.close()
-        return "closeConnection;True"
-        #print("Conexão com o drone encerrada.")
-    except Exception as e:
-        print(f"Erro ao fechar conexão: {e}")
-        return f"closeConnection;Error;{e}"
-        exit(1)
-
-def setHome(vehicle, altitude_type='ABSOLUTE'):
-    """
-    Define o ponto de home para a posição atual do drone.
-
-    Args:
-        vehicle: Objeto pymavlink (mavutil.mavlink_connection).
-        altitude_type (str): Tipo de altitude ('ABSOLUTE' ou 'RELATIVE').
-
-    Returns:
-        bool: True se enviado com sucesso, False em caso de erro.
-    """
-    try:
-        #print("Esperando posição atual...")
-        msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=15)
-        if not msg:
-            #print("Falha ao obter posição atual.")
-            return "setHome;False;Failed to get position"
-
-        lat = msg.lat / 1e7
-        lon = msg.lon / 1e7
-        alt = msg.alt / 1000.0  # altitude AMSL em metros
-
-        #print(f"Definindo HOME para: lat={lat}, lon={lon}, alt={alt}m")
-
-        vehicle.mav.command_long_send(
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_DO_SET_HOME,
-            0,            # confirmation
-            1,            # use current position = 1 (override lat/lon/alt)
-            0, 0, 0,      # unused
-            lat,
-            lon,
-            alt
-        )
-
-        global HOME
-        HOME = [lat, lon, alt]
-
-        #print("Comando de definição de HOME enviado.")
-        return f"setHome;True;{lat};{lon};{alt}"
-
-    except Exception as e:
-        print(f"Erro ao definir HOME: {e}")
-        return f"setHome;Error;{e}"
-
-def haversine(lat1, lon1, lat2, lon2):
-        R = 6371000  # raio da Terra em metros
-        phi1, phi2 = math.radians(lat1), math.radians(lat2)
-        dphi = math.radians(lat2 - lat1)
-        dlambda = math.radians(lon2 - lon1)
-        a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlambda / 2) ** 2
-        return 2 * R * math.asin(math.sqrt(a))
-
-def has_reached_position(vehicle, target_lat, target_lon, target_alt, threshold=0.5):
-    """
-    Verifica se o drone atingiu a posição desejada (verificação única, não bloqueante).
-
-    Args:
-        vehicle: objeto pymavlink.
-        target_lat (float): latitude alvo em graus.
-        target_lon (float): longitude alvo em graus.
-        target_alt (float): altitude alvo em metros (MSL).
-        threshold (float): tolerância em metros para considerar "atingido".
-
-    Returns:
-        bool: True se posição foi atingida, False caso contrário ou erro.
-    """
-    
-    try:
-        msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=False)
-        if msg is None:
-            return f"has_reached_position;Error;Error while getting global position"
-
-        curr_lat = msg.lat / 1e7
-        curr_lon = msg.lon / 1e7
-        curr_alt = msg.alt / 1000.0
-
-        dist_xy = abs(haversine(curr_lat, curr_lon, target_lat, target_lon))
-        dist_z = abs(curr_alt - target_alt)
-
-        #print(f"dist_xy = {dist_xy:.2f}, dist_z = {dist_z:.2f}")
-
-        return f"has_reached_position;{dist_xy < threshold and dist_z < threshold}"
-
-    except Exception as e:
-        return f"has_reached_position;Error;{e}"
-
-def getHome(vehicle, timeout=15):
-    """
-    Obtém e retorna a posição HOME do drone.
-
-    Args:
-        vehicle: objeto pymavlink.
-        timeout (int): tempo máximo de espera pela mensagem (segundos).
-
-    Returns:
-        dict: {'lat': float, 'lon': float, 'alt': float} ou None se falhar.
-    """
-    #print("Aguardando mensagem HOME_POSITION...")
-    try:
-        msg = vehicle.recv_match(type='HOME_POSITION', blocking=True, timeout=timeout)
-        if msg is None:
-            print("\n \n HOME_POSITION não recebida. \n \n")
-            return "getHome;False;Home Position Failed"
-
-        home_lat = msg.latitude / 1e7
-        home_lon = msg.longitude / 1e7
-        home_alt = msg.altitude / 1000.0  # metros AMSL
-
-        #print(f"HOME capturada: lat={home_lat}, lon={home_lon}, alt={home_alt}m")
-
-        return f"getHome;True;{home_lat};{home_lon};{home_alt}"
-
-    except Exception as e:
-        print(f"Erro ao obter HOME_POSITION: {e}")
-        return f"getHome;Error;{e}"
-
-def land(vehicle):
-    """
-    Envia comando de pouso (LAND) para o drone e aguarda até o pouso ser completado.
-
-    Args:
-        vehicle: objeto retornado por mavutil.mavlink_connection.
-    """
-    try:
-        msg = getLocalPos(uav)
-        msg = msg.split(';')
-
-        relMove(vehicle, 0, 0, float(msg[4]), yaw_deg = 0)
-
-        # Envia comando de pouso
-        vehicle.mav.command_long_send(
-            vehicle.target_system,
-            vehicle.target_component,
-            mavutil.mavlink.MAV_CMD_NAV_LAND,
-            0,      # Confirmation
-            0, 0, 0, 0,  # Param1–4: ignorados para LAND simples
-            0, 0,       # Latitude e Longitude = atual
-            0           # Altitude = atual
-        )
-        # #print("Comando de pouso enviado. Aguardando pouso...")
-        timeout = 30 
-        start_time = time.time()
-        landed = False
-        
-        while True:
-            if time.time() - start_time > timeout:
-                # #print("Timeout: Pouso não foi completado dentro do tempo esperado")
-                break
-            
-            status_msg = vehicle.recv_match(type='HEARTBEAT', blocking=True, timeout=1)
-            if status_msg is None:
-                continue
-            
-            # Verifica o system status para ver se está no solo
-            extended_sys_state = vehicle.recv_match(type='EXTENDED_SYS_STATE', blocking=True, timeout=1)
-            if extended_sys_state:
-                if extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_ON_GROUND:
-                    landed = True
-                    break
-                elif extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_LANDING:
-                    alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
-                    if alt_msg:
-                        relative_alt = alt_msg.relative_alt / 1000.0 
-
-            # Alternativa: verifica altitude relativa como fallback
-            alt_msg = vehicle.recv_match(type='GLOBAL_POSITION_INT', blocking=True, timeout=1)
-            if alt_msg:
-                relative_alt = alt_msg.relative_alt / 1000.0  # mm para metros
-                if relative_alt < 0.3:  # Menos de 30cm do solo
-                    # #print(f"✅ Pouso completado! Altitude relativa: {relative_alt:.1f}m")
-                    landed = True
-                    break
-            
-            # Pequena pausa para não sobrecarregar
-            time.sleep(0.5)
-        
-        # if landed:
-        #     #print("🎉 Pouso finalizado com sucesso!")
-        # else:
-        #     #print("⚠️  Pouso não confirmado dentro do tempo limite")
-        if landed == False:
-            landed = True
-
-        return f"land;{landed}"
-        
-    except Exception as e:
-        print(f"❌ Erro durante o pouso: {e}")
-        return f"land;Error;{e}"
-
-# ---------- Main ----------
-uav = ""
-
-class Platform(Node):
+class DroneController(Node):
     def __init__(self):
-        super().__init__('Platform')
-        # subscriber para receber triggers
-        self.create_subscription(String, '/request', self.request_callback, 10)
+        super().__init__('drone_controller')
+        self.get_logger().info('Nó DroneController iniciado.')
 
-        # publisher para devolver respostas
+        self.master = None
+        self.target_system = 0
+        self.target_component = 0
+        self.heartbeat_thread = None
+        self.heartbeat_stop_event = threading.Event()
+        
+        # Variáveis de estado agora pertencem à classe
+        self.start_time = time.time()
+        self.home_pos = [0.0, 0.0, 0.0]  # Latitude, Longitude, Altitude
+
+        self.subscription = self.create_subscription(
+            String, '/request', self.request_callback, 10)
         self.publisher = self.create_publisher(String, '/response', 10)
 
-        self.get_logger().warn('Platform Service Node Started')
+    def _send_mavlink_command(self, command_id, confirmation, param1=0, param2=0, param3=0, param4=0, param5=0, param6=0, param7=0):
+        if not self.master:
+            self.get_logger().error("Conexão MAVLink não estabelecida.")
+            return False
+        try:
+            self.master.mav.command_long_send(
+                self.target_system, self.target_component,
+                command_id, confirmation,
+                param1, param2, param3, param4, param5, param6, param7
+            )
+            return True
+        except Exception as e:
+            self.get_logger().error(f"Erro ao enviar comando MAVLink {command_id}: {e}")
+            return False
+
+    def _wait_for_message(self, msg_type, timeout=5):
+        if not self.master:
+            return None
+        return self.master.recv_match(type=msg_type, blocking=True, timeout=timeout)
+
+    def _heartbeat_monitor(self):
+        while not self.heartbeat_stop_event.is_set():
+            if self.master:
+                self.master.mav.heartbeat_send(
+                    mavutil.mavlink.MAV_TYPE_GCS,
+                    mavutil.mavlink.MAV_AUTOPILOT_GENERIC,
+                    mavutil.mavlink.MAV_MODE_GUIDED_ARMED,
+                    0,
+                    mavutil.mavlink.MAV_STATE_ACTIVE
+                )
+            time.sleep(1)
+
+    def connect_drone(self, connection_string, baudrate=115200, timeout=30):
+        try:
+            self.master = mavutil.mavlink_connection(connection_string, baud=baudrate)
+            self.master.wait_heartbeat(timeout=timeout)
+            self.target_system = self.master.target_system
+            self.target_component = self.master.target_component
+
+            self.heartbeat_stop_event.clear()
+            self.heartbeat_thread = threading.Thread(target=self._heartbeat_monitor, daemon=True)
+            self.heartbeat_thread.start()
+            
+            return "tryToConnect;True"
+        except Exception as e:
+            self.master = None
+            return f"tryToConnect;Error;{e}"
+
+    def arm_uav(self):
+        if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1):
+            return "armUAV;True"
+        return "armUAV;False"
+
+    def disarm_uav(self):
+        if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 0):
+            return "disarmUAV;True"
+        return "disarmUAV;False"
+
+    def is_armed(self, timeout=5):
+        hb = self._wait_for_message('HEARTBEAT', timeout=timeout)
+        if hb:
+            armed_state = (hb.base_mode & mavutil.mavlink.MAV_MODE_FLAG_SAFETY_ARMED) != 0
+            return f"is_armed;{armed_state}"
+        return "is_armed;False;Timeout"
+
+    def set_mode(self, mode_name):
+        if not self.master:
+            return "setMode;Error;NoConnection"
+        
+        mode_name = mode_name.upper()
+        if mode_name == "EMERGENCY":
+            mode_name = "SMART_RTL"
+            
+        mode_mapping = self.master.mode_mapping()
+        if mode_name not in mode_mapping:
+            return f"setMode;Error;ModeNotSupported"
+
+        self.master.set_mode(mode_mapping[mode_name])
+        return f"setMode;True;{mode_name}"
+
+    def check_connection(self, timeout=15):
+        try:
+            self.master.wait_heartbeat(timeout=timeout)
+            return "checkConnection;True"
+        except Exception as e:
+            return f"checkConnection;Error;{e}"
+
+    def get_local_position(self, timeout=5):
+        pos_msg = self._wait_for_message('LOCAL_POSITION_NED', timeout=timeout)
+        att_msg = self._wait_for_message('ATTITUDE', timeout=timeout)
+        if pos_msg and att_msg:
+            return f"getLocalPos;True;{pos_msg.x};{pos_msg.y};{pos_msg.z};{att_msg.yaw}"
+        return "getLocalPos;False;Timeout"
+
+    def get_global_position(self, timeout=5):
+        msg = self._wait_for_message('GLOBAL_POSITION_INT', timeout=timeout)
+        if msg:
+            return f"getGlobalPos;True;{msg.lat / 1e7};{msg.lon / 1e7};{msg.alt / 1000.0}"
+        return "getGlobalPos;False;Timeout"
+
+    def set_home(self, timeout=15):
+        pos_resp = self.get_global_position(timeout=timeout).split(';')
+        if pos_resp[1] == 'True':
+            lat, lon, alt = float(pos_resp[2]), float(pos_resp[3]), float(pos_resp[4])
+            if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_DO_SET_HOME, 0, 1, 0, 0, 0, lat, lon, alt):
+                self.home_pos = [lat, lon, alt]
+                return f"setHome;True;{lat};{lon};{alt}"
+        return "setHome;False;Failed"
+
+    def get_home(self, timeout=15):
+        msg = self._wait_for_message('HOME_POSITION', timeout=timeout)
+        if msg:
+            return f"getHome;True;{msg.latitude / 1e7};{msg.longitude / 1e7};{msg.altitude / 1000.0}"
+        return "getHome;False;Timeout"
+
+    def absolute_move(self, x, y, z, yaw_deg=None, tolerance=0.1, timeout=30):
+        """
+        Move o drone para uma coordenada absoluta no referencial LOCAL_NED,
+        mantendo a orientação (Yaw) fixa para não rodar a câmara.
+        """
+        if not self.master: return "AbsMove;Error;NoConnection"
+
+        # 1. Obter a posição e orientação atual para bloquear o Yaw
+        local_data = self.get_local_position().split(';')
+        if local_data[1] != 'True': return "AbsMove;Error;CannotGetLocalPosition"
+        
+        current_yaw_rad = float(local_data[5])
+
+        # Se não for passado um Yaw específico, usamos o atual (Yaw Lock)
+        if yaw_deg is None:
+            target_yaw_rad = current_yaw_rad
+        else:
+            target_yaw_rad = math.radians(yaw_deg)
+
+        start_wait = time.time()
+
+        # MÁSCARA: 0b0000101111111000 
+        # (Bit 10 em 0 indica que o drone deve OBEDECER ao target_yaw_rad)
+        type_mask = 0b0000101111111000
+
+        self.get_logger().info(f"A mover para Absoluto: X={x}, Y={y}, Z={z} | Yaw={math.degrees(target_yaw_rad):.1f}º")
+
+        while time.time() - start_wait < timeout:
+            timestamp = int((time.time() - self.start_time) * 1000)
+            
+            # Enviamos o comando repetidamente para garantir que a controladora mantém o setpoint
+            self.master.mav.set_position_target_local_ned_send(
+                timestamp, self.target_system, self.target_component,
+                mavutil.mavlink.MAV_FRAME_LOCAL_NED, type_mask,
+                x, y, z,                # Posição alvo
+                0, 0, 0,                # Velocidade (ignorada)
+                0, 0, 0,                # Aceleração (ignorada)
+                target_yaw_rad, 0       # Yaw alvo e Yaw Rate (ignorado)
+            )
+
+            # 2. Verificar progresso usando telemetria em tempo real (sem sleep extra)
+            pos_msg = self._wait_for_message('LOCAL_POSITION_NED', timeout=0.5)
+            if pos_msg:
+                # Cálculo da distância 3D até ao alvo
+                dist = math.sqrt((x - pos_msg.x)**2 + (y - pos_msg.y)**2 + (z - pos_msg.z)**2)
+                
+                if dist <= tolerance:
+                    self.get_logger().info("Alvo absoluto atingido.")
+                    return "AbsMove;True"
+
+        self.get_logger().error("Timeout no movimento absoluto.")
+        return "AbsMove;Error;Timeout"
+
+    def relative_move(self, dx, dy, dz, yaw_deg=None, tolerance=0.1, timeout=30):
+        if not self.master: return "relMove;Error;NoConnection"
+
+        local_pos = self.get_local_position().split(';')
+        if local_pos[1] != 'True': return "relMove;Error;CannotGetLocalPosition"
+
+        x = float(local_pos[2]) + dx
+        y = float(local_pos[3]) + dy
+        z = float(local_pos[4]) - dz
+        
+        # O get_local_position já retorna o yaw em radianos no índice 5
+        current_yaw_rad = float(local_pos[5])
+        
+        # Se não passarmos um Yaw específico, travamos no Yaw atual
+        if yaw_deg is None:
+            yaw_rad = current_yaw_rad
+        else:
+            yaw_rad = math.radians(yaw_deg)
+
+        start_wait = time.time()
+
+        # MÁSCARA NOVA: 0b0000101111111000 (O bit 10 está zerado, então o drone vai respeitar o Yaw enviado)
+        type_mask = 0b0000101111111000
+
+        while time.time() - start_wait < timeout:
+            timestamp = int((time.time() - self.start_time) * 1000)
+            self.master.mav.set_position_target_local_ned_send(
+                timestamp, self.target_system, self.target_component,
+                mavutil.mavlink.MAV_FRAME_LOCAL_NED, type_mask,
+                x, y, z, 0, 0, 0, 0, 0, 0, yaw_rad, 0
+            )
+
+            # Usar o método _wait_for_message ao invés de time.sleep para evitar o buffer lag
+            pos_msg = self._wait_for_message('LOCAL_POSITION_NED', timeout=1)
+            if pos_msg:
+                dist = math.dist([x, y, z], [pos_msg.x, pos_msg.y, pos_msg.z])
+                if dist <= tolerance: 
+                    return "relMove;True"
+                    
+        return "relMove;Error;Timeout"
+
+    def relative_takeoff(self, target_altitude=10.0, tolerance=0.5, timeout=120):
+        if not self.master: return "relTakeOff;Error;NoConnection"
+
+        count = 0
+        
+        self._send_mavlink_command(mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, 0, target_altitude)
+        
+        start_time = time.time()
+        last_alt = 0
+        stuck_count = 0
+
+        self.get_logger().info(f"Decolagem iniciada para {target_altitude}m...")
+
+        while time.time() - start_time < timeout:
+            # Usamos LOCAL_POSITION_NED pois ela nos dá a posição E a velocidade vertical (vz)
+            msg = self._wait_for_message('LOCAL_POSITION_NED', timeout=1)
+            
+            if msg:
+                # No sistema NED, o eixo Z é positivo para BAIXO. 
+                # Portanto, altitude = -z
+                current_alt = -msg.z
+                vertical_velocity = msg.vz # Velocidade vertical (positiva para baixo)
+                
+                self.get_logger().info(f"Alt: {current_alt:.2f}m | Vz: {vertical_velocity:.2f}")
+
+                # Condição de Sucesso: Chegou na faixa de tolerância
+                if abs(current_alt - target_altitude) <= tolerance:
+                    self.get_logger().info("Decolagem concluída com sucesso.")
+                    return "relTakeOff;True"
+
+                # Lógica de Correção (Cenário B):
+                # Se a velocidade vertical for muito baixa (drone parou de subir) 
+                # e ele ainda está abaixo do alvo:
+                if abs(vertical_velocity) < 0.1 and current_alt < (target_altitude - tolerance):
+                    stuck_count += 1
+                    if stuck_count > 40: # Se ficar "preso" por ~3 segundos
+                        self.get_logger().warn("Drone estagnado abaixo do alvo. Enviando correção de subida...")
+                        
+                        # Forçamos o drone a ir para a altitude exata usando comando de posição
+                        # (O mesmo que você usou no absolute_move)
+                        type_mask = 0b0000111111111000 # Máscara padrão para posição
+                        self.master.mav.set_position_target_local_ned_send(
+                            int((time.time() - self.start_time) * 1000),
+                            self.target_system, self.target_component,
+                            mavutil.mavlink.MAV_FRAME_LOCAL_NED,
+                            type_mask,
+                            msg.x, msg.y, -target_altitude, # Mantém X e Y, ajusta Z
+                            0, 0, 0, 0, 0, 0, 0, 0
+                        )
+                        stuck_count = 0 # Reseta o contador após corrigir
+            
+        return "relTakeOff;Error;Timeout"
+
+    def land(self, timeout=120):
+        if not self.master: return "land;Error;NoConnection"
+
+        self._send_mavlink_command(mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0, 0)
+        start_time = time.time()
+
+        while time.time() - start_time < timeout:
+            extended_sys_state = self._wait_for_message('EXTENDED_SYS_STATE', timeout=1)
+            if extended_sys_state and extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_ON_GROUND:
+                return "land;True"
+            time.sleep(1)
+        return "land;False;Timeout"
+
+    def back_home(self):
+        if self.home_pos == [0.0, 0.0, 0.0]: return "backHome;Error;HomeNotSet"
+        if "True" in self.absolute_move(self.home_pos[0], self.home_pos[1], self.home_pos[2] + 4):
+            return self.land()
+        return "backHome;False;Failed"
+
+    def close_connection(self):
+        if self.heartbeat_thread and self.heartbeat_thread.is_alive():
+            self.heartbeat_stop_event.set()
+        if self.master:
+            self.master.close()
+            self.master = None
+            return "closeConnection;True"
+        return "closeConnection;False;NoActiveConnection"
+
+    def _haversine(self, lat1, lon1, lat2, lon2):
+        R = 6371000
+        dphi, dlambda = math.radians(lat2 - lat1), math.radians(lon2 - lon1)
+        a = math.sin(dphi / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlambda / 2)**2
+        return 2 * R * math.asin(math.sqrt(a))
 
     def request_callback(self, request):
-        args = request.data.split(';')
-        self.get_logger().warn(f"Command received: {args}")
-        global uav
-        msg = String()
+        # Dispara uma thread imediatamente para não bloquear o ROS2
+        threading.Thread(target=self._process_command, args=(request.data,), daemon=True).start()
 
-        match (args[0]):
-            case "tryToConnect":
-                # Command, IP
-                msg.data = (tryToConnect(args[1]))
-            case "checkConnection":
-                # Command
-                msg.data = checkConnection(uav)
-            case "setMode":
-                # Command, mode
-                setMode(uav, args[1])
-                msg.data = "OK"
-            case "startEngines":
-                # Command
-                armUAV(uav)
-                msg.data = "OK"
-            case "relTakeOff":
-                # Command, tg_height, home_height
-                msg.data = relTakeOff(uav, float(args[1]), float(args[2]))      
-            case "closeConnection":
-                # Command
-                closeConnection(uav)
-                print("Finalizando máquina....")
-                exit(1)
-            case "getLocalPos":
-                # Command
-                msg.data = getLocalPos(uav) 
-            case "relMove":
-                # Command, dx, dy, dz
-                msg.data = relMove(uav, float(args[1]), float(args[2]), float(args[3]))
-            case "land":
-                # Command
-                msg.data = land(uav)
-            case "armUAV":
-                # Command
-                armUAV(uav)
-                msg.data = "OK"
-            case "AbsMove":
-                # Command, lat, lon
-                msg.data = AbsMove(uav, float(args[1]), float(args[2]), float(args[3]))
-            case "homeAbsMove":
-                # Command, x, y, z, yaw
-                homeAbsMove(uav, float(args[1]), float(args[2]), float(args[3]), int(args[4]))
-                msg.data = "OK"
-            case "setHome":
-                # Command
-                msg.data = setHome(uav)
-            case "getHome":
-                # Command
-                msg.data = getHome(uav)
-            case "getAltitude":
-                #Command
-                msg.data = getLocalPos(uav)
-            case "backHome":
-                # Command
-                AbsMove(uav, HOME[0], HOME[1], 4)
-                land(uav)
-                msg.data = "OK"
-            case _:
-                msg.data = "ERROR: Unknown Command"
+    def _process_command(self, data):
+        args = data.split(';')
+        command = args[0]
+        result = ""
+        self.get_logger().info(f"Received: {";".join(args)}")
 
-        if "OK" not in msg.data:
-            self.publisher.publish(msg)
-            self.get_logger().info(f"Resultado enviado: {msg.data}")
-        if "ERROR" in msg.data:
-            self.get_logger().error(f"Erro no comando: {msg.data}")
+        try:
+            if command == "tryToConnect": result = self.connect_drone(args[1])
+            elif command == "checkConnection": result = self.check_connection()
+            elif command == "setMode": result = self.set_mode(args[1])
+            elif command in ["startEngines", "armUAV"]: result = self.arm_uav()
+            elif command == "relTakeOff": result = self.relative_takeoff(float(args[1]))
+            elif command == "getLocalPos": result = self.get_local_position()
+            elif command == "relMove": result = self.relative_move(float(args[1]), float(args[2]), float(args[3]))
+            elif command == "land": result = self.land()
+            elif command == "AbsMove": result = self.absolute_move(float(args[1]), float(args[2]), float(args[3]))
+            elif command == "homeAbsMove": result = self.relative_move(float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+            elif command == "setHome": result = self.set_home()
+            elif command == "getHome": result = self.get_home()
+            elif command == "getAltitude": result = self.get_local_position()
+            elif command == "backHome": result = self.back_home()
+            elif command == "closeConnection":
+                result = self.close_connection()
+                rclpy.shutdown()
+                return
+            else: result = "ERROR: Unknown Command"
+        except Exception as e:
+            result = f"ERROR: Exception: {e}"
+            self.get_logger().error(f"Received: {result}")
+            
 
+        response_msg = String()
+        response_msg.data = result
+        self.get_logger().warn(f"Sending: {result}")
+        self.publisher.publish(response_msg)
 
 def main(args=None):
     rclpy.init(args=args)
-    node = Platform()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    drone_controller = DroneController()
+    try:
+        rclpy.spin(drone_controller)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        drone_controller.close_connection()
+        drone_controller.destroy_node()
+        if rclpy.ok(): rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

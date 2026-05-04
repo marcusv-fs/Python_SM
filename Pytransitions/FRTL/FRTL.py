@@ -23,6 +23,7 @@ class Position:
     X: float
     Y: float
     Z: float
+    YAW: float
 
 @dataclass
 class Target:
@@ -85,7 +86,7 @@ def searchBases(self, img):
                 new_id = len(self.bases) + 1
                 new_target = Target(
                     id=new_id, 
-                    pos=Position(est_x, est_y, est_z),
+                    pos=Position(est_x, est_y, est_z, 0),
                     visited=False
                 )
                 self.bases.append(new_target)
@@ -94,11 +95,11 @@ def searchBases(self, img):
     # return self.bases
 
     Targets = [
-            Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0)),
-            Target(id=2, pos=Position((4.5 + self.dronePos.X), (-3.0 + self.dronePos.Y), 0.0)),
-            Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0)),
-            Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
-            Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
+            Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0, 0)),
+            Target(id=2, pos=Position((4 + self.dronePos.X), (-3.5 + self.dronePos.Y), 0.0, 0)),
+            Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0, 0)),
+            Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
+            Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
         ]
 
     return Targets
@@ -107,61 +108,51 @@ def searchBases(self, img):
 
 def searchNearestBase(self, img):
     """
-    Retorna a posição RELATIVA (DX, DY, DZ) da base mais próxima não visitada
-    em relação à posição atual do drone.
+    Calcula o deslocamento relativo necessário, transformando as coordenadas
+    da câmera (Body Frame) para o sistema global (NED) usado pela plataforma.
     """
     
-    # 1. Atualiza a posição atual para garantir que o cálculo relativo seja preciso
+    # 1. Atualiza posição e orientação atual
     self.dronePos = updateDronePos(self)
+
+    current_yaw = getattr(self, 'droneYaw', 0.0) 
 
     annotated_img, detections = detect_single_frame(img)
     
-    if annotated_img is not None:
-        out_msg = self.node.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
-        self.node.annotated_pub.publish(out_msg)
-
     if not detections:
-        return Position(0.0, 0.0, 0.0)
+        return Position(0.0, 0.0, 0.0, 0)
 
     best_rel_pos = None
     min_dist_sq = float('inf')
 
     for det in detections:
         if isinstance(det, dict) and 'force_vector' in det:
-            # O force_vector (fx, fy) representa o desvio angular/normalizado na imagem.
-            # Multiplicando pela altitude (Z), obtemos o deslocamento em metros.
             fx = det['force_vector']['x']
             fy = det['force_vector']['y']
 
-            # CÁLCULO RELATIVO (Distância em metros do drone até a base):
-            # No sistema de câmera para NED:
-            # dx_rel (frente/trás) costuma ser influenciado pelo eixo Y da imagem (fy)
-            # dy_rel (esquerda/direita) costuma ser influenciado pelo eixo X da imagem (fx)
-            
-            dx_rel = -(fx * self.dronePos.Z) # Deslocamento em X (North)
-            dy_rel = (fy * self.dronePos.Z)  # Deslocamento em Y (East)
-            dz_rel = 0.0                     # Mantém mesma altitude
+            # 2. Coordenadas no referencial do DRONE (Body Frame)
 
-            # Para verificar se já foi visitada, ainda precisamos estimar a global temporariamente
-            est_x_global = self.dronePos.X + dx_rel
-            est_y_global = self.dronePos.Y + dy_rel
+            dx_body = -(fx * self.dronePos.Z) 
+            dy_body = (fy * self.dronePos.Z)
+
+            # 3. TRANSFORMAÇÃO PARA REFERENCIAL GLOBAL (NED)
+            # Matriz de rotação 2D:
+            dx_ned = dx_body * math.cos(current_yaw) - dy_body * math.sin(current_yaw)
+            dy_ned = dx_body * math.sin(current_yaw) + dy_body * math.cos(current_yaw)
+
+            # 4. Verificação de visita (usando coordenadas globais NED)
+            est_x_global = self.dronePos.X + dx_ned
+            est_y_global = self.dronePos.Y + dy_ned
 
             if is_base_already_visited(self, est_x_global, est_y_global):
                 continue
 
-            # Calcula a distância ao quadrado (mais rápido que sqrt) para encontrar a mais próxima
-            dist_sq = dx_rel**2 + dy_rel**2
-            
+            dist_sq = dx_ned**2 + dy_ned**2
             if dist_sq < min_dist_sq:
                 min_dist_sq = dist_sq
-                best_rel_pos = Position(dx_rel, dy_rel, dz_rel)
+                best_rel_pos = Position(dx_ned, dy_ned, 0.0, 0.0)
 
-    # Retorna o deslocamento relativo (DX, DY, DZ)
-    if best_rel_pos is not None:
-        self.node.get_logger().info(f"Base detectada! Deslocamento relativo: DX={best_rel_pos.X:.2f}, DY={best_rel_pos.Y:.2f}")
-        return best_rel_pos
-    
-    return Position(0.0, 0.0, 0.0)
+    return best_rel_pos if best_rel_pos is not None else Position(0.0, 0.0, 0.0, 0.0)
 
 
 def updateDronePos(self):
@@ -273,6 +264,7 @@ class FrtlNode(Node):
                     self.machine.mission.dronePos.X = float(resp[2])
                     self.machine.mission.dronePos.Y = float(resp[3])
                     self.machine.mission.dronePos.Z = float(resp[4])
+                    self.machine.mission.dronePos.YAW = float(resp[5])
                     Wait_flag = True
                 else:
                     error = True
@@ -290,36 +282,14 @@ class FrtlNode(Node):
                     Wait_flag = True
                 else:
                     error = True
-            case "relTakeOff":
+            
+            # Agrupando os comandos de movimentação e estado que apenas retornam "True"
+            case "relTakeOff" | "relMove" | "land" | "AbsMove" | "setMode" | "armUAV" | "backHome" | "closeConnection":
                 if resp[1] == "True":
                     Wait_flag = True
                 else:
                     error = True
-            case "relMove":
-                if resp[1] == "True":
-                    Wait_flag = True
-                else:
-                    error = True
-            case "land":
-                if resp[1] == "True":
-                    Wait_flag = True
-                else:
-                    error = True
-            case "AbsMove":
-                if resp[1] == "True":
-                    Wait_flag = True
-                else:
-                    error = True
-            case "setHome":
-                if resp[1] == "True":
-                    Wait_flag = True
-                else:
-                    error = True
-            case "Emergency":
-                if resp[1] == "True":
-                    Wait_flag = True
-                else:
-                    error = True
+
         if error:
             self.get_logger().error("; ".join(resp))
 
@@ -376,9 +346,9 @@ class Phase1(GraphMachine):
         self.count = 0
         self.visitedBases = 1
         self.bases: list[Target] = []
-        self.defPos = [ Position(2 + self.homePos.X, 2 + self.homePos.Y,self.targetHeight), 
-                        Position(-4 + self.homePos.X,-4 + self.homePos.Y,self.targetHeight),
-                        Position(-6 + self.homePos.X,-6 + self.homePos.Y,self.targetHeight)]
+        self.defPos = [ Position(2 + self.homePos.X, 2 + self.homePos.Y,self.targetHeight, 0), 
+                        Position(-4 + self.homePos.X,-4 + self.homePos.Y,self.targetHeight, 0),
+                        Position(-6 + self.homePos.X,-6 + self.homePos.Y,self.targetHeight, 0)]
         
         # Targets = [
         #     Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
@@ -388,8 +358,8 @@ class Phase1(GraphMachine):
         #     Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
         # ]
 
-        self.basePos = Position(0,0,0)
-        self.dronePos = Position(0,0,0)
+        self.basePos = Position(0,0,0, 0)
+        self.dronePos = Position(0,0,0, 0)
         self.distToTarget = 99999999.0
 
         self.MAX_ATTEMPT = 3
@@ -505,9 +475,11 @@ class Phase1(GraphMachine):
         self.node.get_logger().info("on_enter_TakeOff")
         print("Changing to Guided...")
         Request(self.node, f"setMode;GUIDED")
+        Wait()
 
         print("Arming...")
         Request(self.node, f"armUAV")
+        Wait()
 
         print("TakingOff...")
         Request(self.node, f"relTakeOff;{self.targetHeight};{self.homePos.Z}")
@@ -575,7 +547,7 @@ class FRTL(GraphMachine):
         self.isConnected = False 
         self.phase = 0
         self.connectionTrys = 0
-        self.homePos = Position(0,0,0)
+        self.homePos = Position(0,0,0, 0)
         self.targetHeight = TARGET_HEIGHT
         self.mission = None
 
@@ -630,7 +602,9 @@ class FRTL(GraphMachine):
     def on_enter_StartEngines(self):
         self.node.get_logger().info("on_enter_StartEngines")
         Request(self.node, f"setMode;GUIDED")
+        Wait()
         Request(self.node, f"armUAV")
+        Wait()
         
 
     def on_enter_TakeOff(self):
@@ -647,6 +621,7 @@ class FRTL(GraphMachine):
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Final")
         Request(self.node, f"closeConnection")
+        Wait()
         self.finished = True
 
 ####################### run #######################   
