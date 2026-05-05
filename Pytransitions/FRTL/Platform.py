@@ -82,6 +82,7 @@ class DroneController(Node):
 
     def arm_uav(self):
         if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1):
+            time.sleep(2)
             return "armUAV;True"
         return "armUAV;False"
 
@@ -133,12 +134,18 @@ class DroneController(Node):
         return "getGlobalPos;False;Timeout"
 
     def set_home(self, timeout=15):
-        pos_resp = self.get_global_position(timeout=timeout).split(';')
-        if pos_resp[1] == 'True':
-            lat, lon, alt = float(pos_resp[2]), float(pos_resp[3]), float(pos_resp[4])
-            if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_DO_SET_HOME, 0, 1, 0, 0, 0, lat, lon, alt):
-                self.home_pos = [lat, lon, alt]
-                return f"setHome;True;{lat};{lon};{alt}"
+        # Obtém a posição LOCAL (em metros) e salva como "Home Verdadeiro"
+        pos_data = self.get_local_position(timeout=timeout).split(';')
+        if pos_data[1] == 'True':
+            x = float(pos_data[2])
+            y = float(pos_data[3])
+            z = float(pos_data[4])
+            
+            self.home_pos = [x, y, z] # Agora salva coordenadas locais NED
+            self.get_logger().info(f"Home Inicial fixado em NED: X={x:.2f}, Y={y:.2f}")
+            
+            # Retorna no formato esperado pela sua máquina de estados FSM
+            return f"setHome;True;{x};{y};{z}"
         return "setHome;False;Failed"
 
     def get_home(self, timeout=15):
@@ -278,6 +285,8 @@ class DroneController(Node):
                     stuck_count += 1
                     if stuck_count > 40: # Se ficar "preso" por ~3 segundos
                         self.get_logger().warn("Drone estagnado abaixo do alvo. Enviando correção de subida...")
+
+                        self._send_mavlink_command(mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, 0, 0, target_altitude)
                         
                         # Forçamos o drone a ir para a altitude exata usando comando de posição
                         # (O mesmo que você usou no absolute_move)
@@ -307,11 +316,35 @@ class DroneController(Node):
             time.sleep(1)
         return "land;False;Timeout"
 
-    def back_home(self):
-        if self.home_pos == [0.0, 0.0, 0.0]: return "backHome;Error;HomeNotSet"
-        if "True" in self.absolute_move(self.home_pos[0], self.home_pos[1], self.home_pos[2] + 4):
+    def back_home(self, safe_altitude=5.0):
+        if self.home_pos == [0.0, 0.0, 0.0]: 
+            return "backHome;Error;HomeNotSet"
+
+        home_x = self.home_pos[0]
+        home_y = self.home_pos[1]
+        
+        # 1. Avalia a altitude atual para não bater em nada no caminho de volta
+        local_pos = self.get_local_position().split(';')
+        if local_pos[1] == 'True':
+            current_z = float(local_pos[4]) 
+        else:
+            current_z = -safe_altitude # Fallback de segurança 
+            
+        # No sistema NED, Z é negativo para CIMA. 
+        # min() entre -3 (3m) e -5 (5m) retorna -5, ou seja, pega a altura mais alta.
+        return_z = min(current_z, -safe_altitude)
+
+        self.get_logger().info(f"Retorno explícito ativado! Indo para X={home_x:.2f}, Y={home_y:.2f} a {abs(return_z):.2f}m de altura.")
+
+        # 2. Voa até o X e Y do Home mantendo a altitude lá no alto
+        move_result = self.absolute_move(home_x, home_y, return_z)
+
+        # 3. Se chegou lá com sucesso, desce em linha reta
+        if "True" in move_result:
+            self.get_logger().info("Drone chegou nas coordenadas iniciais. Iniciando pouso...")
             return self.land()
-        return "backHome;False;Failed"
+            
+        return "backHome;False;FailedToMove"
 
     def close_connection(self):
         if self.heartbeat_thread and self.heartbeat_thread.is_alive():
@@ -348,7 +381,7 @@ class DroneController(Node):
             elif command == "relMove": result = self.relative_move(float(args[1]), float(args[2]), float(args[3]))
             elif command == "land": result = self.land()
             elif command == "AbsMove": result = self.absolute_move(float(args[1]), float(args[2]), float(args[3]))
-            elif command == "homeAbsMove": result = self.relative_move(float(args[1]), float(args[2]), float(args[3]), float(args[4]))
+            elif command == "homeAbsMove": result = self.absolute_move(float(args[1]), float(args[2]), float(args[3]), float(args[4]))
             elif command == "setHome": result = self.set_home()
             elif command == "getHome": result = self.get_home()
             elif command == "getAltitude": result = self.get_local_position()

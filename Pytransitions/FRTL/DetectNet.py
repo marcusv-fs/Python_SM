@@ -128,12 +128,18 @@ def predict(session, image, width, height, threshold=0.7):
             force_x = (cx - img_center_x) / img_center_x
             force_y = (cy - img_center_y) / img_center_y
 
+            # 4. Calcula as dimensões reais da Bounding Box em pixels
+            bbox_width = box_int[2] - box_int[0]
+            bbox_height = box_int[3] - box_int[1]
+
             # Adiciona ao JSON de saída
             detections.append({
                 "label": class_name,
                 "box": box_int,
                 "score": score,
                 "center": {"x": cx, "y": cy},
+                "width": bbox_width,      
+                "height": bbox_height,    
                 "force_vector": {"x": round(force_x, 3), "y": round(force_y, 3)}
             })
 

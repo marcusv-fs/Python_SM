@@ -112,31 +112,56 @@ def searchNearestBase(self, img):
     da câmera (Body Frame) para o sistema global (NED) usado pela plataforma.
     """
     
-    # 1. Atualiza posição e orientação atual
+    # 1. Atualiza e valida a posição do drone (proteção contra falha de leitura)
     self.dronePos = updateDronePos(self)
+    if not self.dronePos:
+        return Position(0.0, 0.0, 0.0, 0.0)
 
+    # CORREÇÃO CRÍTICA 1: Altitude no sistema NED
+    # Em NED, o eixo Z é positivo para BAIXO. Se o drone está a 10m de altura, Z = -10.
+    # Multiplicar um vetor por um Z negativo inverte as direções calculadas.
+    # Usamos abs() para garantir que a escala seja sempre positiva.
+    altitude = abs(self.dronePos.Z)
+
+    # CORREÇÃO CRÍTICA 2: Garantir que o Yaw é lido corretamente (assume-se radianos)
+    # As funções math.cos e math.sin do Python exigem radianos. 
     current_yaw = getattr(self, 'droneYaw', 0.0) 
 
-    annotated_img, detections = detect_single_frame(img)
+    _, detections = detect_single_frame(img)
     
     if not detections:
-        return Position(0.0, 0.0, 0.0, 0)
+        return Position(0.0, 0.0, 0.0, 0.0)
 
     best_rel_pos = None
     min_dist_sq = float('inf')
 
+    smooth_factor = 0.75  # Move apenas 40% do erro por iteração (ajuda a desacelerar)
+    deadzone = 0.05      # Ignora erros menores que 5% (evita tremores finos)
+
+    # Valores extraídos diretamente do SDF do Gazebo
+    FOCAL_LENGTH = 205.47  # Calculado a partir de FOV 2.0 e Width 640
+    REAL_BASE_SIZE_M = 1.0 # 1 metro
+
     for det in detections:
-        if isinstance(det, dict) and 'force_vector' in det:
+        if isinstance(det, dict) and 'force_vector' in det and 'width' in det:
             fx = det['force_vector']['x']
             fy = det['force_vector']['y']
+            bbox_width_pixels = det['width']
 
-            # 2. Coordenadas no referencial do DRONE (Body Frame)
+            # Agora isso vai te dar a distância real (em metros) da lente até a base!
+            dist_to_base = (REAL_BASE_SIZE_M * FOCAL_LENGTH) / bbox_width_pixels
 
-            dx_body = -(fx * self.dronePos.Z) 
-            dy_body = (fy * self.dronePos.Z)
+            # 1. Aplica a Zona Morta (Deadzone)
+            if abs(fx) < deadzone: fx = 0.0
+            if abs(fy) < deadzone: fy = 0.0
+
+            # 2. Coordenadas no referencial do DRONE (Body Frame) com Suavização
+            # O eixo Y da imagem controla Frente/Trás (+X)
+            # O eixo X da imagem controla Direita/Esquerda (+Y)
+            dx_body = -(fy * dist_to_base) * smooth_factor
+            dy_body = (fx * dist_to_base) * smooth_factor
 
             # 3. TRANSFORMAÇÃO PARA REFERENCIAL GLOBAL (NED)
-            # Matriz de rotação 2D:
             dx_ned = dx_body * math.cos(current_yaw) - dy_body * math.sin(current_yaw)
             dy_ned = dx_body * math.sin(current_yaw) + dy_body * math.cos(current_yaw)
 
@@ -350,6 +375,7 @@ class Phase1(GraphMachine):
                         Position(-4 + self.homePos.X,-4 + self.homePos.Y,self.targetHeight, 0),
                         Position(-6 + self.homePos.X,-6 + self.homePos.Y,self.targetHeight, 0)]
         
+        
         # Targets = [
         #     Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
         #     Target(id=2, pos=Position((4.5 + self.dronePos.X), (-3.0 + self.dronePos.Y), 0.0)),
@@ -363,7 +389,7 @@ class Phase1(GraphMachine):
         self.distToTarget = 99999999.0
 
         self.MAX_ATTEMPT = 3
-        self.SAFE_DISTANCE = 0.5
+        self.SAFE_DISTANCE = 0.2
 
         ####################### Draw State Machine ######################
         try:
@@ -586,6 +612,7 @@ class FRTL(GraphMachine):
     def before_Phases_Final(self):
         print("Returning to Launch")
         Request(self.node, f"backHome")
+        Wait()
 
 ####################### On_enter States #######################         
     def on_enter_Connect(self):
@@ -650,6 +677,7 @@ def ros_spin_thread(node):
 def machine_thread(machine):
     """Thread dedicada à máquina de estados."""
     machine.run()
+    return 
 
 def main(args=None):
     rclpy.init(args=args)
@@ -665,15 +693,18 @@ def main(args=None):
 
     # Aguarda a FSM terminar
     try:
-        fsm_thread.join()
-        ros_thread.join()
-    except:
-        ros_thread.join()
-        fsm_thread.join()
-
-    # Quando FSM termina, encerra ROS
-    node.get_logger().info("Encerrando ROS 2...")
-    print("Programa encerrado!")
+        fsm_thread.join() # O programa principal fica esperando a FSM acabar aqui
+    except KeyboardInterrupt:
+        print("\nInterrompido pelo usuário.")
+    finally:
+        # Quando a FSM termina (ou se der erro/Ctrl+C), nós derrubamos o ROS
+        node.get_logger().info("Encerrando ROS 2...")
+        if rclpy.ok():
+            rclpy.shutdown() # Isso quebra o loop infinito do rclpy.spin()
+        
+        # Agora sim a thread do ROS consegue finalizar em paz
+        ros_thread.join(timeout=2.0) 
+        print("Programa encerrado!")
 
 if __name__ == '__main__':
     main()
