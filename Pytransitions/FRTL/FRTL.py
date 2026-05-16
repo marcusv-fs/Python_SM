@@ -12,7 +12,7 @@ from cv_bridge import CvBridge
 
 from DetectNet import detect_single_frame
 
-TARGET_HEIGHT = 3
+TARGET_HEIGHT = 4
 resp = ['']
 msg = String()
 global Wait_flag
@@ -40,6 +40,59 @@ def is_base_already_visited(self, x, y):
         return False
 
 import math
+
+def cleanMappedBases(self):
+        self.node.get_logger().info("Iniciando limpeza das bases mapeadas...")
+
+        # Opcional: Se alguma base foi detectada num surto da rede neural
+        # muito fora do seu grid 8x8m, você pode filtrá-la aqui antes do loop.
+
+        # Enquanto tivermos mais de 5 small bases, fundimos as mais próximas
+        while len(self.bases) > 5:
+            min_dist = float('inf')
+            pair_to_merge = None
+
+            # 1. Encontra o par de bases com a menor distância entre si
+            for i in range(len(self.bases)):
+                for j in range(i + 1, len(self.bases)):
+                    b1 = self.bases[i]
+                    b2 = self.bases[j]
+                    dist = math.sqrt((b1.pos.X - b2.pos.X)**2 + (b1.pos.Y - b2.pos.Y)**2)
+                    
+                    if dist < min_dist:
+                        min_dist = dist
+                        pair_to_merge = (i, j)
+            
+            # 2. Mescla o par mais próximo
+            if pair_to_merge:
+                i, j = pair_to_merge
+                b1 = self.bases[i]
+                b2 = self.bases[j]
+                
+                # Calcula o centroide (média das coordenadas)
+                avg_x = (b1.pos.X + b2.pos.X) / 2.0
+                avg_y = (b1.pos.Y + b2.pos.Y) / 2.0
+                avg_z = (b1.pos.Z + b2.pos.Z) / 2.0
+                
+                # Cria a nova base refinada
+                merged_target = Target(id=b1.id, pos=Position(avg_x, avg_y, avg_z, 0), visited=False)
+                
+                # Remove os antigos (ATENÇÃO: remover sempre o maior índice primeiro (j) para não quebrar a lista!)
+                self.bases.pop(j)
+                self.bases.pop(i)
+                
+                # Adiciona a nova base mesclada
+                self.bases.append(merged_target)
+                self.node.get_logger().info(f"Bases fundidas para corrigir odometria. Distância de erro era: {min_dist:.2f}m")
+
+        # 3. Reorganiza os IDs para ficarem de 1 a 5 certinho
+        for idx, base in enumerate(self.bases):
+            base.id = idx + 1
+            self.node.get_logger().info(f"Small Base Final #{base.id} -> X: {base.pos.X:.2f}, Y: {base.pos.Y:.2f}")
+
+        # Se por algum milagre ele mapeou menos de 5, avisa no log
+        if len(self.bases) < 5:
+            self.node.get_logger().warn(f"Atenção: Apenas {len(self.bases)} bases foram encontradas!")
 
 def searchBases(self, img):
     """
@@ -72,7 +125,7 @@ def searchBases(self, img):
     self.node.annotated_pub.publish(out_msg)
     
     # Constante óptica validada pelo SDF
-    FOCAL_LENGTH = 205.47 
+    FOCAL_LENGTH = 405.47 
     
     current_yaw = getattr(self, 'droneYaw', 0.0)
 
@@ -93,7 +146,7 @@ def searchBases(self, img):
             if label == 'large_base':
                 real_size = 2.0
             else:
-                real_size = 1.0
+                real_size = 1.1
 
             # A) Calcula a distância linear usando o tamanho correto
             dist_to_base = (real_size * FOCAL_LENGTH) / bbox_width_pixels
@@ -119,18 +172,15 @@ def searchBases(self, img):
                 if dist < 1.0:
                     is_duplicate = True
                     break
-            
+
             # 5. Adiciona novo Target respeitando a regra de posições
-            if label != 'large_base':
-                if not is_duplicate:
-                    # Gerar ID único incrementando o tamanho atual
+            if not is_duplicate:
+                if label == 'large_base':
+                    self.largeBase = Target(id=99, pos=Position(est_x, est_y, est_z, 0), visited=False)
+                    self.node.get_logger().info(f"Large Base encontrada em: X={est_x:.2f}, Y={est_y:.2f}")
+                else:
                     new_id = len(self.bases) + 1
-                    new_target = Target(
-                        id=new_id, 
-                        pos=Position(est_x, est_y, est_z, 0),
-                        visited=False
-                    )
-                    
+                    new_target = Target(id=new_id, pos=Position(est_x, est_y, est_z, 0), visited=False)
                     self.bases.append(new_target)
                     self.node.get_logger().info(f"Nova Small Base #{new_id} em: X={est_x:.2f}, Y={est_y:.2f}")
 
@@ -150,22 +200,25 @@ def searchBases(self, img):
 
 def searchNearestBase(self, img):
     """
-    Calcula o deslocamento relativo necessário, transformando as coordenadas
-    da câmera (Body Frame) para o sistema global (NED) usado pela plataforma.
+    Calcula o deslocamento relativo necessário MANTENDO NO REFERENCIAL BODY.
     """
-    
-    # 1. Atualiza e valida a posição do drone (proteção contra falha de leitura)
     time.sleep(3)
 
     self.dronePos = updateDronePos(self)
     if not self.dronePos:
         return Position(0.0, 0.0, 0.0, 0.0)
 
-    altitude = abs(self.dronePos.Z)
-
     current_yaw = getattr(self, 'droneYaw', 0.0) 
+    
+    self.node.get_logger().info("Executando detect_single_frame...")
+    annotated_img, detections = detect_single_frame(img)
 
-    _, detections = detect_single_frame(img)
+    if annotated_img is None:
+        self.node.get_logger().error("annotated_img é None!")
+        return Position(0.0, 0.0, 0.0, 0.0)
+
+    out_msg = self.node.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
+    self.node.annotated_pub.publish(out_msg)
     
     if not detections:
         return Position(0.0, 0.0, 0.0, 0.0)
@@ -173,50 +226,61 @@ def searchNearestBase(self, img):
     best_rel_pos = None
     min_dist_sq = float('inf')
 
-    smooth_factor = 0.85  # Move apenas 40% do erro por iteração (ajuda a desacelerar)
-    deadzone = 0.05      # Ignora erros menores que 5% (evita tremores finos)
+    smooth_factor = 0.85 
+    deadzone = 0.05      
 
-    # Valores extraídos diretamente do SDF do Gazebo
-    FOCAL_LENGTH = 205.47  # Calculado a partir de FOV 2.0 e Width 640
-    REAL_BASE_SIZE_M = 1.0 # 1 metro
+    FOCAL_LENGTH = 205.47
+    
+    # Constantes óticas (Pixels / FOCAL_LENGTH)
+    # Assumindo resolução de 640x480 e force_vector normalizado de -1 a 1
+    CONST_X = (640.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.557
+    CONST_Y = (480.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.168
 
     for det in detections:
         if isinstance(det, dict) and 'force_vector' in det and 'width' in det:
+            
+            # 1. CORREÇÃO DE ESCALA (Tamanho Dinâmico)
+            label = det.get('label', 'small_base')
+            if label == 'large_base':
+                real_size = 2.0
+            else:
+                real_size = 1.1
+
             fx = det['force_vector']['x']
             fy = det['force_vector']['y']
             bbox_width_pixels = det['width']
 
-            # Agora isso vai te dar a distância real (em metros) da lente até a base!
-            dist_to_base = (REAL_BASE_SIZE_M * FOCAL_LENGTH) / bbox_width_pixels
+            dist_to_base = (real_size * FOCAL_LENGTH) / bbox_width_pixels
 
-            # 1. Aplica a Zona Morta (Deadzone)
             if abs(fx) < deadzone: fx = 0.0
             if abs(fy) < deadzone: fy = 0.0
 
-            # 2. Coordenadas no referencial do DRONE (Body Frame) com Suavização
-            # O eixo Y da imagem controla Frente/Trás (+X)
-            # O eixo X da imagem controla Direita/Esquerda (+Y)
-            dx_body = -(fy * dist_to_base) * smooth_factor
-            dy_body = (fx * dist_to_base) * smooth_factor
+            # 2. CORREÇÃO MATEMÁTICA PINHOLE (Aplicando CONST_X e CONST_Y)
+            dx_body = -(fy * CONST_Y * dist_to_base) * smooth_factor
+            dy_body = (fx * CONST_X * dist_to_base) * smooth_factor
 
-            # 3. TRANSFORMAÇÃO PARA REFERENCIAL GLOBAL (NED)
+            # 3. Transformação para Global APENAS para verificar se já foi visitada!
             dx_ned = dx_body * math.cos(current_yaw) - dy_body * math.sin(current_yaw)
             dy_ned = dx_body * math.sin(current_yaw) + dy_body * math.cos(current_yaw)
 
-            # 4. Verificação de visita (usando coordenadas globais NED)
             est_x_global = self.dronePos.X + dx_ned
             est_y_global = self.dronePos.Y + dy_ned
 
             if is_base_already_visited(self, est_x_global, est_y_global):
                 continue
 
-            dist_sq = dx_ned**2 + dy_ned**2
+            # 4. CORREÇÃO DE REFERENCIAL (Retornar Body Frame para o relMove)
+            # Usamos dx_body e dy_body para saber a distância e salvar
+            dist_sq = dx_body**2 + dy_body**2
             if dist_sq < min_dist_sq:
                 min_dist_sq = dist_sq
-                best_rel_pos = Position(dx_ned, dy_ned, 0.0, 0.0)
+                # Salva dx_body, dy_body e A DISTÂNCIA Z ATÉ A BASE!
+                best_rel_pos = Position(dx_body, dy_body, dist_to_base, 0.0)
 
+    # Retorna dist_to_base = 0.0 se não achar nada
     return best_rel_pos if best_rel_pos is not None else Position(0.0, 0.0, 0.0, 0.0)
 
+    return best_rel_pos if best_rel_pos is not None else Position(0.0, 0.0, 0.0, 0.0)
 
 def updateDronePos(self):
     try:
@@ -378,7 +442,7 @@ class Phase1(GraphMachine):
 
         {'trigger': 'LandAndScore_to_TakeOff', 'source': 'LandAndScore', 'dest': 'TakeOff'},
 
-        {'trigger': 'TakeOff_to_Explore', 'source': 'TakeOff', 'dest': 'Explore', 'conditions': 'cond_TakeOff_Explore'},
+        {'trigger': 'TakeOff_to_GoToBase', 'source': 'TakeOff', 'dest': 'GoToBase', 'conditions': 'cond_TakeOff_GoToBase'},
         {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final', 'conditions': 'cond_TakeOff_Final'},
     ]
 
@@ -408,13 +472,19 @@ class Phase1(GraphMachine):
         self.img = None
         self.trigger_image = False
         self.count = 0
-        self.visitedBases = 1
         self.bases: list[Target] = []
+        self.largeBase = None  # Para guardar a base final separada
+        self.visitedBases = 0  
+        
+        # Grid Lawnmower para cobrir 8x8 (pontos extremos e meios)
         self.defPos = [ 
-                    Position(2 + self.homePos.X,  2 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0), 
-                    Position(-4 + self.homePos.X, -4 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
-                    Position(-6 + self.homePos.X, -6 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0)
-                ]
+            Position( 0 + self.homePos.X,   0 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0), 
+            Position( 0 + self.homePos.X,  -8.5 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
+            Position( -4 + self.homePos.X,  -4 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
+            Position(-8 + self.homePos.X,  -0 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
+            Position(-8 + self.homePos.X,   -8 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0)
+        ]
+        self.MAX_ATTEMPT = len(self.defPos)
         
         
         # Targets = [
@@ -429,7 +499,6 @@ class Phase1(GraphMachine):
         self.dronePos = Position(0,0,0, 0)
         self.distToTarget = 99999999.0
 
-        self.MAX_ATTEMPT = 3
         self.SAFE_DISTANCE = 0.2
 
         ####################### Draw State Machine ######################
@@ -451,26 +520,37 @@ class Phase1(GraphMachine):
         return self.count > self.MAX_ATTEMPT
 
     def cond_SearchForBases_Explore(self):
-        return len(self.bases) < 5 and self.count <= self.MAX_ATTEMPT
+        # Continua explorando até varrer todos os pontos
+        return self.count < self.MAX_ATTEMPT
             
     def cond_SearchForBases_GoToBase(self):
-        return len(self.bases) > 1
+        # Acabou de explorar? Vai para as bases!
+        return self.count >= self.MAX_ATTEMPT
     
     def cond_ApproachToBase_ApproachToBase(self):
-        return (self.distToTarget >= self.SAFE_DISTANCE)
+        # Continua aproximando se X/Y forem longe OU se o Z ainda for alto (> 0.6m)
+        current_error_xy = calcDist(self.basePos)
+        current_height_z = self.basePos.Z # Pega o Z retornado pela searchNearestBase
+        return (current_error_xy >= self.SAFE_DISTANCE) or (current_height_z > 0.6)
     
     def cond_ApproachToBase_LandAndScore(self):
-        return (self.distToTarget < self.SAFE_DISTANCE)
+        # Pousa se X/Y forem perto E se estiver baixo (< 0.6m)
+        current_error_xy = calcDist(self.basePos)
+        current_height_z = self.basePos.Z
+        return (current_error_xy < self.SAFE_DISTANCE) and (current_height_z <= 0.6)
     
-    def cond_TakeOff_Explore(self):
-        return (self.visitedBases < 5)
+    def cond_TakeOff_GoToBase(self):
+        # Quantidade de small bases na lista + 1 (se a large base foi achada), senão + 0
+        total_targets = len(self.bases) + (1 if self.largeBase is not None else 0)
+        return self.visitedBases < total_targets 
     
     def cond_TakeOff_Final(self):
-        return (self.visitedBases >= 5)
+        total_targets = len(self.bases) + (1 if self.largeBase is not None else 0)
+        return self.visitedBases >= total_targets
     
     ####################### Before Transitions ####################### 
     def before_Initial_Explore(self):
-        self.count = 1
+        self.count = 0
         self.visitedBases = 0
 
     def reset_trigger_image(self):
@@ -482,11 +562,27 @@ class Phase1(GraphMachine):
         self.count = self.count + 1
 
     def before_SearchForBases_GoToBase(self):
-        self.count = 1
+        cleanMappedBases(self)
 
     def before_ApproachToBase_ApproachToBase(self):
         print("Moving to new Position...")
-        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}")
+        
+        # --- NOVO CÁLCULO DE DESCIDA GRADUAL ---
+        # Definimos uma "altitude de pouso" (ex: 0.5m do chão).
+        DESIRED_LANDING_ALTITUDE_Z = -0.5
+        
+        # Pegamos a altitude Z atual do drone (ex: -3.0).
+        current_altitude_z = self.dronePos.Z
+        
+        # Criamos um delta_z para aproximar a altitude atual da altitude de pouso.
+        # Usamos smooth_factor para a descida ser suave.
+        descend_smooth_factor = 0.2 # Desce 20% do erro por iteração
+        delta_z = (DESIRED_LANDING_ALTITUDE_Z - current_altitude_z) * descend_smooth_factor
+        # ----------------------------------------
+
+        # Usamos a posição Body Frame (X, Y) calculada pela câmera 
+        # e o novo delta_z calculado para a descida.
+        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{-delta_z}")
         Wait()
 
     ####################### On_enter States #######################         
@@ -502,15 +598,35 @@ class Phase1(GraphMachine):
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
-        target_global = self.bases[self.visitedBases].pos
+        
+        # Decide qual é o alvo: As 5 pequenas ou a grande?
+        if self.visitedBases < len(self.bases):
+            target_global = self.bases[self.visitedBases].pos
+            self.node.get_logger().info(f"Indo para Small Base {self.visitedBases+1}")
+        elif self.largeBase is not None:
+            target_global = self.largeBase.pos
+            self.node.get_logger().info("Indo para a Large Base Final!")
+        else:
+            self.node.get_logger().error("Erro: Large Base não foi mapeada!")
+            return # Ou joga pro final/emergência
+            
         self.dronePos = updateDronePos(self)
+        current_yaw = getattr(self, 'droneYaw', 0.0) 
+    
+        # 1. Distância no Referencial Global (Norte/Leste)
+        delta_x_global = target_global.X - self.dronePos.X
+        delta_y_global = target_global.Y - self.dronePos.Y
+        
+        # 2. Converte para o Referencial do Drone (Body Frame: Frente/Direita)
+        # Aplicamos a matriz de rotação inversa (girando pelo -Yaw)
+        delta_x_body = delta_x_global * math.cos(current_yaw) + delta_y_global * math.sin(current_yaw)
+        delta_y_body = -delta_x_global * math.sin(current_yaw) + delta_y_global * math.cos(current_yaw)
+        delta_z = 0.1
 
-        # offset relativo
-        delta_x = target_global.X - self.dronePos.X
-        delta_y = target_global.Y - self.dronePos.Y
-        delta_z = 0
+        self.node.get_logger().info(f"Movendo (Body Frame): Frente={delta_x_body:.2f}m, Direita={delta_y_body:.2f}m")
 
-        Request(self.node, f"relMove;{delta_x};{delta_y};{delta_z}")
+        # 3. Envia o comando relativo na perspectiva do drone
+        Request(self.node, f"relMove;{delta_x_body};{delta_y_body};{delta_z}")
         Wait()
 
     def on_enter_ApproachToBase(self):

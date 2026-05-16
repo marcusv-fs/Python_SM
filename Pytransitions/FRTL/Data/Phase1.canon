@@ -35,6 +35,6 @@ digraph "State Machine" {
 	ApproachToBase -> LandAndScore	[label="ApproachToBase_to_LandAndScore [cond_ApproachToBase_LandAndScore]"];
 	TakeOff	[label="TakeOff\l- enter:\l  + on_enter_TakeOff\l"];
 	LandAndScore -> TakeOff	[label=LandAndScore_to_TakeOff];
-	TakeOff -> Explore	[label="TakeOff_to_Explore [cond_TakeOff_Explore]"];
+	TakeOff -> GoToBase	[label="TakeOff_to_GoToBase [cond_TakeOff_GoToBase]"];
 	TakeOff -> Final	[label="TakeOff_to_Final [cond_TakeOff_Final]"];
 }
