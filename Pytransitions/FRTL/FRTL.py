@@ -39,41 +39,80 @@ def is_base_already_visited(self, x, y):
                 return True
         return False
 
+import math
+
 def searchBases(self, img):
     """
     Cria e adiciona novos Targets à lista self.bases com base nas 
-    inferências da rede neural, evitando duplicatas em um raio de 1m.
+    inferências da rede neural.
+    
+    REGRAS ESPECIAIS:
+    1. 'large_base' tem 2.0m de tamanho (smalls têm 1.0m).
+    2. Se for uma 'large_base', ela DEVE ser inserida no índice 0 de self.bases.
+    3. Se uma 'large_base' sobrepuser qualquer base já existente (raio < 1m), ela é ignorada.
     """
 
-    self.dronePos = updateDronePos(self)
+    time.sleep(3)
 
-    # 1. Solicita a detecção (Certifique-se de que detect_single_frame foi importado)
+    self.dronePos = updateDronePos(self)
+    if not self.dronePos:
+        return self.bases
+
+    # 1. Solicita a detecção
     self.node.get_logger().info("Executando detect_single_frame...")
     annotated_img, detections = detect_single_frame(img)
 
-    # 2. Publica a imagem usando o nó ROS (self.node)
+    # 2. Publica a imagem anotada
     if annotated_img is None:
         self.node.get_logger().error("annotated_img é None! DetectNet não retornou imagem.")
-        return self.bases  # retorna sem publicar
+        return self.bases  
 
-    self.node.get_logger().info(f"Publicando imagem anotada, shapeannot: {annotated_img.shape}")
+    self.node.get_logger().info(f"Publicando imagem anotada, shape: {annotated_img.shape}")
     out_msg = self.node.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
     self.node.annotated_pub.publish(out_msg)
-    self.node.get_logger().warn("Imagem publicada em /ProcDroneImg")
     
-    # 3. Processa as detecções para criar Targets
+    # Constante óptica validada pelo SDF
+    FOCAL_LENGTH = 205.47 
+    
+    current_yaw = getattr(self, 'droneYaw', 0.0)
+
+    # 3. Processa as detecções
     for det in detections:
-        if isinstance(det, dict) and 'force_vector' in det:
+        if isinstance(det, dict) and 'force_vector' in det and 'width' in det:
+            
+            label = det.get('label', 'small_base') # assume small_base se não houver label
             fx = det['force_vector']['x']
             fy = det['force_vector']['y']
+            bbox_width_pixels = det['width']
+
+            if bbox_width_pixels <= 0:
+                continue
+
+            # --- AJUSTE DINÂMICO DO TAMANHO DA BASE ---
+            # Se for large_base o tamanho real é 2.0m, caso contrário é 1.0m
+            if label == 'large_base':
+                real_size = 2.0
+            else:
+                real_size = 1.0
+
+            # A) Calcula a distância linear usando o tamanho correto
+            dist_to_base = (real_size * FOCAL_LENGTH) / bbox_width_pixels
+
+            # B) Coordenadas no referencial do DRONE (Body Frame)
+            dx_body = -(fy * dist_to_base)
+            dy_body = (fx * dist_to_base)
+
+            # C) TRANSFORMAÇÃO PARA REFERENCIAL GLOBAL (NED)
+            dx_ned = dx_body * math.cos(current_yaw) - dy_body * math.sin(current_yaw)
+            dy_ned = dx_body * math.sin(current_yaw) + dy_body * math.cos(current_yaw)
             
-            # Estima posição global
-            est_x = self.dronePos.X + (fy * self.dronePos.Z)
-            est_y = self.dronePos.Y + (fx * self.dronePos.Z)
+            est_x = self.dronePos.X + dx_ned
+            est_y = self.dronePos.Y + dy_ned
+            est_z = self.dronePos.Z # Mantém altitude de voo (anti-mergulho)
 
-            est_z = 0.0 
-
-            # Verifica duplicatas (raio de 1 metro)
+            # 4. Verifica duplicatas/sobreposição (raio de 1 metro)
+            # Regra: Se a nova base (seja small ou large) estiver em cima de QUALQUER 
+            # base existente na lista, ela será considerada duplicata.
             is_duplicate = False
             for target in self.bases:
                 dist = math.sqrt((est_x - target.pos.X)**2 + (est_y - target.pos.Y)**2)
@@ -81,28 +120,31 @@ def searchBases(self, img):
                     is_duplicate = True
                     break
             
-            # Adiciona novo Target se for único
-            if not is_duplicate:
-                new_id = len(self.bases) + 1
-                new_target = Target(
-                    id=new_id, 
-                    pos=Position(est_x, est_y, est_z, 0),
-                    visited=False
-                )
-                self.bases.append(new_target)
-                self.node.get_logger().info(f"Novo Target #{new_id} em: X={est_x:.2f}, Y={est_y:.2f}")
-            
-    # return self.bases
+            # 5. Adiciona novo Target respeitando a regra de posições
+            if label != 'large_base':
+                if not is_duplicate:
+                    # Gerar ID único incrementando o tamanho atual
+                    new_id = len(self.bases) + 1
+                    new_target = Target(
+                        id=new_id, 
+                        pos=Position(est_x, est_y, est_z, 0),
+                        visited=False
+                    )
+                    
+                    self.bases.append(new_target)
+                    self.node.get_logger().info(f"Nova Small Base #{new_id} em: X={est_x:.2f}, Y={est_y:.2f}")
 
-    Targets = [
-            Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0, 0)),
-            Target(id=2, pos=Position((4 + self.dronePos.X), (-3.5 + self.dronePos.Y), 0.0, 0)),
-            Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0, 0)),
-            Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
-            Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
-        ]
+    return self.bases
 
-    return Targets
+    # Targets = [
+    #         Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0, 0)),
+    #         Target(id=2, pos=Position((4 + self.dronePos.X), (-3.5 + self.dronePos.Y), 0.0, 0)),
+    #         Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0, 0)),
+    #         Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
+    #         Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
+    #     ]
+
+    # return Targets
 
 
 
@@ -113,18 +155,14 @@ def searchNearestBase(self, img):
     """
     
     # 1. Atualiza e valida a posição do drone (proteção contra falha de leitura)
+    time.sleep(3)
+
     self.dronePos = updateDronePos(self)
     if not self.dronePos:
         return Position(0.0, 0.0, 0.0, 0.0)
 
-    # CORREÇÃO CRÍTICA 1: Altitude no sistema NED
-    # Em NED, o eixo Z é positivo para BAIXO. Se o drone está a 10m de altura, Z = -10.
-    # Multiplicar um vetor por um Z negativo inverte as direções calculadas.
-    # Usamos abs() para garantir que a escala seja sempre positiva.
     altitude = abs(self.dronePos.Z)
 
-    # CORREÇÃO CRÍTICA 2: Garantir que o Yaw é lido corretamente (assume-se radianos)
-    # As funções math.cos e math.sin do Python exigem radianos. 
     current_yaw = getattr(self, 'droneYaw', 0.0) 
 
     _, detections = detect_single_frame(img)
@@ -135,7 +173,7 @@ def searchNearestBase(self, img):
     best_rel_pos = None
     min_dist_sq = float('inf')
 
-    smooth_factor = 0.75  # Move apenas 40% do erro por iteração (ajuda a desacelerar)
+    smooth_factor = 0.85  # Move apenas 40% do erro por iteração (ajuda a desacelerar)
     deadzone = 0.05      # Ignora erros menores que 5% (evita tremores finos)
 
     # Valores extraídos diretamente do SDF do Gazebo
@@ -229,6 +267,7 @@ def Wait():
         now = time.time()
         if now - start_time > 60:  # Timeout de 30 segundos
             print("Timeout ao esperar resposta.")
+            valor = input("Digite 'Y' para prosseguir")
             Wait_flag = True
     Wait_flag = False
 
@@ -270,9 +309,9 @@ class FrtlNode(Node):
             self.machine.mission.img = self.frame
             self.machine.mission.trigger_image = True
 
-            annotated_img, detections = detect_single_frame(self.frame)
-            out_msg = self.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
-            self.annotated_pub.publish(out_msg)
+            # annotated_img, detections = detect_single_frame(self.frame)
+            # out_msg = self.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
+            # self.annotated_pub.publish(out_msg)
 
         except AttributeError:
             pass
@@ -371,9 +410,11 @@ class Phase1(GraphMachine):
         self.count = 0
         self.visitedBases = 1
         self.bases: list[Target] = []
-        self.defPos = [ Position(2 + self.homePos.X, 2 + self.homePos.Y,self.targetHeight, 0), 
-                        Position(-4 + self.homePos.X,-4 + self.homePos.Y,self.targetHeight, 0),
-                        Position(-6 + self.homePos.X,-6 + self.homePos.Y,self.targetHeight, 0)]
+        self.defPos = [ 
+                    Position(2 + self.homePos.X,  2 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0), 
+                    Position(-4 + self.homePos.X, -4 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
+                    Position(-6 + self.homePos.X, -6 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0)
+                ]
         
         
         # Targets = [
@@ -410,7 +451,7 @@ class Phase1(GraphMachine):
         return self.count > self.MAX_ATTEMPT
 
     def cond_SearchForBases_Explore(self):
-        return len(self.bases) < 2 and self.count <= self.MAX_ATTEMPT
+        return len(self.bases) < 5 and self.count <= self.MAX_ATTEMPT
             
     def cond_SearchForBases_GoToBase(self):
         return len(self.bases) > 1
