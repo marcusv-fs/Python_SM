@@ -540,13 +540,12 @@ class Phase1(GraphMachine):
         return (current_error_xy < self.SAFE_DISTANCE) and (current_height_z <= 0.6)
     
     def cond_TakeOff_GoToBase(self):
-        # Quantidade de small bases na lista + 1 (se a large base foi achada), senão + 0
-        total_targets = len(self.bases) + (1 if self.largeBase is not None else 0)
-        return self.visitedBases < total_targets 
+        # Continua indo para as bases enquanto não visitou todas as small bases (as 5)
+        return self.visitedBases < len(self.bases) 
     
     def cond_TakeOff_Final(self):
-        total_targets = len(self.bases) + (1 if self.largeBase is not None else 0)
-        return self.visitedBases >= total_targets
+        # Visitou todas as pequenas? Fim da Phase1! (Deixa a grande para a máquina principal)
+        return self.visitedBases >= len(self.bases)
     
     ####################### Before Transitions ####################### 
     def before_Initial_Explore(self):
@@ -599,19 +598,16 @@ class Phase1(GraphMachine):
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
         
-        # Decide qual é o alvo: As 5 pequenas ou a grande?
+        # O alvo agora são EXCLUSIVAMENTE as small bases
         if self.visitedBases < len(self.bases):
             target_global = self.bases[self.visitedBases].pos
             self.node.get_logger().info(f"Indo para Small Base {self.visitedBases+1}")
-        elif self.largeBase is not None:
-            target_global = self.largeBase.pos
-            self.node.get_logger().info("Indo para a Large Base Final!")
         else:
-            self.node.get_logger().error("Erro: Large Base não foi mapeada!")
-            return # Ou joga pro final/emergência
+            self.node.get_logger().error("Erro: Sem mais bases para visitar no GoToBase!")
+            return
             
         self.dronePos = updateDronePos(self)
-        current_yaw = getattr(self, 'droneYaw', 0.0) 
+        current_yaw = getattr(self, 'droneYaw', 0.0)
     
         # 1. Distância no Referencial Global (Norte/Leste)
         delta_x_global = target_global.X - self.dronePos.X
