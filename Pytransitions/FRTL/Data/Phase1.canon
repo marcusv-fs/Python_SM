@@ -23,8 +23,6 @@ digraph "State Machine" {
 	Initial -> Explore	[label=Initial_to_Explore];
 	SearchForBases	[label="SearchForBases\l- enter:\l  + on_enter_SearchForBases\l"];
 	Explore -> SearchForBases	[label="Explore_to_SearchForBases [cond_Explore_SearchForBases]"];
-	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
-	Explore -> Final	[label="Explore_to_Final [cond_Explore_Final]"];
 	SearchForBases -> Explore	[label="SearchForBases_to_Explore [cond_SearchForBases_Explore]"];
 	GoToBase	[label="GoToBase\l- enter:\l  + on_enter_GoToBase\l"];
 	SearchForBases -> GoToBase	[label="SearchForBases_to_GoToBase [cond_SearchForBases_GoToBase]"];
@@ -36,5 +34,6 @@ digraph "State Machine" {
 	TakeOff	[label="TakeOff\l- enter:\l  + on_enter_TakeOff\l"];
 	LandAndScore -> TakeOff	[label=LandAndScore_to_TakeOff];
 	TakeOff -> GoToBase	[label="TakeOff_to_GoToBase [cond_TakeOff_GoToBase]"];
+	Final	[label="Final\l- enter:\l  + on_enter_Final\l"];
 	TakeOff -> Final	[label="TakeOff_to_Final [cond_TakeOff_Final]"];
 }

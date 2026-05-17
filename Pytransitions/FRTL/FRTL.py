@@ -12,7 +12,10 @@ from cv_bridge import CvBridge
 
 from DetectNet import detect_single_frame
 
+DSD_LAND_ALT = -0.5
+SMOOTH = 0.4 
 TARGET_HEIGHT = 4
+
 resp = ['']
 msg = String()
 global Wait_flag
@@ -41,13 +44,12 @@ def is_base_already_visited(self, x, y):
 
 import math
 
-def cleanMappedBases(self):
+def isSafeToLand(self):
+        # Pousa se X/Y forem perto E se estiver baixo (< 0.6m)
+        return (calcDist(self.basePos) < self.SAFE_DISTANCE) and (self.basePos.Z <= 0.6)
+
+def optimizeBasePositions(self):
         self.node.get_logger().info("Iniciando limpeza das bases mapeadas...")
-
-        # Opcional: Se alguma base foi detectada num surto da rede neural
-        # muito fora do seu grid 8x8m, você pode filtrá-la aqui antes do loop.
-
-        # Enquanto tivermos mais de 5 small bases, fundimos as mais próximas
         while len(self.bases) > 5:
             min_dist = float('inf')
             pair_to_merge = None
@@ -74,23 +76,19 @@ def cleanMappedBases(self):
                 avg_y = (b1.pos.Y + b2.pos.Y) / 2.0
                 avg_z = (b1.pos.Z + b2.pos.Z) / 2.0
                 
-                # Cria a nova base refinada
                 merged_target = Target(id=b1.id, pos=Position(avg_x, avg_y, avg_z, 0), visited=False)
-                
-                # Remove os antigos (ATENÇÃO: remover sempre o maior índice primeiro (j) para não quebrar a lista!)
                 self.bases.pop(j)
                 self.bases.pop(i)
                 
-                # Adiciona a nova base mesclada
+                # Adiciona a nova base
                 self.bases.append(merged_target)
                 self.node.get_logger().info(f"Bases fundidas para corrigir odometria. Distância de erro era: {min_dist:.2f}m")
 
-        # 3. Reorganiza os IDs para ficarem de 1 a 5 certinho
+        # 3. Reorganiza os IDs
         for idx, base in enumerate(self.bases):
             base.id = idx + 1
             self.node.get_logger().info(f"Small Base Final #{base.id} -> X: {base.pos.X:.2f}, Y: {base.pos.Y:.2f}")
 
-        # Se por algum milagre ele mapeou menos de 5, avisa no log
         if len(self.bases) < 5:
             self.node.get_logger().warn(f"Atenção: Apenas {len(self.bases)} bases foram encontradas!")
 
@@ -98,11 +96,6 @@ def searchBases(self, img):
     """
     Cria e adiciona novos Targets à lista self.bases com base nas 
     inferências da rede neural.
-    
-    REGRAS ESPECIAIS:
-    1. 'large_base' tem 2.0m de tamanho (smalls têm 1.0m).
-    2. Se for uma 'large_base', ela DEVE ser inserida no índice 0 de self.bases.
-    3. Se uma 'large_base' sobrepuser qualquer base já existente (raio < 1m), ela é ignorada.
     """
 
     time.sleep(3)
@@ -141,8 +134,6 @@ def searchBases(self, img):
             if bbox_width_pixels <= 0:
                 continue
 
-            # --- AJUSTE DINÂMICO DO TAMANHO DA BASE ---
-            # Se for large_base o tamanho real é 2.0m, caso contrário é 1.0m
             if label == 'large_base':
                 real_size = 2.0
             else:
@@ -161,11 +152,8 @@ def searchBases(self, img):
             
             est_x = self.dronePos.X + dx_ned
             est_y = self.dronePos.Y + dy_ned
-            est_z = self.dronePos.Z # Mantém altitude de voo (anti-mergulho)
+            est_z = self.dronePos.Z 
 
-            # 4. Verifica duplicatas/sobreposição (raio de 1 metro)
-            # Regra: Se a nova base (seja small ou large) estiver em cima de QUALQUER 
-            # base existente na lista, ela será considerada duplicata.
             is_duplicate = False
             for target in self.bases:
                 dist = math.sqrt((est_x - target.pos.X)**2 + (est_y - target.pos.Y)**2)
@@ -185,18 +173,6 @@ def searchBases(self, img):
                     self.node.get_logger().info(f"Nova Small Base #{new_id} em: X={est_x:.2f}, Y={est_y:.2f}")
 
     return self.bases
-
-    # Targets = [
-    #         Target(id=1, pos=Position((-9 + self.dronePos.X), (-1.6 + self.dronePos.Y), 0.0, 0)),
-    #         Target(id=2, pos=Position((4 + self.dronePos.X), (-3.5 + self.dronePos.Y), 0.0, 0)),
-    #         Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0, 0)),
-    #         Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
-    #         Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0, 0)),
-    #     ]
-
-    # return Targets
-
-
 
 def searchNearestBase(self, img):
     """
@@ -269,16 +245,12 @@ def searchNearestBase(self, img):
             if is_base_already_visited(self, est_x_global, est_y_global):
                 continue
 
-            # 4. CORREÇÃO DE REFERENCIAL (Retornar Body Frame para o relMove)
-            # Usamos dx_body e dy_body para saber a distância e salvar
+            # 4. CORREÇÃO DE REFERENCIAL 
             dist_sq = dx_body**2 + dy_body**2
             if dist_sq < min_dist_sq:
                 min_dist_sq = dist_sq
                 # Salva dx_body, dy_body e A DISTÂNCIA Z ATÉ A BASE!
                 best_rel_pos = Position(dx_body, dy_body, dist_to_base, 0.0)
-
-    # Retorna dist_to_base = 0.0 se não achar nada
-    return best_rel_pos if best_rel_pos is not None else Position(0.0, 0.0, 0.0, 0.0)
 
     return best_rel_pos if best_rel_pos is not None else Position(0.0, 0.0, 0.0, 0.0)
 
@@ -372,11 +344,6 @@ class FrtlNode(Node):
         try:
             self.machine.mission.img = self.frame
             self.machine.mission.trigger_image = True
-
-            # annotated_img, detections = detect_single_frame(self.frame)
-            # out_msg = self.bridge.cv2_to_imgmsg(annotated_img, encoding='bgr8')
-            # self.annotated_pub.publish(out_msg)
-
         except AttributeError:
             pass
 
@@ -410,8 +377,7 @@ class FrtlNode(Node):
                     Wait_flag = True
                 else:
                     error = True
-            
-            # Agrupando os comandos de movimentação e estado que apenas retornam "True"
+
             case "relTakeOff" | "relMove" | "land" | "AbsMove" | "setMode" | "armUAV" | "backHome" | "closeConnection":
                 if resp[1] == "True":
                     Wait_flag = True
@@ -430,7 +396,6 @@ class Phase1(GraphMachine):
         {'trigger': 'Initial_to_Explore', 'source': 'Initial', 'dest': 'Explore', 'before': 'before_Initial_Explore'},
 
         {'trigger': 'Explore_to_SearchForBases', 'source': 'Explore', 'dest': 'SearchForBases', 'conditions': 'cond_Explore_SearchForBases', 'before': 'reset_trigger_image'},
-        {'trigger': 'Explore_to_Final', 'source': 'Explore', 'dest': 'Final', 'conditions': 'cond_Explore_Final'},
 
         {'trigger': 'SearchForBases_to_Explore', 'source': 'SearchForBases', 'dest': 'Explore', 'conditions': 'cond_SearchForBases_Explore', 'before': 'before_SearchForBases_Explore'},
         {'trigger': 'SearchForBases_to_GoToBase', 'source': 'SearchForBases', 'dest': 'GoToBase', 'conditions': 'cond_SearchForBases_GoToBase', 'before': 'before_SearchForBases_GoToBase'},
@@ -477,24 +442,14 @@ class Phase1(GraphMachine):
         self.visitedBases = 0  
         
         # Grid Lawnmower para cobrir 8x8 (pontos extremos e meios)
-        self.defPos = [ 
+        self.searchPoses = [ 
             Position( 0 + self.homePos.X,   0 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0), 
             Position( 0 + self.homePos.X,  -8.5 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
             Position( -4 + self.homePos.X,  -4 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
             Position(-8 + self.homePos.X,  -0 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0),
             Position(-8 + self.homePos.X,   -8 + self.homePos.Y, self.homePos.Z - self.targetHeight, 0)
         ]
-        self.MAX_ATTEMPT = len(self.defPos)
-        
-        
-        # Targets = [
-        #     Target(id=1, pos=Position((-9.50 + self.dronePos.X), (-1.0 + self.dronePos.Y), 0.0)),
-        #     Target(id=2, pos=Position((4.5 + self.dronePos.X), (-3.0 + self.dronePos.Y), 0.0)),
-        #     Target(id=3, pos=Position((0.0 + self.dronePos.X), (-5.0 + self.dronePos.Y), 0.0)),
-        #     Target(id=4, pos=Position((-4.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
-        #     Target(id=5, pos=Position((10.5 + self.dronePos.X), (-0.5 + self.dronePos.Y), 0.0)),
-        # ]
-
+        self.qtdPos = len(self.searchPoses)
         self.basePos = Position(0,0,0, 0)
         self.dronePos = Position(0,0,0, 0)
         self.distToTarget = 99999999.0
@@ -514,37 +469,24 @@ class Phase1(GraphMachine):
 
 ####################### Transition Conditions ####################### 
     def cond_Explore_SearchForBases(self):
-        return self.count <= self.MAX_ATTEMPT
-    
-    def cond_Explore_Final(self):
-        return self.count > self.MAX_ATTEMPT
+        return self.count <= self.qtdPos and self.trigger_image
 
     def cond_SearchForBases_Explore(self):
-        # Continua explorando até varrer todos os pontos
-        return self.count < self.MAX_ATTEMPT
+        return self.count < self.qtdPos
             
     def cond_SearchForBases_GoToBase(self):
-        # Acabou de explorar? Vai para as bases!
-        return self.count >= self.MAX_ATTEMPT
+        return self.count >= self.qtdPos
     
     def cond_ApproachToBase_ApproachToBase(self):
-        # Continua aproximando se X/Y forem longe OU se o Z ainda for alto (> 0.6m)
-        current_error_xy = calcDist(self.basePos)
-        current_height_z = self.basePos.Z # Pega o Z retornado pela searchNearestBase
-        return (current_error_xy >= self.SAFE_DISTANCE) or (current_height_z > 0.6)
+        return not isSafeToLand(self)
     
     def cond_ApproachToBase_LandAndScore(self):
-        # Pousa se X/Y forem perto E se estiver baixo (< 0.6m)
-        current_error_xy = calcDist(self.basePos)
-        current_height_z = self.basePos.Z
-        return (current_error_xy < self.SAFE_DISTANCE) and (current_height_z <= 0.6)
+        return isSafeToLand(self)
     
     def cond_TakeOff_GoToBase(self):
-        # Continua indo para as bases enquanto não visitou todas as small bases (as 5)
         return self.visitedBases < len(self.bases) 
     
     def cond_TakeOff_Final(self):
-        # Visitou todas as pequenas? Fim da Phase1! (Deixa a grande para a máquina principal)
         return self.visitedBases >= len(self.bases)
     
     ####################### Before Transitions ####################### 
@@ -556,31 +498,16 @@ class Phase1(GraphMachine):
         self.trigger_image = False
 
     def before_SearchForBases_Explore(self):
-        Request(self.node, f"homeAbsMove;{self.defPos[self.count].X};{self.defPos[self.count].Y};{self.defPos[self.count].Z}; 0")
+        Request(self.node, f"homeAbsMove;{self.searchPoses[self.count].X};{self.searchPoses[self.count].Y};{self.searchPoses[self.count].Z}; 0")
         Wait()
         self.count = self.count + 1
 
     def before_SearchForBases_GoToBase(self):
-        cleanMappedBases(self)
+        optimizeBasePositions(self)
 
     def before_ApproachToBase_ApproachToBase(self):
         print("Moving to new Position...")
-        
-        # --- NOVO CÁLCULO DE DESCIDA GRADUAL ---
-        # Definimos uma "altitude de pouso" (ex: 0.5m do chão).
-        DESIRED_LANDING_ALTITUDE_Z = -0.5
-        
-        # Pegamos a altitude Z atual do drone (ex: -3.0).
-        current_altitude_z = self.dronePos.Z
-        
-        # Criamos um delta_z para aproximar a altitude atual da altitude de pouso.
-        # Usamos smooth_factor para a descida ser suave.
-        descend_smooth_factor = 0.2 # Desce 20% do erro por iteração
-        delta_z = (DESIRED_LANDING_ALTITUDE_Z - current_altitude_z) * descend_smooth_factor
-        # ----------------------------------------
-
-        # Usamos a posição Body Frame (X, Y) calculada pela câmera 
-        # e o novo delta_z calculado para a descida.
+        delta_z = (DSD_LAND_ALT - self.dronePos.Z) * SMOOTH
         Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{-delta_z}")
         Wait()
 
@@ -597,8 +524,7 @@ class Phase1(GraphMachine):
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
-        
-        # O alvo agora são EXCLUSIVAMENTE as small bases
+
         if self.visitedBases < len(self.bases):
             target_global = self.bases[self.visitedBases].pos
             self.node.get_logger().info(f"Indo para Small Base {self.visitedBases+1}")
@@ -609,12 +535,9 @@ class Phase1(GraphMachine):
         self.dronePos = updateDronePos(self)
         current_yaw = getattr(self, 'droneYaw', 0.0)
     
-        # 1. Distância no Referencial Global (Norte/Leste)
         delta_x_global = target_global.X - self.dronePos.X
         delta_y_global = target_global.Y - self.dronePos.Y
         
-        # 2. Converte para o Referencial do Drone (Body Frame: Frente/Direita)
-        # Aplicamos a matriz de rotação inversa (girando pelo -Yaw)
         delta_x_body = delta_x_global * math.cos(current_yaw) + delta_y_global * math.sin(current_yaw)
         delta_y_body = -delta_x_global * math.sin(current_yaw) + delta_y_global * math.cos(current_yaw)
         delta_z = 0.1
@@ -638,14 +561,8 @@ class Phase1(GraphMachine):
     def on_enter_LandAndScore(self):
         """Callback executado ao iniciar o pouso"""
         self.node.get_logger().info("Pousando e salvando posição...")
-        
-        # Atualiza posição atual antes de salvar
         self.dronePos = updateDronePos(self)
-        
-        # Salva a posição para não repetir
         self.visited_bases_coords.append((self.dronePos.X, self.dronePos.Y))
-        
-        # Comando de pouso via ROS
         Request(self.node, "land")
         Wait()
         self.visitedBases += 1
@@ -689,19 +606,13 @@ class FRTL(GraphMachine):
 ####################### Transitions Statement  #######################  
     transitions = [
         {'trigger': 'Initial_to_Connect', 'source': 'Initial', 'dest': 'Connect'},
-
         {'trigger': 'Connect_to_Connect', 'source': 'Connect', 'dest': 'Connect', 'conditions': 'cond_Connect_Connect', 'before': ['before_Connect_Connect']},
         {'trigger': 'Connect_to_Wait', 'source': 'Connect', 'dest': 'Wait', 'conditions': 'cond_Connect_Wait'},
         {'trigger': 'Connect_to_Final', 'source': 'Connect', 'dest': 'Final', 'conditions': 'cond_Connect_Final'},
-
         {'trigger': 'Wait_to_StartEngines', 'source': 'Wait', 'dest': 'StartEngines', 'conditions': 'cond_Wait_StartEngines', 'before': ['reset_trigger_start',]},
         {'trigger': 'StartEngines_to_TakeOff', 'source': 'StartEngines', 'dest': 'TakeOff'},
-
         {'trigger': 'TakeOff_to_Phases', 'source': 'TakeOff', 'dest': 'Phases'},
-
         {'trigger': 'Phases_to_Final', 'source': 'Phases', 'dest': 'Final', 'before': 'before_Phases_Final'}
-
-        #{'trigger': 'Phases_to_Final', 'source': 'Phases', 'dest': 'Final', 'before': ['before_Phases_Final', 'reset_trigger']} -> Multiplas ações antes da transição
         ]
     
     def __init__(self, node: Node):    
@@ -716,12 +627,10 @@ class FRTL(GraphMachine):
             show_state_attributes=True
         )
 
-        #connection_string = "tcp:127.0.0.1:5760"
         self.connection_string = "udp:127.0.0.1:14551"
         self.finished = False
         self.node = node
         self.start_time = time.time()
-
 
         self.isConnected = False 
         self.phase = 0
@@ -785,7 +694,6 @@ class FRTL(GraphMachine):
         Wait()
         Request(self.node, f"armUAV")
         Wait()
-        
 
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")
@@ -843,19 +751,14 @@ def main(args=None):
     # Inicia as threads
     ros_thread.start()
     fsm_thread.start()
-
-    # Aguarda a FSM terminar
     try:
-        fsm_thread.join() # O programa principal fica esperando a FSM acabar aqui
+        fsm_thread.join()
     except KeyboardInterrupt:
         print("\nInterrompido pelo usuário.")
     finally:
-        # Quando a FSM termina (ou se der erro/Ctrl+C), nós derrubamos o ROS
         node.get_logger().info("Encerrando ROS 2...")
         if rclpy.ok():
-            rclpy.shutdown() # Isso quebra o loop infinito do rclpy.spin()
-        
-        # Agora sim a thread do ROS consegue finalizar em paz
+            rclpy.shutdown()
         ros_thread.join(timeout=2.0) 
         print("Programa encerrado!")
 
