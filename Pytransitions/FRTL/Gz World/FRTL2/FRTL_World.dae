@@ -743,23 +743,8 @@
           </bind_material>
         </instance_geometry>
       </node>
-      <node id="Cubo_002" name="Cubo.002" type="NODE">
-        <matrix sid="transform">1 0 0 4.009726 0 1 0 -4 0 0 1 0.51 0 0 0 1</matrix>
-        <instance_geometry url="#Cubo_001-mesh" name="Cubo.002">
-          <bind_material>
-            <technique_common>
-              <instance_material symbol="Materiais_011-material" target="#Materiais_011-material">
-                <bind_vertex_input semantic="Mapa UV" input_semantic="TEXCOORD" input_set="0"/>
-              </instance_material>
-              <instance_material symbol="Materiais_010-material" target="#Materiais_010-material">
-                <bind_vertex_input semantic="Mapa UV" input_semantic="TEXCOORD" input_set="0"/>
-              </instance_material>
-            </technique_common>
-          </bind_material>
-        </instance_geometry>
-      </node>
       <node id="Cubo_001" name="Cubo.001" type="NODE">
-        <matrix sid="transform">1 0 0 -4 0 1 0 -4 0 0 1 0.51 0 0 0 1</matrix>
+        <matrix sid="transform">1 0 0 0 0 1 0 0 0 0 1 0.51 0 0 0 1</matrix>
         <instance_geometry url="#Cubo_002-mesh" name="Cubo.001">
           <bind_material>
             <technique_common>

@@ -30,3 +30,4 @@ gnome-terminal -- bash -i -c "
 "
 
 echo "Simulação iniciada!"
+
