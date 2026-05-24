@@ -1,0 +1,42 @@
+<annotation>
+	<folder />
+	<filename>Gravacao-de-tela-de-2025-10-20-08-54-39_mp4-0133_jpg.rf.66d244fb913ddb23ddb5baeec58e8a4a_brightness.jpg</filename>
+	<path>Gravacao-de-tela-de-2025-10-20-08-54-39_mp4-0133_jpg.rf.66d244fb913ddb23ddb5baeec58e8a4a.jpg</path>
+	<source>
+		<database>roboflow.com</database>
+	</source>
+	<size>
+		<width>1442</width>
+		<height>964</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>small_base</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<occluded>0</occluded>
+		<bndbox>
+			<xmin>302</xmin>
+			<xmax>850</xmax>
+			<ymin>484</ymin>
+			<ymax>954</ymax>
+		</bndbox>
+	</object>
+	<object>
+		<name>small_base</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<occluded>0</occluded>
+		<bndbox>
+			<xmin>1</xmin>
+			<xmax>203</xmax>
+			<ymin>101</ymin>
+			<ymax>177</ymax>
+		</bndbox>
+	</object>
+	<metadata>
+	</metadata>
+</annotation>

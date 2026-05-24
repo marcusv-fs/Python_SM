@@ -1,6 +1,9 @@
-#
+#!/usr/bin/env python3
+# _*_ coding:utf-8 _*_
+
 # train an SSD model on Pascal VOC or Open Images datasets
-# hrllo
+# com Early Stopping
+
 import os
 import sys
 import logging
@@ -102,6 +105,12 @@ parser.add_argument('--checkpoint-folder', '--model-dir', default='models/',
                     help='Directory for saving checkpoint models')
 parser.add_argument('--log-level', default='info', type=str,
                     help='Logging level, one of:  debug, info, warning, error, critical (default: info)')
+
+# Early Stopping Params
+parser.add_argument('--patience', default=10, type=int,
+                    help='Número de épocas para aguardar melhora antes de parar (Early Stopping)')
+parser.add_argument('--min-delta', default=0.001, type=float,
+                    help='Melhoria mínima na perda de validação para ser considerada um avanço')
                                         
 args = parser.parse_args()
 
@@ -182,6 +191,7 @@ def train(loader, net, criterion, optimizer, device, debug_steps=100, epoch=-1):
     tensorboard.add_scalar('Regression Loss/train', train_regression_loss, epoch)
     tensorboard.add_scalar('Classification Loss/train', train_classification_loss, epoch)
 
+
 def test(loader, net, criterion, device):
     net.eval()
     running_loss = 0.0
@@ -217,7 +227,7 @@ if __name__ == '__main__':
         args.checkpoint_folder = os.path.expanduser(args.checkpoint_folder)
 
         if not os.path.exists(args.checkpoint_folder):
-            os.mkdir(args.checkpoint_folder)
+            os.makedirs(args.checkpoint_folder, exist_ok=True)
             
     # select the network architecture and config     
     if args.net == 'vgg16-ssd':
@@ -389,6 +399,10 @@ if __name__ == '__main__':
         parser.print_help(sys.stderr)
         sys.exit(1)
 
+    # --- VARIÁVEIS DE EARLY STOPPING ---
+    best_val_loss = float('inf')
+    epochs_without_improvement = 0
+
     # train for the desired number of epochs
     logging.info(f"Start training from epoch {last_epoch + 1}.")
     
@@ -418,10 +432,31 @@ if __name__ == '__main__':
                 
                 for i in range(len(class_ap)):
                     tensorboard.add_scalar(f"Class Average Precision/{eval_dataset.class_names[i+1]}", class_ap[i], epoch)
-    
-            model_path = os.path.join(args.checkpoint_folder, f"{args.net}-Epoch-{epoch}-Loss-{val_loss}.pth")
-            net.save(model_path)
-            logging.info(f"Saved model {model_path}")
+
+            # --- LÓGICA DE EARLY STOPPING E SALVAMENTO ---
+            if val_loss < (best_val_loss - args.min_delta):
+                logging.info(f"🔥 Redução na perda detectada: {best_val_loss:.4f} -> {val_loss:.4f}")
+                best_val_loss = val_loss
+                epochs_without_improvement = 0
+                
+                # Salva o melhor modelo
+                best_model_path = os.path.join(args.checkpoint_folder, f"{args.net}-Best-Model.pth")
+                net.save(best_model_path)
+                logging.info(f"⭐ Melhor modelo atualizado: {best_model_path}")
+            else:
+                epochs_without_improvement += 1
+                logging.info(f"⚠️ Nenhuma melhora significativa por {epochs_without_improvement} épocas.")
+
+            # Verifica o critério de parada
+            if epochs_without_improvement >= args.patience:
+                logging.info(f"🛑 EARLY STOPPING: O treinamento parou na época {epoch}. A validação parou de melhorar.")
+                break
+            
+            # (Opcional) Salva um checkpoint de segurança a cada 20 épocas
+            if epoch > 0 and epoch % 20 == 0:
+                periodic_model_path = os.path.join(args.checkpoint_folder, f"{args.net}-Epoch-{epoch}.pth")
+                net.save(periodic_model_path)
+                logging.info(f"💾 Checkpoint periódico salvo: {periodic_model_path}")
 
     logging.info("Task done, exiting program.")
     tensorboard.close()

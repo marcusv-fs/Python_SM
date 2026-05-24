@@ -19,7 +19,7 @@ CLASS_NAMES = (
     "large_base"   # índice 3
 )
 
-THRESHOLD = 0.4
+THRESHOLD = 0.8
 
 # =============================
 # Funções auxiliares de NMS/IoU

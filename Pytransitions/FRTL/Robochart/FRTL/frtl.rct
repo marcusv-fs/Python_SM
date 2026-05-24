@@ -37,7 +37,8 @@ stm FRTL {
 	uses IEvents requires IPlatOps 
 	
 	
-	var isConnected : boolean = false , phase : int , connectionTrys : int = 0 , homePos : Position
+	
+	var isConnected : boolean = false , phase : int , connectionTrys : int = 0 , homePos : Position , targetHeight : int = 4
 	requires IPhases initial i0
 	final f0
 	state Connect {
@@ -47,10 +48,10 @@ stm FRTL {
 		entry homePos = setHome ( )
 	}
 	state StartEngines {
-		entry setMode ( "GUIDED" ) ; wait ( 1 ) ; armUAV ( ) ; wait ( 1 )
+		entry setMode ( "GUIDED" ) ; wait ( 1 ) ; armUAV ( ) ; wait ( 1 ) ; if phase == 4 then targetHeight = 0.5 end
 	}
 	state TakeOff {
-		entry relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
+		entry relTakeOff ( targetHeight , homePos . Z ) ; wait ( 1 )
 	}
 	state Phases {
 		entry if phase == 1 then Phase1 ( homePos , TARGET_HEIGHT ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( homePos , TARGET_HEIGHT ) else if phase == 4 then Phase4 ( homePos , TARGET_HEIGHT ) end end end end
@@ -68,6 +69,7 @@ stm FRTL {
 		from Wait
 		to StartEngines
 	trigger 	
+	
 	
 	start ? phase
 	}
@@ -194,11 +196,11 @@ operation Phase4 ( homePos : Position
 , TARGET_HEIGHT : real
 ) {
 	uses IEvents requires IPlatOps 
-	var img : Image , targetPos : Position , dronePos : Position , distToTarget : real
+	var img : Image , targetPos : Position , dronePos : Position , distToTarget : real , isSafe : int = 0
 	initial i0
 
 	state Approach {
-		entry takePicture ? img ; targetPos = SearchNearestBase ( img ) ; distToTarget = calcDist ( targetPos , dronePos )
+		entry takePicture ? img ; targetPos = SearchNearestBase ( img ) ; isSafe = isSafeToLandP4 ( )
 	}
 	state Restart {
 		entry targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1
@@ -219,7 +221,7 @@ operation Phase4 ( homePos : Position
 	transition t2 {
 		from Approach
 		to Restart
-		condition isSafeToLandP4 ( ) == 2
+		condition isSafe == 2
 	}
 	transition t3 {
 		from Restart
@@ -230,7 +232,7 @@ operation Phase4 ( homePos : Position
 	transition t4 {
 		from Approach
 		to Land
-		condition isSafeToLandP4 (  ) == 1
+		condition isSafe == 1
 	}
 	transition t5 {
 		from Land
@@ -243,8 +245,9 @@ operation Phase4 ( homePos : Position
 transition t7 {
 		from Approach
 		to Approach
-		condition isSafeToLandP4 (  ) == 0
-		action relMove ( targetPos ) ; wait ( 1 )
+		condition isSafe == 0
+		action 
+	relMove ( targetPos ) ; wait ( 1 )
 	}
 const SAFE_DISTANCE : real = 0.3
 }

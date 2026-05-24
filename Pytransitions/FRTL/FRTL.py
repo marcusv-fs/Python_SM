@@ -14,7 +14,12 @@ from DetectNet import detect_single_frame
 
 DSD_LAND_ALT = -0.5
 SMOOTH = 0.4 
-TARGET_HEIGHT = 4
+FOCAL_LENGTH = 205.47
+    
+# Constantes óticas (Pixels / FOCAL_LENGTH)
+# Assumindo resolução de 640x480 e force_vector normalizado de -1 a 1
+CONST_X = (640.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.557
+CONST_Y = (480.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.168
 
 resp = ['']
 msg = String()
@@ -224,13 +229,6 @@ def searchNearestBase(self, img):
 
     smooth_factor = 0.85 
     deadzone = 0.05      
-
-    FOCAL_LENGTH = 205.47
-    
-    # Constantes óticas (Pixels / FOCAL_LENGTH)
-    # Assumindo resolução de 640x480 e force_vector normalizado de -1 a 1
-    CONST_X = (640.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.557
-    CONST_Y = (480.0 / 2.0) / FOCAL_LENGTH  # Aproximadamente 1.168
 
     for det in detections:
         if isinstance(det, dict) and 'force_vector' in det and 'width' in det:
@@ -566,8 +564,7 @@ class Phase1(GraphMachine):
         self.trigger_image = False
 
         time.sleep(3)
-        self.basePos = searchNearestBase(self, self.img)     
-        self.distToTarget = calcDist(basePos=self.basePos)
+        self.basePos = searchNearestBase(self, self.img)
 
     def on_enter_LandAndScore(self):
         """Callback executado ao iniciar o pouso"""
@@ -651,6 +648,7 @@ class Phase4(GraphMachine):
         self.targetPos: Position = Position(0,0,0,0)
         self.dronePos: Position = Position(0,0,0,0)
         self.distToTarget: float
+        self.isSafe: int = 0
 
         ####################### Draw State Machine ######################
         try:
@@ -665,19 +663,19 @@ class Phase4(GraphMachine):
             
 ####################### Transition Conditions ####################### 
     def cond_Approach_Approach(self):
-        if isSafeToLandP4(self) == 0:
+        if self.isSafe == 0:
             return True
         else:
             return False
         
     def cond_Approach_Land(self):
-        if isSafeToLandP4(self) == 1:
+        if self.isSafe  == 1:
             return True
         else:
             return False
         
     def cond_Approach_Restart(self):
-        if isSafeToLandP4(self) == 2:
+        if self.isSafe  == 2:
             return True
         else:
             return False
@@ -686,7 +684,7 @@ class Phase4(GraphMachine):
     def before_Initial_Approach(self):
         self.targetPos.X = -4
         self.targetPos.Y = -4
-        self.targetPos.Z = 1
+        self.targetPos.Z = 0
         Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{self.targetPos.Z}")
         Wait()
     
@@ -696,8 +694,8 @@ class Phase4(GraphMachine):
 
     def before_Restart_Approach(self):
         self.targetPos.X = self.homePos.X + self.targetPos.X
-        self.targetPos.X = self.homePos.Y + self.targetPos.Y
-        self.targetPos.X = self.homePos.Z + self.targetPos.Z
+        self.targetPos.Y = self.homePos.Y + self.targetPos.Y
+        self.targetPos.Z = self.homePos.Z - self.targetPos.Z
 
         Request(self.node, f"homeAbsMove;{self.targetPos.X};{self.targetPos.Y};{self.targetPos.Z};0")
         Wait()
@@ -708,14 +706,14 @@ class Phase4(GraphMachine):
             self.node.get_logger().info("Aguardando imagem...")
             time.sleep(0.1)
         self.targetPos = searchNearestBase(self, self.img)
-        self.distToTarget = calcDist(self.targetPos)
+        self.isSafe = isSafeToLandP4(self)
 
     def on_enter_Restart(self):
         self.node.get_logger().info("on_enter_Restart")
 
-        self.targetPos.X = -4
-        self.targetPos.Y = -4
-        self.targetPos.Z = 1
+        self.targetPos.X = -4.5
+        self.targetPos.Y = -4.5
+        self.targetPos.Z = 0
 
     def on_enter_Land(self):
         self.node.get_logger().info("on_enter_Land")
@@ -730,6 +728,10 @@ class Phase4(GraphMachine):
         Wait()
         Request(self.node, f"relTakeOff;{self.targetHeight};{self.homePos.Z}")
         Wait()
+
+    def on_enter_Final(self):
+        self.node.get_logger().info("on_enter_Final")
+        self.finished = True
 
 ####################### run #######################   
     def run(self):
@@ -781,7 +783,7 @@ class FRTL(GraphMachine):
         self.phase = 0
         self.connectionTrys = 0
         self.homePos = Position(0,0,0, 0)
-        self.targetHeight = TARGET_HEIGHT
+        self.targetHeight = 4
         self.mission = None
 
         self.trigger_start = False
@@ -839,6 +841,8 @@ class FRTL(GraphMachine):
         Wait()
         Request(self.node, f"armUAV")
         Wait()
+        if self.phase == 4:
+            self.targetHeight = 0.5
 
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")
@@ -848,16 +852,15 @@ class FRTL(GraphMachine):
     def on_enter_Phases(self):
         self.node.get_logger().info("on_enter_Phases")
         if self.phase == 1:
-            self.mission = Phase1(self.node, self.homePos, TARGET_HEIGHT)
+            self.mission = Phase1(self.node, self.homePos, self.targetHeight)
             self.mission.run()
         elif self.phase == 4:
-            self.mission = Phase4(self.node, self.homePos, TARGET_HEIGHT)
+            self.mission = Phase4(self.node, self.homePos, self.targetHeight)
             self.mission.run()
 
     def on_enter_Final(self):
         self.node.get_logger().info("on_enter_Final")
         Request(self.node, f"closeConnection")
-        Wait()
         self.finished = True
 
 ####################### run #######################   
