@@ -1,0 +1,34 @@
+digraph "State Machine" {
+	graph [color=black,
+		directed=true,
+		fillcolor=white,
+		label="State Machine",
+		rankdir=LR,
+		"strict"=false,
+		style=solid
+	];
+	node [color=black,
+		fillcolor=white,
+		label="\N",
+		peripheries=1,
+		shape=rectangle,
+		style="rounded,filled"
+	];
+	edge [color=black];
+	Initial	[color=red,
+		fillcolor=darksalmon,
+		label="Initial\l",
+		peripheries=2];
+	Approach	[label="Approach\l- enter:\l  + on_enter_Approach\l"];
+	Initial -> Approach	[label=Initial_to_Approach];
+	Approach -> Approach	[label="Approach_to_Approach [cond_Approach_Approach]"];
+	Restart	[label="Restart\l- enter:\l  + on_enter_Restart\l"];
+	Approach -> Restart	[label="Approach_to_Restart [cond_Approach_Restart]"];
+	Land	[label="Land\l- enter:\l  + on_enter_Land\l"];
+	Approach -> Land	[label="Approach_to_Land [cond_Approach_Land]"];
+	Restart -> Approach	[label=Restart_to_Approach];
+	TakeOff	[label="TakeOff\l- enter:\l  + on_enter_TakeOff\l"];
+	Land -> TakeOff	[label=Land_to_TakeOff];
+	Final	[label="Final\l"];
+	TakeOff -> Final	[label=TakeOff_to_Final];
+}

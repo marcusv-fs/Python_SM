@@ -8,6 +8,7 @@ land ( )
 
 	setMode ( mode : string )
 relTakeOff ( tgHeight : real , homePos : real )
+homeAbsMove ( pos : Position )
 }
 
 interface IEvents {
@@ -52,7 +53,7 @@ stm FRTL {
 		entry relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
 	}
 	state Phases {
-	entry if phase == 1 then Phase1 ( homePos , TARGET_HEIGHT ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( ) else if phase == 4 then Phase4 ( ) end end end end
+		entry if phase == 1 then Phase1 ( homePos , TARGET_HEIGHT ) else if phase == 2 then Phase2 ( ) else if phase == 3 then Phase3 ( homePos , TARGET_HEIGHT ) else if phase == 4 then Phase4 ( homePos , TARGET_HEIGHT ) end end end end
 	}
 	transition t0 {
 		from i0
@@ -99,7 +100,7 @@ transition t6 {
 operation Phase1 ( homePos: Position, TARGET_HEIGHT: real) {
 requires IPlatOps uses IEvents const qtdPos : int = 5 , SAFE_DISTANCE : real = 0.5 , DSD_LAND_ALT : real = - 0.5 , SMOOTH : real = 0.4
 	initial i0
-var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , defPos : vector ( Position , 3 ) , basePos : Position , dronePos : Position , distToTarget : real
+var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Target , 6 ) , searchPoses : vector ( Position , 20 ) , basePos : Position , dronePos : Position , distToTarget : real
 	state Explore {
 	}
 	state SearchForBases {
@@ -108,8 +109,7 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 	transition t0 {
 		from i0 
 		to Explore
-		action 
-	count = 0 ; visitedBases = 0
+		action count = 0 ; visitedBases = 0
 	}
 	transition t1 {
 		from Explore
@@ -122,8 +122,10 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 		
 		
 		
+		
 		takePicture ? img
 		condition count < qtdPos
+		action homeAbsMove ( searchPoses [ count ] ) ; wait ( 1 )
 	}
 	transition t2 {
 		from SearchForBases
@@ -132,15 +134,13 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 		action count = count + 1
 	}
 	state GoToBase {
-		entry basePos = bases [ visitedBases ] . pos ; relMove ( basePos ) ; wait ( 1 )
+		entry dronePos = updateDronePos ( ) ; basePos = convertBasePos ( ) ; wait ( 1 )
 	}
 	transition t3 {
 		from SearchForBases
 		to GoToBase
 		condition count >= qtdPos
-		action 
-	
-	count = 1 ; bases = optimizeBasePositions ( )
+		action count = 1 ; bases = optimizeBasePositions ( )
 	}
 state ApproachToBase {
 		entry takePicture ? img ; dronePos = updateDronePos ( ) ; basePos = SearchNearestBase ( img ) ; distToTarget = calcDist ( basePos , dronePos )
@@ -158,8 +158,12 @@ state LandAndScore {
 		to ApproachToBase
 		condition 
 		
+		
+		
 		not isSafeToLand ( )
-		action delta_z = ( DSD_LAND_ALT - dronePos . Z ) * SMOOTH ; relMove ( basePos . X , basePos . Y , - delta_z )
+		action 
+	
+	basePos = calcNewPos ( basePos ) ; relMove ( basePos )
 	}
 	transition t6 {
 		from ApproachToBase
@@ -180,7 +184,7 @@ state LandAndScore {
 		to GoToBase
 		condition visitedBases < len ( bases )
 	}
-var delta_z : real
+var delta_z : real , min_dist_to_new_base : real = 1.0 , visited_bases_coords : vector ( Position , 20 )
 state TakeOff {
 		entry setMode ( "GUIDED" ) ; armUAV ( ) ; relTakeOff ( TARGET_HEIGHT , homePos . Z ) ; wait ( 1 )
 	}
@@ -189,20 +193,18 @@ state TakeOff {
 operation Phase4 ( homePos : Position
 , TARGET_HEIGHT : real
 ) {
-	uses IEvents requires IPlatOps const qtdPos : int = 3
-	var img : Image , targetPos : Position , dronePos : Position , distToTarget : real , SAFE_DISTANCE : real = 1
+	uses IEvents requires IPlatOps 
+	var img : Image , targetPos : Position , dronePos : Position , distToTarget : real
 	initial i0
-	state GoToCenter {
-		entry takePicture ? img ; targetPos = SearchNearestBase ( img )
+
+	state Approach {
+		entry takePicture ? img ; targetPos = SearchNearestBase ( img ) ; distToTarget = calcDist ( targetPos , dronePos )
 	}
-	state StartLanding {
-		entry relMove ( targetPos ) ; wait ( 1 ) ; SAFE_DISTANCE = 0.3 ; takePicture ? img ; targetPos = SearchNearestBase ( img )
+	state Restart {
+		entry targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1
 	}
-	state AbortLanding {
-		entry targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1 ; SAFE_DISTANCE = 1
-	}
-	state FinishLanding {
-		entry land ( ) ; wait ( 1 ) ; setMode ( "GUIDED" )
+	state Land {
+		entry land ( ) ; wait ( 1 ) ; setMode ( "GUIDED" ) ; wait ( 1 )
 	}
 	final f0
 	state TakeOff {
@@ -210,37 +212,41 @@ operation Phase4 ( homePos : Position
 	}
 	transition t0 {
 		from i0
-		to GoToCenter
-		action targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1 ; relMove ( targetPos )
-	}
-	transition t1 {
-		from GoToCenter
-		to StartLanding
-		condition targetPos . X < SAFE_DISTANCE /\ targetPos . Y < SAFE_DISTANCE
+		to Approach
+		action 
+	targetPos . X = 4 ; targetPos . Y = 4 ; targetPos . Z = 1 ; relMove ( targetPos )
 	}
 	transition t2 {
-		from StartLanding
-		to AbortLanding
-		condition targetPos . X > SAFE_DISTANCE \/ targetPos . Y > SAFE_DISTANCE
+		from Approach
+		to Restart
+		condition isSafeToLandP4 ( ) == 2
 	}
 	transition t3 {
-		from AbortLanding
-		to GoToCenter
-		action relMove ( targetPos ) ; wait ( 1 )
+		from Restart
+		to Approach
+		action 
+	relMove ( targetPos ) ; wait ( 1 )
 	}
 	transition t4 {
-		from StartLanding
-		to FinishLanding
-		condition targetPos . X < SAFE_DISTANCE /\ targetPos . Y < SAFE_DISTANCE
+		from Approach
+		to Land
+		condition isSafeToLandP4 (  ) == 1
 	}
 	transition t5 {
-		from FinishLanding
+		from Land
 		to TakeOff
 	}
 	transition t6 {
 		from TakeOff
 		to f0
 	}
+transition t7 {
+		from Approach
+		to Approach
+		condition isSafeToLandP4 (  ) == 0
+		action relMove ( targetPos ) ; wait ( 1 )
+	}
+const SAFE_DISTANCE : real = 0.3
 }
 
 operation Phase3 ( homePos : Position
@@ -298,4 +304,4 @@ operation Phase3 ( homePos : Position
 	}
 }
 
-function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { } function SearchNearestBase ( img : Image ) : Position { } function SearchBases ( img : Image ) : vector ( Target , 6 ) { } function updateDronePos ( ) : Position { } function markVisitedBase ( pos : Position , bases : vector ( Target , 6 ) ) : vector ( Target , 6 ) { } function BarCodeReaderStart ( ) : boolean { } function BarCodeReaderStop ( ) : boolean { } function optimizeBasePositions ( ) : vector ( Target , 6 ) { } function isSafeToLand ( ) : boolean { }
+function len ( bases : vector ( Target , 6 ) ) : int { }  function calcDist( dronePos : Position , basePos : Position ) : real { } function tryToConnect ( ) : boolean { } function setHome ( ) : Position { } function SearchNearestBase ( img : Image ) : Position { } function SearchBases ( img : Image ) : vector ( Target , 6 ) { } function updateDronePos ( ) : Position { } function markVisitedBase ( pos : Position , bases : vector ( Target , 6 ) ) : vector ( Target , 6 ) { } function BarCodeReaderStart ( ) : boolean { } function BarCodeReaderStop ( ) : boolean { } function optimizeBasePositions ( ) : vector ( Target , 6 ) { } function isSafeToLand ( ) : boolean { } function isSafeToLandP4 ( ) : int { } function calcNewPos ( basePos : Position ) : Position { } function convertBasePos ( ) : Position { }

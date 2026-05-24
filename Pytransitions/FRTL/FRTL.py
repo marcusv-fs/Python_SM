@@ -44,9 +44,30 @@ def is_base_already_visited(self, x, y):
 
 import math
 
+def convertBasePos(self):
+    current_yaw = getattr(self, 'droneYaw', 0.0)
+    target_global = self.bases[self.visitedBases].pos
+    delta_x_global = target_global.X - self.dronePos.X
+    delta_y_global = target_global.Y - self.dronePos.Y
+    
+    delta_x_body = delta_x_global * math.cos(current_yaw) + delta_y_global * math.sin(current_yaw)
+    delta_y_body = -delta_x_global * math.sin(current_yaw) + delta_y_global * math.cos(current_yaw)
+    delta_z = 0.1
+    
+    return Position(delta_x_body, delta_y_body, delta_z, 0)
+
 def isSafeToLand(self):
         # Pousa se X/Y forem perto E se estiver baixo (< 0.6m)
         return (calcDist(self.basePos) < self.SAFE_DISTANCE) and (self.basePos.Z <= 0.6)
+
+def isSafeToLandP4(self):
+    # Pousa se X/Y forem perto E se estiver baixo (< 0.6m)
+    if (self.targetPos.X == 0 and self.targetPos.Y == 0 and self.targetPos.Z == 0):
+        return 2
+    if (calcDist(self.targetPos) < self.SAFE_DISTANCE) and (self.targetPos.Z <= 0.6):
+        return 1
+    else:
+        return 0
 
 def optimizeBasePositions(self):
         self.node.get_logger().info("Iniciando limpeza das bases mapeadas...")
@@ -178,7 +199,6 @@ def searchNearestBase(self, img):
     """
     Calcula o deslocamento relativo necessário MANTENDO NO REFERENCIAL BODY.
     """
-    time.sleep(3)
 
     self.dronePos = updateDronePos(self)
     if not self.dronePos:
@@ -219,6 +239,8 @@ def searchNearestBase(self, img):
             label = det.get('label', 'small_base')
             if label == 'large_base':
                 real_size = 2.0
+                if "Phase4" in self.name:
+                    continue
             else:
                 real_size = 1.1
 
@@ -242,9 +264,10 @@ def searchNearestBase(self, img):
             est_x_global = self.dronePos.X + dx_ned
             est_y_global = self.dronePos.Y + dy_ned
 
-            if is_base_already_visited(self, est_x_global, est_y_global):
-                continue
-
+            if "Phase1" in self.name:
+                if is_base_already_visited(self, est_x_global, est_y_global):
+                    continue
+                
             # 4. CORREÇÃO DE REFERENCIAL 
             dist_sq = dx_body**2 + dy_body**2
             if dist_sq < min_dist_sq:
@@ -294,6 +317,12 @@ def tryToConnect(self):
     Wait()
     return self.isConnected
 
+def calcNewPos(self, basePos):
+    delta_z = (DSD_LAND_ALT - self.dronePos.Z) * SMOOTH
+    basePos = Position(basePos.X, basePos.Y, -delta_z, 0)
+    return basePos
+
+
 def Wait():
     start_time = time.time()
     global Wait_flag
@@ -308,6 +337,7 @@ def Wait():
     Wait_flag = False
 
 def Request(node: Node, command : str):
+    node.get_logger().info(command)
     msg.data = command
     node.request_pub.publish(msg)
 
@@ -333,7 +363,7 @@ class FrtlNode(Node):
         self.machine.trigger_start = True
         self.machine.phase = msg.data
         self.get_logger().info(f"\n Command received: {self.machine.trigger_start}, in: {time.time()} ###")
-        if(msg.data == 2):
+        if(msg.data == 9):
             msg = String()
             msg.data = f"setMode;EMERGENCY"
             self.request_pub.publish(msg)
@@ -489,7 +519,7 @@ class Phase1(GraphMachine):
     def cond_TakeOff_Final(self):
         return self.visitedBases >= len(self.bases)
     
-    ####################### Before Transitions ####################### 
+####################### Before Transitions ####################### 
     def before_Initial_Explore(self):
         self.count = 0
         self.visitedBases = 0
@@ -498,7 +528,7 @@ class Phase1(GraphMachine):
         self.trigger_image = False
 
     def before_SearchForBases_Explore(self):
-        Request(self.node, f"homeAbsMove;{self.searchPoses[self.count].X};{self.searchPoses[self.count].Y};{self.searchPoses[self.count].Z}; 0")
+        Request(self.node, f"homeAbsMove;{self.searchPoses[self.count].X};{self.searchPoses[self.count].Y};{self.searchPoses[self.count].Z};0")
         Wait()
         self.count = self.count + 1
 
@@ -507,12 +537,11 @@ class Phase1(GraphMachine):
 
     def before_ApproachToBase_ApproachToBase(self):
         print("Moving to new Position...")
-        delta_z = (DSD_LAND_ALT - self.dronePos.Z) * SMOOTH
-        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{-delta_z}")
+        self.basePos = calcNewPos(self, self.basePos)
+        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}")
         Wait()
 
-    ####################### On_enter States #######################         
-
+####################### On_enter States #####################         
     def on_enter_SearchForBases(self):
         self.node.get_logger().info("on_enter_SearchForBases")
         while self.img is None:
@@ -524,28 +553,9 @@ class Phase1(GraphMachine):
 
     def on_enter_GoToBase(self):
         self.node.get_logger().info("on_enter_GoToBase")
-
-        if self.visitedBases < len(self.bases):
-            target_global = self.bases[self.visitedBases].pos
-            self.node.get_logger().info(f"Indo para Small Base {self.visitedBases+1}")
-        else:
-            self.node.get_logger().error("Erro: Sem mais bases para visitar no GoToBase!")
-            return
-            
         self.dronePos = updateDronePos(self)
-        current_yaw = getattr(self, 'droneYaw', 0.0)
-    
-        delta_x_global = target_global.X - self.dronePos.X
-        delta_y_global = target_global.Y - self.dronePos.Y
-        
-        delta_x_body = delta_x_global * math.cos(current_yaw) + delta_y_global * math.sin(current_yaw)
-        delta_y_body = -delta_x_global * math.sin(current_yaw) + delta_y_global * math.cos(current_yaw)
-        delta_z = 0.1
-
-        self.node.get_logger().info(f"Movendo (Body Frame): Frente={delta_x_body:.2f}m, Direita={delta_y_body:.2f}m")
-
-        # 3. Envia o comando relativo na perspectiva do drone
-        Request(self.node, f"relMove;{delta_x_body};{delta_y_body};{delta_z}")
+        self.basePos = convertBasePos(self)
+        Request(self.node, f"relMove;{self.basePos.X};{self.basePos.Y};{self.basePos.Z}")
         Wait()
 
     def on_enter_ApproachToBase(self):
@@ -555,6 +565,7 @@ class Phase1(GraphMachine):
             time.sleep(0.1)
         self.trigger_image = False
 
+        time.sleep(3)
         self.basePos = searchNearestBase(self, self.img)     
         self.distToTarget = calcDist(basePos=self.basePos)
 
@@ -585,7 +596,7 @@ class Phase1(GraphMachine):
         self.node.get_logger().info("on_enter_Phase1_Final")
         self.finished = True
 
-    ####################### run #######################   
+####################### run #######################   
     def run(self):
         while not self.finished:
             self.tock = 1
@@ -599,6 +610,140 @@ class Phase1(GraphMachine):
                 print("tock -> ")
                 time.sleep(0.5) 
         
+class Phase4(GraphMachine):
+####################### States Declaration #######################   
+    states = ['Initial', 'Approach', 'Restart', 'Land', 'TakeOff', 'Final']
+
+##################### Transitions Statement  #######################  
+    transitions = [
+        {'trigger': 'Initial_to_Approach', 'source': 'Initial', 'dest': 'Approach', 'before': 'before_Initial_Approach'},
+
+        {'trigger': 'Approach_to_Approach', 'source': 'Approach', 'dest': 'Approach', 'before': 'before_Approach_Approach', 'conditions': 'cond_Approach_Approach'},
+        {'trigger': 'Approach_to_Land', 'source': 'Approach', 'dest': 'Land', 'conditions': 'cond_Approach_Land'},
+        {'trigger': 'Approach_to_Restart', 'source': 'Approach', 'dest': 'Restart', 'conditions': 'cond_Approach_Restart'},
+
+        {'trigger': 'Restart_to_Approach', 'source': 'Restart', 'dest': 'Approach', 'before': 'before_Restart_Approach'},
+
+        {'trigger': 'Land_to_TakeOff', 'source': 'Land', 'dest': 'TakeOff'},
+
+        {'trigger': 'TakeOff_to_Final', 'source': 'TakeOff', 'dest': 'Final'},
+    ]
+
+    def __init__(self, node: Node, homePos: Position, TARGET_HEIGHT: float):    
+        super().__init__(
+            model=self,
+            name="Phase4",
+            states=self.states,
+            transitions=self.transitions,
+            initial='Initial',
+            auto_transitions=False,
+            show_conditions=True,
+            show_state_attributes=True
+        )
+
+        self.targetHeight = TARGET_HEIGHT
+        self.homePos = homePos
+        self.finished = False
+        self.node = node
+        self.SAFE_DISTANCE = 0.3
+
+        self.img = None
+        self.targetPos: Position = Position(0,0,0,0)
+        self.dronePos: Position = Position(0,0,0,0)
+        self.distToTarget: float
+
+        ####################### Draw State Machine ######################
+        try:
+            out_dir = 'Pytransitions/FRTL/Data/'
+            os.makedirs(out_dir, exist_ok=True)
+            
+            self.get_graph().draw(os.path.join(out_dir, 'Phase4.canon'), prog='dot')
+            self.get_graph().draw(os.path.join(out_dir, 'Phase4.png'), prog='dot')
+
+        except Exception as e:
+            self.node.get_logger().error(f"Não foi possível gerar diagrama: {e}")
+            
+####################### Transition Conditions ####################### 
+    def cond_Approach_Approach(self):
+        if isSafeToLandP4(self) == 0:
+            return True
+        else:
+            return False
+        
+    def cond_Approach_Land(self):
+        if isSafeToLandP4(self) == 1:
+            return True
+        else:
+            return False
+        
+    def cond_Approach_Restart(self):
+        if isSafeToLandP4(self) == 2:
+            return True
+        else:
+            return False
+
+####################### Before Transitions ####################### 
+    def before_Initial_Approach(self):
+        self.targetPos.X = -4
+        self.targetPos.Y = -4
+        self.targetPos.Z = 1
+        Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{self.targetPos.Z}")
+        Wait()
+    
+    def before_Approach_Approach(self):
+        Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{-self.targetPos.Z}")
+        Wait()
+
+    def before_Restart_Approach(self):
+        self.targetPos.X = self.homePos.X + self.targetPos.X
+        self.targetPos.X = self.homePos.Y + self.targetPos.Y
+        self.targetPos.X = self.homePos.Z + self.targetPos.Z
+
+        Request(self.node, f"homeAbsMove;{self.targetPos.X};{self.targetPos.Y};{self.targetPos.Z};0")
+        Wait()
+####################### On_enter States #####################         
+    def on_enter_Approach(self):
+        self.node.get_logger().info("on_enter_Approach")
+        while self.img is None:
+            self.node.get_logger().info("Aguardando imagem...")
+            time.sleep(0.1)
+        self.targetPos = searchNearestBase(self, self.img)
+        self.distToTarget = calcDist(self.targetPos)
+
+    def on_enter_Restart(self):
+        self.node.get_logger().info("on_enter_Restart")
+
+        self.targetPos.X = -4
+        self.targetPos.Y = -4
+        self.targetPos.Z = 1
+
+    def on_enter_Land(self):
+        self.node.get_logger().info("on_enter_Land")
+        Request(self.node, "land")
+        Wait()
+        Request(self.node, f"setMode;GUIDED")
+        Wait()
+
+    def on_enter_TakeOff(self):
+        self.node.get_logger().info("on_enter_TakeOff")
+        Request(self.node, f"armUAV")
+        Wait()
+        Request(self.node, f"relTakeOff;{self.targetHeight};{self.homePos.Z}")
+        Wait()
+
+####################### run #######################   
+    def run(self):
+        while not self.finished:
+            self.tock = 1
+            for transition in self.transitions:
+                if self.state in str(transition.get("source")):
+                    if self.may_trigger(transition.get("trigger")):
+                        self.tock = 0
+                        self.node.get_logger().info(f"Transition triggered: {transition.get("trigger")}")
+                        self.trigger(transition.get("trigger"))
+            if self.tock == 1:
+                print("tock -> ")
+                time.sleep(0.5) 
 class FRTL(GraphMachine):
 ####################### States Declaration #######################   
     states = ['Initial', 'Connect', 'Wait', 'StartEngines', 'TakeOff', 'Phases', 'Final']
@@ -704,6 +849,9 @@ class FRTL(GraphMachine):
         self.node.get_logger().info("on_enter_Phases")
         if self.phase == 1:
             self.mission = Phase1(self.node, self.homePos, TARGET_HEIGHT)
+            self.mission.run()
+        elif self.phase == 4:
+            self.mission = Phase4(self.node, self.homePos, TARGET_HEIGHT)
             self.mission.run()
 
     def on_enter_Final(self):
