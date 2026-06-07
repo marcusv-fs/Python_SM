@@ -132,7 +132,7 @@ var count : int = 0 , img : Image , visitedBases : int = 0 , bases : vector ( Ta
 	transition t2 {
 		from SearchForBases
 		to Explore
-	condition len ( bases ) <= 0
+	condition count < qtdPos
 		action count = count + 1
 	}
 	state GoToBase {

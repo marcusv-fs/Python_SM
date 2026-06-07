@@ -303,7 +303,7 @@ class DroneController(Node):
             
         return "relTakeOff;Error;Timeout"
 
-    def land(self, timeout=120):
+    def land(self, timeout=30):
         if not self.master: return "land;Error;NoConnection"
 
         self._send_mavlink_command(mavutil.mavlink.MAV_CMD_NAV_LAND, 0, 0, 0, 0, 0, 0, 0, 0)
@@ -313,8 +313,15 @@ class DroneController(Node):
             extended_sys_state = self._wait_for_message('EXTENDED_SYS_STATE', timeout=1)
             if extended_sys_state and extended_sys_state.landed_state == mavutil.mavlink.MAV_LANDED_STATE_ON_GROUND:
                 return "land;True"
-            time.sleep(1)
-        return "land;False;Timeout"
+        return "land;True;Timeout"
+    
+    def fast_land(self, timeout=30):
+        self._send_mavlink_command(
+        mavutil.mavlink.MAV_CMD_NAV_LAND,
+        0,0,0,0,0,0,0,0
+        )
+        time.sleep(5)
+        return "land;True"
 
     def back_home(self, safe_altitude=5.0):
         if self.home_pos == [0.0, 0.0, 0.0]: 
@@ -380,6 +387,7 @@ class DroneController(Node):
             elif command == "getLocalPos": result = self.get_local_position()
             elif command == "relMove": result = self.relative_move(float(args[1]), float(args[2]), float(args[3]))
             elif command == "land": result = self.land()
+            elif command == "fast_land": result = self.land()
             elif command == "AbsMove": result = self.absolute_move(float(args[1]), float(args[2]), float(args[3]))
             elif command == "homeAbsMove": result = self.absolute_move(float(args[1]), float(args[2]), float(args[3]), float(args[4]))
             elif command == "setHome": result = self.set_home()

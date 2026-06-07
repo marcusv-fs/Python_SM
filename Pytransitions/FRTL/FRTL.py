@@ -237,8 +237,6 @@ def searchNearestBase(self, img):
             label = det.get('label', 'small_base')
             if label == 'large_base':
                 real_size = 2.0
-                if "Phase4" in self.name:
-                    continue
             else:
                 real_size = 1.1
 
@@ -312,7 +310,7 @@ def setHome(self):
 
 def tryToConnect(self):
     Request(self.node, f"tryToConnect;{self.connection_string}")
-    Wait()
+    time.sleep(5)
     return self.isConnected
 
 def calcNewPos(self, basePos):
@@ -689,7 +687,7 @@ class Phase4(GraphMachine):
         Wait()
     
     def before_Approach_Approach(self):
-        Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{-self.targetPos.Z}")
+        Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{-self.targetPos.Z * 0.25}")
         Wait()
 
     def before_Restart_Approach(self):
@@ -717,7 +715,7 @@ class Phase4(GraphMachine):
 
     def on_enter_Land(self):
         self.node.get_logger().info("on_enter_Land")
-        Request(self.node, "land")
+        Request(self.node, "fast_land")
         Wait()
         Request(self.node, f"setMode;GUIDED")
         Wait()
@@ -842,7 +840,7 @@ class FRTL(GraphMachine):
         Request(self.node, f"armUAV")
         Wait()
         if self.phase == 4:
-            self.targetHeight = 0.5
+            self.targetHeight = 1
 
     def on_enter_TakeOff(self):
         self.node.get_logger().info("on_enter_TakeOff")

@@ -242,10 +242,10 @@
       </link>
     </model>
 
-    <actor name="cubo_2_actor">
+    <model name="cubo_2_model">
+      <pose>0 0 0.15 0 0 0</pose> <!-- Posição inicial do modelo -->
       <link name="link">
         <visual name="Cubo.001">
-          <pose>0 0 0.15 0 0 0</pose>
           <geometry>
             <mesh>
               <uri>FRTL_World.dae</uri>
@@ -265,7 +265,6 @@
           </material>
         </visual>
         <collision name="collision">
-          <pose>0 0 0.15 0 0 0</pose>
           <geometry>
             <box>
               <size>1 1 0.1</size>
@@ -273,12 +272,11 @@
           </geometry>
         </collision>
       </link>
-      
-      <script>
+      <plugin filename="gz-sim-trajectory-follower-system"
+        name="gz::sim::systems::TrajectoryFollower">
+        <link_name>link</link_name>
         <loop>true</loop>
-        <delay_start>0.0</delay_start>
-        <auto_start>true</auto_start>
-        <trajectory id="0" type="lemniscata">
+        <waypoints>
           <waypoint><time>0.0</time><pose>0.000 0.000 0 0 0 0</pose></waypoint>
           <waypoint><time>2.0</time><pose>0.750 0.776 0 0 0 0</pose></waypoint>
           <waypoint><time>4.0</time><pose>1.300 1.500 0 0 0 0</pose></waypoint>
@@ -309,9 +307,13 @@
           <waypoint><time>46.0</time><pose>-0.750 -0.776 0 0 0 0</pose></waypoint>
           
           <waypoint><time>48.0</time><pose>0.000 0.000 0 0 0 0</pose></waypoint>
-        </trajectory>
-      </script>
-    </actor>
+        </waypoints>
+        <force>100</force> <!-- Ajuste a força conforme necessário -->
+        <torque>100</torque> <!-- Ajuste o torque conforme necessário -->
+        <range_tolerance>0.1</range_tolerance>
+        <bearing_tolerance>5</bearing_tolerance>
+      </plugin>
+    </model>
 
     <include>
       <uri>model://iris_with_gimbal</uri>
