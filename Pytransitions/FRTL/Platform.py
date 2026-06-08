@@ -82,7 +82,7 @@ class DroneController(Node):
 
     def arm_uav(self):
         if self._send_mavlink_command(mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM, 0, 1):
-            time.sleep(2)
+            time.sleep(1)
             return "armUAV;True"
         return "armUAV;False"
 

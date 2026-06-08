@@ -310,7 +310,7 @@ def setHome(self):
 
 def tryToConnect(self):
     Request(self.node, f"tryToConnect;{self.connection_string}")
-    time.sleep(5)
+    time.sleep(3)
     return self.isConnected
 
 def calcNewPos(self, basePos):
@@ -324,7 +324,6 @@ def Wait():
     global Wait_flag
     Wait_flag = False
     while Wait_flag == False:
-        time.sleep(1)
         now = time.time()
         if now - start_time > 60:  # Timeout de 30 segundos
             print("Timeout ao esperar resposta.")
@@ -542,7 +541,6 @@ class Phase1(GraphMachine):
         self.node.get_logger().info("on_enter_SearchForBases")
         while self.img is None:
             self.node.get_logger().info("Aguardando imagem...")
-            time.sleep(0.1)
         self.node.get_logger().info("Chamando searchBases...")
         self.bases = searchBases(self, self.img)
         self.node.get_logger().info(f"Bases encontradas: {len(self.bases)}")
@@ -681,8 +679,8 @@ class Phase4(GraphMachine):
 ####################### Before Transitions ####################### 
     def before_Initial_Approach(self):
         self.targetPos.X = -4
-        self.targetPos.Y = -4
-        self.targetPos.Z = 0
+        self.targetPos.Y = -4.5
+        self.targetPos.Z = -0.5
         Request(self.node, f"relMove;{self.targetPos.X};{self.targetPos.Y};{self.targetPos.Z}")
         Wait()
     
@@ -702,20 +700,19 @@ class Phase4(GraphMachine):
         self.node.get_logger().info("on_enter_Approach")
         while self.img is None:
             self.node.get_logger().info("Aguardando imagem...")
-            time.sleep(0.1)
         self.targetPos = searchNearestBase(self, self.img)
         self.isSafe = isSafeToLandP4(self)
 
     def on_enter_Restart(self):
         self.node.get_logger().info("on_enter_Restart")
 
-        self.targetPos.X = -4.5
+        self.targetPos.X = -4
         self.targetPos.Y = -4.5
         self.targetPos.Z = 0
 
     def on_enter_Land(self):
         self.node.get_logger().info("on_enter_Land")
-        Request(self.node, "fast_land")
+        Request(self.node, "land")
         Wait()
         Request(self.node, f"setMode;GUIDED")
         Wait()
