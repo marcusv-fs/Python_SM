@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <sdf version="1.8">
   <world name="FRTL_World">
-    <physics name="1ms" type="ignore">
+    <physics name="1ms" type="ode">
       <max_step_size>0.001</max_step_size>
-      <real_time_factor>1.0</real_time_factor>
+      <real_time_factor>0.5</real_time_factor>
     </physics>
 
     <plugin filename="gz-sim-physics-system"
@@ -243,8 +243,13 @@
     </model>
 
     <model name="cubo_2_model">
-      <pose>0 0 0.15 0 0 0</pose> <!-- Posição inicial do modelo -->
+      <pose>0 0 0.5 0 0 0</pose>
+
       <link name="link">
+        <inertial>
+          <mass>1.0</mass>
+        </inertial>
+
         <visual name="Cubo.001">
           <geometry>
             <mesh>
@@ -264,54 +269,131 @@
             </pbr>
           </material>
         </visual>
+
         <collision name="collision">
           <geometry>
             <box>
-              <size>1 1 0.1</size>
-            </box>
+              <size>2 2 0.1</size>   </box>
           </geometry>
         </collision>
+        <velocity_decay>
+         <linear>50.0</linear> 
+         <angular>50.0</angular>
+          </velocity_decay> 
       </link>
+
       <plugin filename="gz-sim-trajectory-follower-system"
-        name="gz::sim::systems::TrajectoryFollower">
+              name="gz::sim::systems::TrajectoryFollower">
         <link_name>link</link_name>
         <loop>true</loop>
+
+        <force>16</force>
+        <torque>20</torque>
+
+        <pos_gain>0.5</pos_gain> <vel_gain>0.5</vel_gain> <rot_gain>0.5</rot_gain>
+
         <waypoints>
-          <waypoint><time>0.0</time><pose>0.000 0.000 0 0 0 0</pose></waypoint>
-          <waypoint><time>2.0</time><pose>0.750 0.776 0 0 0 0</pose></waypoint>
-          <waypoint><time>4.0</time><pose>1.300 1.500 0 0 0 0</pose></waypoint>
-          <waypoint><time>6.0</time><pose>1.500 2.122 0 0 0 0</pose></waypoint>
-          <waypoint><time>8.0</time><pose>1.300 2.598 0 0 0 0</pose></waypoint>
-          <waypoint><time>10.0</time><pose>0.750 2.898 0 0 0 0</pose></waypoint>
-          
-          <waypoint><time>12.0</time><pose>0.000 3.000 0 0 0 0</pose></waypoint> 
-          <waypoint><time>14.0</time><pose>-0.750 2.898 0 0 0 0</pose></waypoint>
-          <waypoint><time>16.0</time><pose>-1.300 2.598 0 0 0 0</pose></waypoint>
-          <waypoint><time>18.0</time><pose>-1.500 2.122 0 0 0 0</pose></waypoint>
-          <waypoint><time>20.0</time><pose>-1.300 1.500 0 0 0 0</pose></waypoint>
-          <waypoint><time>22.0</time><pose>-0.750 0.776 0 0 0 0</pose></waypoint>
-          
-          <waypoint><time>24.0</time><pose>0.000 0.000 0 0 0 0</pose></waypoint>
-          
-          <waypoint><time>26.0</time><pose>0.750 -0.776 0 0 0 0</pose></waypoint>
-          <waypoint><time>28.0</time><pose>1.300 -1.500 0 0 0 0</pose></waypoint>
-          <waypoint><time>30.0</time><pose>1.500 -2.122 0 0 0 0</pose></waypoint>
-          <waypoint><time>32.0</time><pose>1.300 -2.598 0 0 0 0</pose></waypoint>
-          <waypoint><time>34.0</time><pose>0.750 -2.898 0 0 0 0</pose></waypoint>
-          
-          <waypoint><time>36.0</time><pose>0.000 -3.000 0 0 0 0</pose></waypoint> 
-          <waypoint><time>38.0</time><pose>-0.750 -2.898 0 0 0 0</pose></waypoint>
-          <waypoint><time>40.0</time><pose>-1.300 -2.598 0 0 0 0</pose></waypoint>
-          <waypoint><time>42.0</time><pose>-1.500 -2.122 0 0 0 0</pose></waypoint>
-          <waypoint><time>44.0</time><pose>-1.300 -1.500 0 0 0 0</pose></waypoint>
-          <waypoint><time>46.0</time><pose>-0.750 -0.776 0 0 0 0</pose></waypoint>
-          
-          <waypoint><time>48.0</time><pose>0.000 0.000 0 0 0 0</pose></waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.425 0.338 0</waypoint>
+          <waypoint>0.700 0.826 0</waypoint>
+          <waypoint>1.075 1.088 0</waypoint>
+          <waypoint>1.250 1.550 0</waypoint>
+          <waypoint>1.450 1.761 0</waypoint>
+          <waypoint>1.450 2.172 0</waypoint>
+          <waypoint>1.450 2.310 0</waypoint>
+          <waypoint>1.250 2.648 0</waypoint>
+          <waypoint>1.075 2.698 0</waypoint>
+          <waypoint>0.700 2.948 0</waypoint>
+          <waypoint>0.425 2.899 0</waypoint>
+          <waypoint>-0.050 3.050 0</waypoint>
+          <waypoint>-0.325 2.899 0</waypoint>
+          <waypoint>-0.800 2.948 0</waypoint>
+          <waypoint>-0.975 2.698 0</waypoint>
+          <waypoint>-1.350 2.648 0</waypoint>
+          <waypoint>-1.350 2.310 0</waypoint>
+          <waypoint>-1.550 2.172 0</waypoint>
+          <waypoint>-1.350 1.761 0</waypoint>
+          <waypoint>-1.350 1.550 0</waypoint>
+          <waypoint>-0.975 1.088 0</waypoint>
+          <waypoint>-0.800 0.826 0</waypoint>
+          <waypoint>-0.325 0.338 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.425 -0.438 0</waypoint>
+          <waypoint>0.700 -0.726 0</waypoint>
+          <waypoint>1.075 -1.188 0</waypoint>
+          <waypoint>1.250 -1.450 0</waypoint>
+          <waypoint>1.450 -1.861 0</waypoint>
+          <waypoint>1.450 -2.072 0</waypoint>
+          <waypoint>1.450 -2.410 0</waypoint>
+          <waypoint>1.250 -2.548 0</waypoint>
+          <waypoint>1.075 -2.798 0</waypoint>
+          <waypoint>0.700 -2.848 0</waypoint>
+          <waypoint>0.425 -2.999 0</waypoint>
+          <waypoint>-0.050 -2.950 0</waypoint>
+          <waypoint>-0.325 -2.999 0</waypoint>
+          <waypoint>-0.800 -2.848 0</waypoint>
+          <waypoint>-0.975 -2.798 0</waypoint>
+          <waypoint>-1.350 -2.548 0</waypoint>
+          <waypoint>-1.350 -2.410 0</waypoint>
+          <waypoint>-1.550 -2.072 0</waypoint>
+          <waypoint>-1.350 -1.861 0</waypoint>
+          <waypoint>-1.350 -1.450 0</waypoint>
+          <waypoint>-0.975 -1.188 0</waypoint>
+          <waypoint>-0.800 -0.726 0</waypoint>
+          <waypoint>-0.325 -0.438 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.425 0.338 0</waypoint>
+          <waypoint>0.700 0.826 0</waypoint>
+          <waypoint>1.075 1.088 0</waypoint>
+          <waypoint>1.250 1.550 0</waypoint>
+          <waypoint>1.450 1.761 0</waypoint>
+          <waypoint>1.450 2.172 0</waypoint>
+          <waypoint>1.450 2.310 0</waypoint>
+          <waypoint>1.250 2.648 0</waypoint>
+          <waypoint>1.075 2.698 0</waypoint>
+          <waypoint>0.700 2.948 0</waypoint>
+          <waypoint>0.425 2.899 0</waypoint>
+          <waypoint>-0.050 3.050 0</waypoint>
+          <waypoint>-0.325 2.899 0</waypoint>
+          <waypoint>-0.800 2.948 0</waypoint>
+          <waypoint>-0.975 2.698 0</waypoint>
+          <waypoint>-1.350 2.648 0</waypoint>
+          <waypoint>-1.350 2.310 0</waypoint>
+          <waypoint>-1.550 2.172 0</waypoint>
+          <waypoint>-1.350 1.761 0</waypoint>
+          <waypoint>-1.350 1.550 0</waypoint>
+          <waypoint>-0.975 1.088 0</waypoint>
+          <waypoint>-0.800 0.826 0</waypoint>
+          <waypoint>-0.325 0.338 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.425 -0.438 0</waypoint>
+          <waypoint>0.700 -0.726 0</waypoint>
+          <waypoint>1.075 -1.188 0</waypoint>
+          <waypoint>1.250 -1.450 0</waypoint>
+          <waypoint>1.450 -1.861 0</waypoint>
+          <waypoint>1.450 -2.072 0</waypoint>
+          <waypoint>1.450 -2.410 0</waypoint>
+          <waypoint>1.250 -2.548 0</waypoint>
+          <waypoint>1.075 -2.798 0</waypoint>
+          <waypoint>0.700 -2.848 0</waypoint>
+          <waypoint>0.425 -2.999 0</waypoint>
+          <waypoint>-0.050 -2.950 0</waypoint>
+          <waypoint>-0.325 -2.999 0</waypoint>
+          <waypoint>-0.800 -2.848 0</waypoint>
+          <waypoint>-0.975 -2.798 0</waypoint>
+          <waypoint>-1.350 -2.548 0</waypoint>
+          <waypoint>-1.350 -2.410 0</waypoint>
+          <waypoint>-1.550 -2.072 0</waypoint>
+          <waypoint>-1.350 -1.861 0</waypoint>
+          <waypoint>-1.350 -1.450 0</waypoint>
+          <waypoint>-0.975 -1.188 0</waypoint>
+          <waypoint>-0.800 -0.726 0</waypoint>
+          <waypoint>-0.325 -0.438 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
+          <waypoint>0.000 0.000 0</waypoint>
         </waypoints>
-        <force>100</force> <!-- Ajuste a força conforme necessário -->
-        <torque>100</torque> <!-- Ajuste o torque conforme necessário -->
-        <range_tolerance>0.1</range_tolerance>
-        <bearing_tolerance>5</bearing_tolerance>
       </plugin>
     </model>
 
